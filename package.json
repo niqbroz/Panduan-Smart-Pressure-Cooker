@@ -1,0 +1,12 @@
+{
+  "name": "midea-apps-chat-proxy",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Static frontend + Node proxy for Midea Apps chatbot",
+  "scripts": {
+    "start": "node openai-chat-proxy.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

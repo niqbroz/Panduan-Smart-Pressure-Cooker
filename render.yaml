@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: midea-chat-proxy
+    env: node
+    plan: free
+    buildCommand: "echo 'no build'"
+    startCommand: "npm start"
+    autoDeploy: true
+    envVars:
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: OPENAI_BASE_URL
+        value: https://litellm.koboi2026.biz.id/v1
+      - key: OPENAI_MODEL
+        value: all-team-models
+      - key: HOST
+        value: 0.0.0.0
+      - key: PORT
+        value: 10000
