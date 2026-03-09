@@ -1,5 +1,5 @@
 (function () {
-  const NAV_VERSION = 'lang-sync-2026-03-09-v11';
+  const NAV_VERSION = 'lang-sync-2026-03-09-v12';
   window.MIDEA_NAV_VERSION = NAV_VERSION;
 
   const wraps = Array.from(document.querySelectorAll('.phone-wrap'));
@@ -22,44 +22,8 @@
     .map((wrap, idx) => (wrap.querySelector('.chapter-progress-bar') ? idx : -1))
     .filter((idx) => idx >= 0);
 
-  const CHAT_API_STORAGE_KEY = 'midea_chat_api_url';
-
-  function readStoredChatApiUrl() {
-    try {
-      return localStorage.getItem(CHAT_API_STORAGE_KEY) || '';
-    } catch (_err) {
-      return '';
-    }
-  }
-
-  function writeStoredChatApiUrl(value) {
-    try {
-      if (value) {
-        localStorage.setItem(CHAT_API_STORAGE_KEY, value);
-      } else {
-        localStorage.removeItem(CHAT_API_STORAGE_KEY);
-      }
-    } catch (_err) {}
-  }
-
-  function isApiUrlCandidate(raw) {
-    if (!raw) return true;
-    return /^https?:\/\//i.test(raw) || raw.startsWith('/');
-  }
-
-  function normalizeChatApiUrl(raw) {
-    const value = String(raw || '').trim();
-    if (!value) return '/api/chat';
-    if (/\/api\/chat\/?$/i.test(value)) return value.replace(/\/+$/, '');
-    if (/^https?:\/\//i.test(value) || value.startsWith('/')) {
-      return `${value.replace(/\/+$/, '')}/api/chat`;
-    }
-    return value;
-  }
-
-  // prioritas: window override -> localStorage -> same-origin default
-  const initialChatUrlRaw = window.MIDEA_CHAT_API_URL || readStoredChatApiUrl() || '/api/chat';
-  let chatApiUrl = normalizeChatApiUrl(initialChatUrlRaw);
+  // default same-origin agar tetap jalan saat diakses via IP LAN device lain
+  const CHAT_API_URL = window.MIDEA_CHAT_API_URL || '/api/chat';
 
   function deriveTranslateApiUrl(chatUrl) {
     if (window.MIDEA_TRANSLATE_API_URL) return window.MIDEA_TRANSLATE_API_URL;
@@ -69,7 +33,7 @@
     return '/api/translate-ui';
   }
 
-  let translateApiUrl = deriveTranslateApiUrl(chatApiUrl);
+  const TRANSLATE_API_URL = deriveTranslateApiUrl(CHAT_API_URL);
   const SUPPORTED_LANGS = ['id', 'en', 'zh'];
 
   const UI_TEXT = {
@@ -84,17 +48,8 @@
       profileChatHistory: 'Riwayat Chat Bantuan',
       profileRegisteredProducts: 'Produk Terdaftar',
       profileLanguageSettings: 'Pengaturan Bahasa',
-      profileApiSettings: 'Koneksi AI',
-      profileApiHelp:
-        'Isi URL backend publik. Kosongkan lalu reset jika ingin kembali ke default.',
-      profileApiSave: 'Simpan URL',
-      profileApiReset: 'Reset Default',
-      profileApiPlaceholder: 'https://nama-backend-kamu.onrender.com/api/chat',
       gallerySearchPlaceholder: 'Cari video (contoh: panduan, bahan, pressure cooker)...',
       galleryEmpty: 'Video tidak ditemukan. Coba kata kunci lain.',
-      toastApiSaved: 'URL backend AI tersimpan.',
-      toastApiCleared: 'URL backend AI direset ke default.',
-      toastApiInvalid: 'Format URL backend tidak valid.',
       fallbackRecipeAirfryer:
         'Coba: ayam fillet 180°C 16-18 menit, marinasi bawang putih, garam, lada, sedikit minyak. Balik di menit ke-9.',
       fallbackRecipeGeneral:
@@ -117,16 +72,8 @@
       profileChatHistory: 'Support Chat History',
       profileRegisteredProducts: 'Registered Products',
       profileLanguageSettings: 'Language Settings',
-      profileApiSettings: 'AI Connection',
-      profileApiHelp: 'Enter your public backend URL. Clear and reset to return to default.',
-      profileApiSave: 'Save URL',
-      profileApiReset: 'Reset Default',
-      profileApiPlaceholder: 'https://your-backend.onrender.com/api/chat',
       gallerySearchPlaceholder: 'Search videos (example: guide, ingredients, pressure cooker)...',
       galleryEmpty: 'No videos found. Try another keyword.',
-      toastApiSaved: 'AI backend URL saved.',
-      toastApiCleared: 'AI backend URL reset to default.',
-      toastApiInvalid: 'Invalid backend URL format.',
       fallbackRecipeAirfryer:
         'Try this: chicken fillet at 180°C for 16-18 minutes. Marinate with garlic, salt, pepper, and a little oil. Flip at minute 9.',
       fallbackRecipeGeneral:
@@ -149,16 +96,8 @@
       profileChatHistory: '客服聊天记录',
       profileRegisteredProducts: '已注册产品',
       profileLanguageSettings: '语言设置',
-      profileApiSettings: 'AI 连接',
-      profileApiHelp: '填写你的公开后端 URL。清空并重置可恢复默认。',
-      profileApiSave: '保存 URL',
-      profileApiReset: '重置默认',
-      profileApiPlaceholder: 'https://your-backend.onrender.com/api/chat',
       gallerySearchPlaceholder: '搜索视频（例如：教程、食材、压力锅）...',
       galleryEmpty: '未找到视频，请尝试其他关键词。',
-      toastApiSaved: 'AI 后端 URL 已保存。',
-      toastApiCleared: 'AI 后端 URL 已重置为默认。',
-      toastApiInvalid: '后端 URL 格式无效。',
       fallbackRecipeAirfryer:
         '可尝试：鸡胸肉 180°C 烤 16-18 分钟，蒜末+盐+胡椒+少量油腌制，第 9 分钟翻面。',
       fallbackRecipeGeneral: '我可以根据您的美的设备推荐食谱，请提供设备、主要食材和目标烹饪时间。',
@@ -745,7 +684,7 @@
   }
 
   async function fetchUiTranslationsChunk(lang, texts) {
-    const response = await fetch(translateApiUrl, {
+    const response = await fetch(TRANSLATE_API_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ lang, texts }),
@@ -904,15 +843,6 @@
         <button style="padding:11px 12px;border-radius:11px;border:1.5px solid #E8E4DF;background:#fff;text-align:left;cursor:pointer;font-size:12px;">${tr('profileRegisteredProducts')}</button>
         <button style="padding:11px 12px;border-radius:11px;border:1.5px solid #E8E4DF;background:#fff;text-align:left;cursor:pointer;font-size:12px;">${tr('profileLanguageSettings')}</button>
       </div>
-      <div style="margin-top:12px;border:1px solid #E8E4DF;border-radius:12px;padding:10px;background:#FCFCFD;">
-        <div style="font-size:12px;font-weight:700;color:#1E1E2E;margin-bottom:8px;">${tr('profileApiSettings')}</div>
-        <input id="profile-api-url" type="text" placeholder="${tr('profileApiPlaceholder')}" style="width:100%;padding:10px 11px;border-radius:10px;border:1.5px solid #E8E4DF;font-size:12px;outline:none;margin-bottom:8px;">
-        <div style="font-size:10.5px;color:#6B6B80;line-height:1.45;margin-bottom:8px;">${tr('profileApiHelp')}</div>
-        <div style="display:flex;gap:8px;">
-          <button id="profile-api-save" type="button" style="flex:1;padding:9px 10px;border-radius:10px;border:0;background:#D72638;color:#fff;font-size:11px;font-weight:600;cursor:pointer;">${tr('profileApiSave')}</button>
-          <button id="profile-api-reset" type="button" style="flex:1;padding:9px 10px;border-radius:10px;border:1.5px solid #E8E4DF;background:#fff;color:#1E1E2E;font-size:11px;font-weight:600;cursor:pointer;">${tr('profileApiReset')}</button>
-        </div>
-      </div>
     `;
   }
 
@@ -955,40 +885,6 @@
     card.querySelector('#profile-close-btn')?.addEventListener('click', () => {
       panel.style.display = 'none';
     });
-
-    const apiInput = card.querySelector('#profile-api-url');
-    const saveBtn = card.querySelector('#profile-api-save');
-    const resetBtn = card.querySelector('#profile-api-reset');
-
-    if (apiInput) {
-      apiInput.value = readStoredChatApiUrl();
-    }
-
-    if (saveBtn && apiInput) {
-      saveBtn.addEventListener('click', () => {
-        const raw = String(apiInput.value || '').trim();
-        if (!isApiUrlCandidate(raw)) {
-          showToast(tr('toastApiInvalid'));
-          return;
-        }
-
-        const normalized = normalizeChatApiUrl(raw);
-        writeStoredChatApiUrl(normalized);
-        chatApiUrl = normalized;
-        translateApiUrl = deriveTranslateApiUrl(chatApiUrl);
-        showToast(`${tr('toastApiSaved')} ${normalized}`);
-      });
-    }
-
-    if (resetBtn && apiInput) {
-      resetBtn.addEventListener('click', () => {
-        writeStoredChatApiUrl('');
-        apiInput.value = '';
-        chatApiUrl = normalizeChatApiUrl(window.MIDEA_CHAT_API_URL || '/api/chat');
-        translateApiUrl = deriveTranslateApiUrl(chatApiUrl);
-        showToast(tr('toastApiCleared'));
-      });
-    }
 
     panel.style.display = 'flex';
   }
@@ -1450,7 +1346,7 @@
 
   async function fetchGptReply() {
     const history = getCurrentHistory();
-    const response = await fetch(chatApiUrl, {
+    const response = await fetch(CHAT_API_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
