@@ -952,8 +952,8 @@
           <span>Beranda</span>
         </div>
         <div class="nav-item">
-          <svg viewBox="0 0 24 24" fill="none" stroke="var(--mid-gray)" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <span>Cari</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--mid-gray)" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          <span>Panduan</span>
         </div>
         <div class="nav-item">
           <svg viewBox="0 0 24 24" fill="none" stroke="var(--mid-gray)" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
@@ -1617,6 +1617,7 @@ function closeChapter() {
       </div>
 
       <div class="chat-area">
+        <!-- Sapaan awal -->
         <div>
           <div class="chat-meta">
             <div class="chat-avatar"><svg viewBox="0 0 38 38" fill="none" width="12" height="12"><path d="M8 28 C8 28 10 16 19 12 C28 8 30 16 30 16" stroke="white" stroke-width="2.5" stroke-linecap="round"/><circle cx="19" cy="22" r="7" stroke="white" stroke-width="2.5"/><circle cx="19" cy="22" r="2.5" fill="white"/></svg></div>
@@ -1633,10 +1634,12 @@ function closeChapter() {
           </div>
         </div>
 
+        <!-- Pertanyaan user -->
         <div class="chat-bubble user">
-          Halo, AC saya tidak dingin. Apa yang harus saya lakukan?
+          Tutup pressure cooker saya susah dibuka setelah selesai memasak, kenapa ya?
         </div>
 
+        <!-- Jawaban bot -->
         <div>
           <div class="chat-meta">
             <div class="chat-avatar"><svg viewBox="0 0 38 38" fill="none" width="12" height="12"><path d="M8 28 C8 28 10 16 19 12 C28 8 30 16 30 16" stroke="white" stroke-width="2.5" stroke-linecap="round"/><circle cx="19" cy="22" r="7" stroke="white" stroke-width="2.5"/><circle cx="19" cy="22" r="2.5" fill="white"/></svg></div>
@@ -1644,9 +1647,22 @@ function closeChapter() {
             <span class="chat-time">09:42</span>
           </div>
           <div class="chat-bubble bot">
-            Coba beberapa langkah ini ya: <br>1. Pastikan suhu sudah diatur di bawah suhu ruangan<br>2. Bersihkan filter setiap 2 minggu<br>3. Cek apakah freon perlu diisi ulang
+            Itu terjadi karena masih ada tekanan di dalam panci. Coba langkah ini ya:<br><br>
+            1. Tekan tombol <b>Steam Release</b> di pegangan tutup hingga uap habis<br>
+            2. Tunggu hingga <b>float valve turun</b> — baru tutup bisa dibuka<br>
+            3. Jika float valve macet, dorong pelan dengan ujung pena atau sumpit
           </div>
         </div>
+
+        <!-- CTA tidak puas -->
+        <div style="display:flex;align-items:center;justify-content:center;margin-top:4px;margin-bottom:2px;">
+          <div style="display:flex;align-items:center;gap:8px;background:#fff;border:1.5px solid var(--light-gray);border-radius:22px;padding:8px 14px;cursor:pointer;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2" width="13" height="13"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            <span style="font-size:11px;color:var(--mid-gray);">Tidak puas dengan jawaban ini?</span>
+            <span style="font-size:11px;font-weight:700;color:var(--red);">Tanya CS</span>
+          </div>
+        </div>
+
       </div>
 
       <div class="chat-input-bar">
@@ -2705,9 +2721,9 @@ function closeChapter() {
 </div>
 
 <script>
-  // Kosongkan jika ingin pakai default localhost dari midea-navigation.js
-  // Contoh production:
+  // Opsional untuk produksi:
   // window.MIDEA_CHAT_API_URL = "https://domain-backend-anda.com/api/chat";
+  // window.MIDEA_TRANSLATE_API_URL = "https://domain-backend-anda.com/api/translate-ui";
 </script>
 <script src="midea-navigation.js"></script>
 
