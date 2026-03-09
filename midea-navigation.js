@@ -1,5 +1,5 @@
 (function () {
-  const NAV_VERSION = 'lang-sync-2026-03-09-v9';
+  const NAV_VERSION = 'lang-sync-2026-03-09-v10';
   window.MIDEA_NAV_VERSION = NAV_VERSION;
 
   const wraps = Array.from(document.querySelectorAll('.phone-wrap'));
@@ -22,14 +22,15 @@
     .map((wrap, idx) => (wrap.querySelector('.chapter-progress-bar') ? idx : -1))
     .filter((idx) => idx >= 0);
 
-  const CHAT_API_URL = window.MIDEA_CHAT_API_URL || 'http://localhost:8787/api/chat';
+  // default same-origin agar tetap jalan saat diakses via IP LAN device lain
+  const CHAT_API_URL = window.MIDEA_CHAT_API_URL || '/api/chat';
 
   function deriveTranslateApiUrl(chatUrl) {
     if (window.MIDEA_TRANSLATE_API_URL) return window.MIDEA_TRANSLATE_API_URL;
     if (/\/api\/chat\/?$/.test(chatUrl)) {
       return chatUrl.replace(/\/api\/chat\/?$/, '/api/translate-ui');
     }
-    return 'http://localhost:8787/api/translate-ui';
+    return '/api/translate-ui';
   }
 
   const TRANSLATE_API_URL = deriveTranslateApiUrl(CHAT_API_URL);
