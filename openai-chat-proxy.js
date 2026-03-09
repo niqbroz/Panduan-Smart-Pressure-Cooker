@@ -1,6 +1,7 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
+const os = require('os');
 
 function stripQuotes(value) {
   if (
@@ -31,6 +32,7 @@ function loadEnvFile(filepath) {
 loadEnvFile(path.join(process.cwd(), '.env'));
 
 const PORT = Number(process.env.PORT || 8787);
+const HOST = process.env.HOST || '0.0.0.0';
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY || process.env.OPENAI_KEY || '';
 const OPENAI_MODEL = process.env.OPENAI_MODEL || 'gpt-4o-mini';
 const RAW_BASE_URL =
@@ -620,8 +622,26 @@ const server = http.createServer(async (req, res) => {
   text(res, 405, 'Method Not Allowed');
 });
 
-server.listen(PORT, () => {
+function listLanUrls(port) {
+  const out = [];
+  const nets = os.networkInterfaces();
+  Object.values(nets).forEach((entries) => {
+    (entries || []).forEach((net) => {
+      if (!net || net.internal) return;
+      if (net.family === 'IPv4') {
+        out.push(`http://${net.address}:${port}`);
+      }
+    });
+  });
+  return [...new Set(out)];
+}
+
+server.listen(PORT, HOST, () => {
   console.log(`Midea chat proxy running on http://localhost:${PORT}`);
+  const lanUrls = listLanUrls(PORT);
+  if (lanUrls.length > 0) {
+    console.log(`LAN URL: ${lanUrls[0]}`);
+  }
   console.log(`Model default: ${OPENAI_MODEL}`);
   console.log(`Base URL: ${OPENAI_BASE_URL}`);
   console.log(`OpenAI key: ${OPENAI_API_KEY ? 'configured' : 'missing'}`);
