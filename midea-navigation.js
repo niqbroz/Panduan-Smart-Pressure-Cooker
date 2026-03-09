@@ -1,5 +1,5 @@
 (function () {
-  const NAV_VERSION = 'lang-sync-2026-03-09-v10';
+  const NAV_VERSION = 'lang-sync-2026-03-09-v11';
   window.MIDEA_NAV_VERSION = NAV_VERSION;
 
   const wraps = Array.from(document.querySelectorAll('.phone-wrap'));
@@ -160,7 +160,8 @@
 
   const VIDEO_LIBRARY = [
     {
-      src: './Panduan.mp4',
+      src: 'https://drive.google.com/file/d/1TegbaF6pyWUHdCVCbfDF_ZbE_098uzk1/view?usp=sharing',
+      thumb: 'https://drive.google.com/thumbnail?id=1TegbaF6pyWUHdCVCbfDF_ZbE_098uzk1&sz=w1000',
       title: {
         id: 'Video Panduan Utama',
         en: 'Main Guide Video',
@@ -174,7 +175,8 @@
       tags: ['panduan', 'guide', 'pressure cooker', 'my-cs5039p', 'tutorial'],
     },
     {
-      src: './Bahan.mp4',
+      src: 'https://drive.google.com/file/d/1OSTIefrJqebpTeNW5HqWoYljk_ckdPjG/view?usp=sharing',
+      thumb: 'https://drive.google.com/thumbnail?id=1OSTIefrJqebpTeNW5HqWoYljk_ckdPjG&sz=w1000',
       title: {
         id: 'Video Persiapan Bahan',
         en: 'Ingredient Preparation Video',
@@ -379,6 +381,27 @@
     } catch (_err) {
       return raw;
     }
+  }
+
+  function extractDriveFileId(src) {
+    const raw = String(src || '').trim();
+    if (!raw) return '';
+    const byPath = raw.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/);
+    if (byPath && byPath[1]) return byPath[1];
+    try {
+      const u = new URL(raw);
+      return u.searchParams.get('id') || '';
+    } catch (_err) {
+      return '';
+    }
+  }
+
+  function toDrivePreviewUrl(fileId) {
+    return `https://drive.google.com/file/d/${fileId}/preview`;
+  }
+
+  function toDriveThumbUrl(fileId) {
+    return `https://drive.google.com/thumbnail?id=${fileId}&sz=w1000`;
   }
 
   function captureVideoThumbnail(src, seekAtSeconds = 1) {
@@ -886,6 +909,18 @@
     cards.forEach((card) => {
       const src = card.getAttribute('data-video-src') || '';
       if (!src) return;
+      const driveId = extractDriveFileId(src);
+      const explicitThumb = card.getAttribute('data-video-thumb') || '';
+      const thumbUrl = explicitThumb || (driveId ? toDriveThumbUrl(driveId) : '');
+      if (thumbUrl) {
+        const thumbEl = card.querySelector('.video-gallery-thumb');
+        if (thumbEl) thumbEl.style.backgroundImage = `url(${thumbUrl})`;
+      }
+      if (driveId) {
+        const durationEl = card.querySelector('.video-duration');
+        if (durationEl) durationEl.textContent = '';
+        return;
+      }
 
       const cached = videoThumbCache[src];
       if (cached && cached.ready) {
@@ -937,6 +972,7 @@
       card.className = 'video-card video-open-btn gallery-video-card';
       card.setAttribute('data-video-src', item.src);
       card.setAttribute('data-video-title', title);
+      if (item.thumb) card.setAttribute('data-video-thumb', item.thumb);
       card.innerHTML = `
         <div class="video-gallery-thumb">
           <svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.92)" stroke-width="2">
@@ -970,10 +1006,14 @@
   function closeVideoPlayer() {
     const overlay = document.getElementById('video-player-overlay');
     const player = document.getElementById('video-player');
-    if (!overlay || !player) return;
+    const frame = document.getElementById('video-player-frame');
+    if (!overlay || !player || !frame) return;
     player.pause();
     player.removeAttribute('src');
     player.load();
+    frame.removeAttribute('src');
+    frame.style.display = 'none';
+    player.style.display = 'block';
     overlay.classList.remove('open');
     overlay.setAttribute('aria-hidden', 'true');
   }
@@ -981,21 +1021,37 @@
   function openVideoPlayer(src, title) {
     const overlay = document.getElementById('video-player-overlay');
     const player = document.getElementById('video-player');
+    const frame = document.getElementById('video-player-frame');
     const titleEl = document.getElementById('video-player-title');
-    if (!overlay || !player) return;
+    if (!overlay || !player || !frame) return;
 
     const safeSrc = String(src || '').trim();
     if (!safeSrc) return;
     const resolvedSrc = resolveAssetUrl(safeSrc);
+    const driveId = extractDriveFileId(resolvedSrc);
 
     if (titleEl) titleEl.textContent = title || 'Video Panduan';
-    player.src = resolvedSrc;
+    if (driveId) {
+      player.pause();
+      player.removeAttribute('src');
+      player.load();
+      player.style.display = 'none';
+      frame.style.display = 'block';
+      frame.src = toDrivePreviewUrl(driveId);
+    } else {
+      frame.removeAttribute('src');
+      frame.style.display = 'none';
+      player.style.display = 'block';
+      player.src = resolvedSrc;
+    }
     overlay.classList.add('open');
     overlay.setAttribute('aria-hidden', 'false');
 
-    const playPromise = player.play();
-    if (playPromise && typeof playPromise.catch === 'function') {
-      playPromise.catch(() => {});
+    if (!driveId) {
+      const playPromise = player.play();
+      if (playPromise && typeof playPromise.catch === 'function') {
+        playPromise.catch(() => {});
+      }
     }
   }
 
@@ -1017,7 +1073,7 @@
     const player = document.getElementById('video-player');
     if (player) {
       player.addEventListener('error', () => {
-        showToast('Video gagal dimuat. Pastikan server aktif dan file video tersedia.');
+        showToast('Video gagal dimuat. Cek izin akses file Google Drive.');
       });
     }
 

@@ -1302,6 +1302,14 @@
     border-radius: 12px;
     background: #000;
   }
+  .video-player-frame {
+    width: 100%;
+    height: min(70vh, 560px);
+    border: 0;
+    border-radius: 12px;
+    background: #000;
+    display: none;
+  }
 </style>
 
 <div class="phone-wrap">
@@ -1355,8 +1363,9 @@
           <button
             type="button"
             class="video-card video-open-btn"
-            data-video-src="./Panduan.mp4"
+            data-video-src="https://drive.google.com/file/d/1TegbaF6pyWUHdCVCbfDF_ZbE_098uzk1/view?usp=sharing"
             data-video-title="Video Panduan Utama"
+            data-video-thumb="https://drive.google.com/thumbnail?id=1TegbaF6pyWUHdCVCbfDF_ZbE_098uzk1&sz=w1000"
           >
             <div class="video-thumb">
               <svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="2">
@@ -1374,8 +1383,9 @@
           <button
             type="button"
             class="video-card video-open-btn"
-            data-video-src="./Bahan.mp4"
+            data-video-src="https://drive.google.com/file/d/1OSTIefrJqebpTeNW5HqWoYljk_ckdPjG/view?usp=sharing"
             data-video-title="Video Persiapan Bahan"
+            data-video-thumb="https://drive.google.com/thumbnail?id=1OSTIefrJqebpTeNW5HqWoYljk_ckdPjG&sz=w1000"
           >
             <div class="video-thumb">
               <svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="2">
@@ -3035,6 +3045,7 @@ function closeChapter() {
       <button type="button" class="video-close-btn" data-video-close>✕</button>
     </div>
     <video id="video-player" class="video-player" controls playsinline preload="metadata"></video>
+    <iframe id="video-player-frame" class="video-player-frame" allow="autoplay; encrypted-media" allowfullscreen></iframe>
   </div>
 </div>
 
@@ -3043,7 +3054,7 @@ function closeChapter() {
   // window.MIDEA_CHAT_API_URL = "https://domain-backend-anda.com/api/chat";
   // window.MIDEA_TRANSLATE_API_URL = "https://domain-backend-anda.com/api/translate-ui";
 </script>
-<script src="midea-navigation.js?v=20260309-v10"></script>
+<script src="midea-navigation.js?v=20260309-v11"></script>
 
 </body>
 </html>
