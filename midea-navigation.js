@@ -1,5 +1,5 @@
 (function () {
-  const NAV_VERSION = 'lang-sync-2026-03-09-v5';
+  const NAV_VERSION = 'lang-sync-2026-03-09-v6';
   window.MIDEA_NAV_VERSION = NAV_VERSION;
 
   const wraps = Array.from(document.querySelectorAll('.phone-wrap'));
@@ -363,11 +363,24 @@
   function shouldCacheUnchangedText(sourceText, lang) {
     const text = (sourceText || '').trim();
     if (!text) return true;
-    if (text.length <= 3) return true;
-    if (/\d/.test(text)) return true;
+    if (text.length <= 2) return true;
+    if (/^[0-9 .,:/%()+-]+$/.test(text)) return true;
     if (/^[A-Z0-9 _\-./:+()]+$/.test(text)) return true;
-    if (lang === 'en' && /^[A-Za-z0-9 ,.&'’()\/:+-]+$/.test(text)) return true;
+    if (lang === 'en' && /^(WiFi|MAX|OPEN|Standby|Preset|Keep-Warm|Start|Menu|Timer|Warm)$/i.test(text)) {
+      return true;
+    }
     return false;
+  }
+
+  function purgeWeakUnchangedCache(lang) {
+    const cache = state.runtimeTranslationCache[lang];
+    if (!cache) return;
+    Object.keys(cache).forEach((sourceText) => {
+      const translated = cache[sourceText];
+      if (translated === sourceText && !shouldCacheUnchangedText(sourceText, lang)) {
+        delete cache[sourceText];
+      }
+    });
   }
 
   function collectMissingTranslations(lang, options = {}) {
@@ -593,6 +606,7 @@
     state.language = safeLang;
     localStorage.setItem('midea_lang', safeLang);
     document.documentElement.lang = safeLang === 'zh' ? 'zh-CN' : safeLang;
+    if (safeLang !== 'id') purgeWeakUnchangedCache(safeLang);
 
     const initialScope = safeLang === 'id' ? 'all' : 'active';
     const missingMap = collectMissingTranslations(safeLang, { scope: initialScope });
@@ -1076,6 +1090,31 @@
       missingCount: missingMap.size,
       sample,
     };
+  };
+
+  // debug helper: paksa translate ulang semua layar untuk bahasa aktif/non-id
+  window.mideaForceRetranslate = function (lang) {
+    const target = SUPPORTED_LANGS.includes(lang) ? lang : state.language;
+    if (target === 'id') {
+      applyLanguage('id', { resetChat: false });
+      return { ok: true, language: 'id', action: 'reset-to-id' };
+    }
+
+    state.runtimeTranslationCache[target] = Object.create(null);
+    const requestId = ++state.languageRequestId;
+    state.language = target;
+    localStorage.setItem('midea_lang', target);
+    document.documentElement.lang = target === 'zh' ? 'zh-CN' : target;
+
+    const missingMap = collectMissingTranslations(target, { scope: 'all' });
+    translateMissingTexts(target, missingMap, requestId)
+      .then(() => pretranslateAllScreensInBackground(requestId))
+      .catch((error) => {
+        const msg = (error?.message || 'Unknown error').replace(/\s+/g, ' ').slice(0, 90);
+        showToast(`Terjemahan gagal: ${msg}`);
+      });
+
+    return { ok: true, language: target, queued: missingMap.size };
   };
 
   goToScreen(SCREEN.SPLASH);
