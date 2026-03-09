@@ -31,6 +31,8 @@
     id: {
       toastChatErrorPrefix: 'ChatGPT gagal',
       toastBookmark: 'Bab ditandai (bookmark).',
+      toastBackChapter: 'Kembali ke bab sebelumnya.',
+      toastBackToToc: 'Kembali ke daftar isi.',
       profileTitle: 'Profil Saya',
       profileSummary: 'Ringkasan akun aplikasi Midea',
       profileMember: 'Member Midea',
@@ -51,6 +53,8 @@
     en: {
       toastChatErrorPrefix: 'ChatGPT failed',
       toastBookmark: 'Chapter bookmarked.',
+      toastBackChapter: 'Returned to previous chapter.',
+      toastBackToToc: 'Back to table of contents.',
       profileTitle: 'My Profile',
       profileSummary: 'Midea app account summary',
       profileMember: 'Midea Member',
@@ -71,6 +75,8 @@
     zh: {
       toastChatErrorPrefix: 'ChatGPT 连接失败',
       toastBookmark: '章节已收藏。',
+      toastBackChapter: '已返回上一章节。',
+      toastBackToToc: '已返回目录。',
       profileTitle: '我的资料',
       profileSummary: 'Midea 应用账号概览',
       profileMember: '美的会员',
@@ -668,19 +674,26 @@
     const tanyaCard = home.querySelector('.card-tanya');
     const resepCard = home.querySelector('.card-resep');
 
-    if (panduanCard) panduanCard.addEventListener('click', () => goToScreen(SCREEN.PANDUAN));
+    if (panduanCard) {
+      panduanCard.addEventListener('click', () => goToScreen(SCREEN.PANDUAN));
+      // pastikan area icon/arrow di dalam kartu tetap trigger aksi yang sama
+      panduanCard.querySelectorAll('*').forEach((el) => {
+        el.addEventListener('click', () => goToScreen(SCREEN.PANDUAN));
+      });
+    }
     if (tanyaCard) tanyaCard.addEventListener('click', openSupportChat);
     if (resepCard) resepCard.addEventListener('click', openRecipeChat);
 
     const navItems = home.querySelectorAll('.bottom-nav .nav-item');
-    navItems.forEach((item) => {
-      const label = item.querySelector('span')?.textContent?.trim();
+    const actions = [
+      () => goToScreen(SCREEN.HOME),
+      () => goToScreen(SCREEN.PANDUAN),
+      () => openSupportChat(),
+      () => openProfilePanel(),
+    ];
+    navItems.forEach((item, index) => {
       item.style.cursor = 'pointer';
-
-      if (label === 'Beranda') item.addEventListener('click', () => goToScreen(SCREEN.HOME));
-      if (label === 'Cari') item.addEventListener('click', () => goToScreen(SCREEN.PANDUAN));
-      if (label === 'Bantuan') item.addEventListener('click', openSupportChat);
-      if (label === 'Profil') item.addEventListener('click', openProfilePanel);
+      if (actions[index]) item.addEventListener('click', actions[index]);
     });
   }
 
@@ -697,14 +710,15 @@
     });
 
     const navItems = panduan.querySelectorAll('.bottom-nav .nav-item');
-    navItems.forEach((item) => {
-      const label = item.querySelector('span')?.textContent?.trim();
+    const actions = [
+      () => goToScreen(SCREEN.HOME),
+      () => goToScreen(SCREEN.PANDUAN),
+      () => openSupportChat(),
+      () => openProfilePanel(),
+    ];
+    navItems.forEach((item, index) => {
       item.style.cursor = 'pointer';
-
-      if (label === 'Beranda') item.addEventListener('click', () => goToScreen(SCREEN.HOME));
-      if (label === 'Panduan') item.addEventListener('click', () => goToScreen(SCREEN.PANDUAN));
-      if (label === 'Bantuan') item.addEventListener('click', openSupportChat);
-      if (label === 'Profil') item.addEventListener('click', openProfilePanel);
+      if (actions[index]) item.addEventListener('click', actions[index]);
     });
   }
 
@@ -941,7 +955,15 @@
 
       if (bookmarkBtn) {
         bookmarkBtn.style.cursor = 'pointer';
-        bookmarkBtn.addEventListener('click', () => showToast(tr('toastBookmark')));
+        bookmarkBtn.addEventListener('click', () => {
+          if (i > SCREEN.CHAPTER_START) {
+            goToScreen(i - 1);
+            showToast(tr('toastBackChapter'));
+          } else {
+            goToScreen(SCREEN.PANDUAN);
+            showToast(tr('toastBackToToc'));
+          }
+        });
       }
     }
   }

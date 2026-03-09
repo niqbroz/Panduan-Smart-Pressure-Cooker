@@ -480,7 +480,7 @@ const server = http.createServer(async (req, res) => {
         .filter((v) => typeof v === 'string')
         .map((v) => v.trim())
         .filter(Boolean)
-        .slice(0, 200);
+        .slice(0, 1000);
 
       if (lang === 'id') {
         json(res, 200, { translations: texts });
