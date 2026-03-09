@@ -1,4 +1,7 @@
 (function () {
+  const NAV_VERSION = 'lang-sync-2026-03-09-v2';
+  window.MIDEA_NAV_VERSION = NAV_VERSION;
+
   const wraps = Array.from(document.querySelectorAll('.phone-wrap'));
   if (wraps.length < 12) return;
 
@@ -503,7 +506,7 @@
       translateMissingTexts(safeLang, missingMap, requestId).catch((error) => {
         if (requestId !== state.languageRequestId || state.language !== safeLang) return;
         const msg = (error?.message || 'Unknown error').replace(/\s+/g, ' ').slice(0, 90);
-        showToast(`${tr('toastChatErrorPrefix')}: ${msg}`);
+        showToast(`Terjemahan gagal: ${msg}`);
       });
     }
   }
