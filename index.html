@@ -786,7 +786,7 @@
         <div class="lang-sub">Silakan pilih bahasa yang Anda inginkan</div>
 
         <div class="lang-options">
-          <div class="lang-btn active">
+          <div class="lang-btn active" data-lang="id">
             <div class="lang-flag">🇮🇩</div>
             <div class="lang-info">
               <div class="lang-name">Bahasa Indonesia</div>
@@ -797,7 +797,7 @@
             </div>
           </div>
 
-          <div class="lang-btn">
+          <div class="lang-btn" data-lang="en">
             <div class="lang-flag">🇺🇸</div>
             <div class="lang-info">
               <div class="lang-name">English</div>
@@ -808,7 +808,7 @@
             </div>
           </div>
 
-          <div class="lang-btn">
+          <div class="lang-btn" data-lang="zh">
             <div class="lang-flag">🇨🇳</div>
             <div class="lang-info">
               <div class="lang-name">中文</div>
@@ -2704,12 +2704,12 @@ function closeChapter() {
   <span class="screen-label">Layar 12 · Detail Bab 8 — Pemecahan Masalah</span>
 </div>
 
- <script>
-window.MIDEA_CHAT_API_URL = "http://localhost:8787/api/chat";
+<script>
+  // Kosongkan jika ingin pakai default localhost dari midea-navigation.js
+  // Contoh production:
+  // window.MIDEA_CHAT_API_URL = "https://domain-backend-anda.com/api/chat";
 </script>
- 
- <script src="midea-navigation.js"></script>
- 
+<script src="midea-navigation.js"></script>
 
 </body>
 </html>
