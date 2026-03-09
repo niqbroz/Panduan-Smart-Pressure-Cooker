@@ -141,19 +141,66 @@ function parseJsonObjectFromText(textValue) {
 }
 
 function parseTranslationsOutput(rawText, fallbackTexts) {
-  const parsed = parseJsonObjectFromText(rawText);
-  if (!parsed || !Array.isArray(parsed.translations)) return null;
+  const normalizeResult = (list) => {
+    if (!Array.isArray(list)) return null;
+    const out = [];
+    for (let i = 0; i < fallbackTexts.length; i += 1) {
+      const value = list[i];
+      if (typeof value === 'string' && value.trim()) {
+        out.push(value.trim());
+      } else {
+        out.push(fallbackTexts[i]);
+      }
+    }
+    return out;
+  };
 
-  const result = [];
-  for (let i = 0; i < fallbackTexts.length; i += 1) {
-    const value = parsed.translations[i];
-    if (typeof value === 'string' && value.trim()) {
-      result.push(value.trim());
-    } else {
-      result.push(fallbackTexts[i]);
+  const parsedObject = parseJsonObjectFromText(rawText);
+  if (parsedObject && Array.isArray(parsedObject.translations)) {
+    return normalizeResult(parsedObject.translations);
+  }
+
+  const normalized = normalizeCodeBlock(rawText);
+  if (!normalized) return null;
+
+  // fallback 1: pure JSON array
+  try {
+    const parsedArray = JSON.parse(normalized);
+    const normalizedArray = normalizeResult(parsedArray);
+    if (normalizedArray) return normalizedArray;
+  } catch (_err) {
+    // ignore
+  }
+
+  // fallback 2: extract first JSON array segment
+  const arrayStart = normalized.indexOf('[');
+  const arrayEnd = normalized.lastIndexOf(']');
+  if (arrayStart >= 0 && arrayEnd > arrayStart) {
+    const maybeArray = normalized.slice(arrayStart, arrayEnd + 1);
+    try {
+      const extractedArray = JSON.parse(maybeArray);
+      const normalizedArray = normalizeResult(extractedArray);
+      if (normalizedArray) return normalizedArray;
+    } catch (_err) {
+      // ignore
     }
   }
-  return result;
+
+  // fallback 3: numbered/bulleted lines
+  const lines = normalized
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line) => line.replace(/^\d+\s*[\.\)\:\-]\s*/, ''))
+    .map((line) => line.replace(/^[-*]\s*/, ''))
+    .map((line) => line.replace(/^["']|["'],?$/g, '').trim())
+    .filter(Boolean);
+
+  if (lines.length >= fallbackTexts.length) {
+    return normalizeResult(lines);
+  }
+
+  return null;
 }
 
 async function tryChatCompletions(mode, messages, model, lang) {
@@ -338,7 +385,7 @@ async function translateUiTexts(lang, texts) {
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt },
         ],
-        temperature: 0.2,
+        temperature: 0,
       }),
     });
 

@@ -1,5 +1,5 @@
 (function () {
-  const NAV_VERSION = 'lang-sync-2026-03-09-v4';
+  const NAV_VERSION = 'lang-sync-2026-03-09-v5';
   window.MIDEA_NAV_VERSION = NAV_VERSION;
 
   const wraps = Array.from(document.querySelectorAll('.phone-wrap'));
@@ -360,8 +360,19 @@
     node.nodeValue = baseText.replace(trimmed, translatedCore);
   }
 
-  function collectMissingTranslations(lang) {
+  function shouldCacheUnchangedText(sourceText, lang) {
+    const text = (sourceText || '').trim();
+    if (!text) return true;
+    if (text.length <= 3) return true;
+    if (/\d/.test(text)) return true;
+    if (/^[A-Z0-9 _\-./:+()]+$/.test(text)) return true;
+    if (lang === 'en' && /^[A-Za-z0-9 ,.&'’()\/:+-]+$/.test(text)) return true;
+    return false;
+  }
+
+  function collectMissingTranslations(lang, options = {}) {
     const missingMap = new Map();
+    const scope = options.scope || 'active';
     const activeWrap = getActiveWrap();
 
     cacheTextNodes();
@@ -374,14 +385,9 @@
       const insideProfileOverlay = Boolean(parent.closest('#profile-overlay'));
       const insideToast = Boolean(parent.closest('#prototype-toast'));
 
-      // fokus ke layar aktif agar terjemahan cepat dan tidak timeout/rate-limit
-      if (activeWrap && ownerWrap && ownerWrap !== activeWrap) return;
+      // mode active: fokus ke layar aktif agar cepat
+      if (scope === 'active' && activeWrap && ownerWrap && ownerWrap !== activeWrap) return;
       if (!ownerWrap && !insideProfileOverlay && !insideToast) return;
-
-      if (lang === 'id' && typeof node.nodeValue === 'string' && node.nodeValue.trim()) {
-        // sinkronkan baseline saat kembali ke bahasa asal untuk node dinamis
-        node.__baseText = node.nodeValue;
-      }
 
       const baseText = node.__baseText;
       const trimmed = baseText.trim();
@@ -504,7 +510,7 @@
     );
     if (keys.length === 0) return;
 
-    const CHUNK_SIZE = 40;
+    const CHUNK_SIZE = 20;
     for (let i = 0; i < keys.length; i += CHUNK_SIZE) {
       if (requestId !== state.languageRequestId || state.language !== lang) return;
 
@@ -531,7 +537,9 @@
 
       chunk.forEach((sourceText, index) => {
         const t = translated[index] && translated[index].trim() ? translated[index].trim() : sourceText;
-        state.runtimeTranslationCache[lang][sourceText] = t;
+        if (t !== sourceText || shouldCacheUnchangedText(sourceText, lang)) {
+          state.runtimeTranslationCache[lang][sourceText] = t;
+        }
       });
     }
 
@@ -540,6 +548,20 @@
     missingMap.forEach((nodes, sourceText) => {
       const translated = state.runtimeTranslationCache[lang][sourceText] || sourceText;
       nodes.forEach((node) => applyTextToNode(node, translated));
+    });
+  }
+
+  function pretranslateAllScreensInBackground(requestId) {
+    if (state.language === 'id') return;
+
+    const passDelays = [220, 900, 1800];
+    passDelays.forEach((delay) => {
+      setTimeout(() => {
+        if (requestId !== state.languageRequestId || state.language === 'id') return;
+        const allMissingMap = collectMissingTranslations(state.language, { scope: 'all' });
+        if (!allMissingMap.size) return;
+        translateMissingTexts(state.language, allMissingMap, requestId).catch(() => {});
+      }, delay);
     });
   }
 
@@ -552,8 +574,9 @@
 
     state.translationDebounceTimer = setTimeout(() => {
       state.translationDebounceTimer = null;
-      const requestId = ++state.languageRequestId;
-      const missingMap = collectMissingTranslations(state.language);
+      // requestId hanya berubah saat user ganti bahasa, bukan saat pindah layar.
+      const requestId = state.languageRequestId;
+      const missingMap = collectMissingTranslations(state.language, { scope: 'active' });
       translateMissingTexts(state.language, missingMap, requestId).catch((error) => {
         if (requestId !== state.languageRequestId || state.language === 'id') return;
         const msg = (error?.message || 'Unknown error').replace(/\s+/g, ' ').slice(0, 90);
@@ -571,7 +594,8 @@
     localStorage.setItem('midea_lang', safeLang);
     document.documentElement.lang = safeLang === 'zh' ? 'zh-CN' : safeLang;
 
-    const missingMap = collectMissingTranslations(safeLang);
+    const initialScope = safeLang === 'id' ? 'all' : 'active';
+    const missingMap = collectMissingTranslations(safeLang, { scope: initialScope });
     updateLanguageButtons();
 
     if (resetChat) {
@@ -586,6 +610,7 @@
         const msg = (error?.message || 'Unknown error').replace(/\s+/g, ' ').slice(0, 90);
         showToast(`Terjemahan gagal: ${msg}`);
       });
+      pretranslateAllScreensInBackground(requestId);
     }
   }
 
@@ -697,6 +722,12 @@
 
     titleEl.textContent = chatText(safeMode, 'title');
     subEl.textContent = chatText(safeMode, 'subtitle');
+    if (titleEl.firstChild && titleEl.firstChild.nodeType === Node.TEXT_NODE) {
+      titleEl.firstChild.__baseText = titleEl.firstChild.nodeValue;
+    }
+    if (subEl.firstChild && subEl.firstChild.nodeType === Node.TEXT_NODE) {
+      subEl.firstChild.__baseText = subEl.firstChild.nodeValue;
+    }
     if (input) input.placeholder = chatText(safeMode, 'placeholder');
 
     renderChat();
@@ -1034,6 +1065,18 @@
     if (hasAddedNodes) scheduleLanguageRefresh();
   });
   observer.observe(document.body, { childList: true, subtree: true });
+
+  // debug helper: cek sisa teks yang belum punya terjemahan runtime
+  window.mideaTranslationAudit = function () {
+    const missingMap = collectMissingTranslations(state.language, { scope: 'all' });
+    const sample = Array.from(missingMap.keys()).slice(0, 25);
+    return {
+      version: NAV_VERSION,
+      language: state.language,
+      missingCount: missingMap.size,
+      sample,
+    };
+  };
 
   goToScreen(SCREEN.SPLASH);
   applyLanguage(state.language, { resetChat: true });
