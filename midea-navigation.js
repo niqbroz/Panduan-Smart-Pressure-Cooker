@@ -1,18 +1,25 @@
 (function () {
-  const NAV_VERSION = 'lang-sync-2026-03-09-v2';
+  const NAV_VERSION = 'lang-sync-2026-03-09-v4';
   window.MIDEA_NAV_VERSION = NAV_VERSION;
 
   const wraps = Array.from(document.querySelectorAll('.phone-wrap'));
-  if (wraps.length < 12) return;
+  if (wraps.length === 0) return;
+
+  function screenIndexBySelector(selector, fallback) {
+    const idx = wraps.findIndex((wrap) => wrap.querySelector(selector));
+    return idx >= 0 ? idx : fallback;
+  }
 
   const SCREEN = {
-    SPLASH: 0,
-    HOME: 1,
-    PANDUAN: 2,
-    TANYA: 3,
-    CHAPTER_START: 4,
-    CHAPTER_END: 11,
+    SPLASH: screenIndexBySelector('#screen-splash', 0),
+    HOME: screenIndexBySelector('#screen-home', 1),
+    PANDUAN: screenIndexBySelector('#screen-panduan', 2),
+    TANYA: screenIndexBySelector('#screen-tanya', 3),
   };
+
+  const CHAPTER_SCREENS = wraps
+    .map((wrap, idx) => (wrap.querySelector('.chapter-progress-bar') ? idx : -1))
+    .filter((idx) => idx >= 0);
 
   const CHAT_API_URL = window.MIDEA_CHAT_API_URL || 'http://localhost:8787/api/chat';
 
@@ -292,6 +299,13 @@
     return `${hh}:${mm}`;
   }
 
+  function getActiveWrap() {
+    return wraps.find((wrap) => {
+      const style = window.getComputedStyle(wrap);
+      return style.display !== 'none';
+    });
+  }
+
   function cacheTextNodes() {
     const walker = document.createTreeWalker(
       document.body,
@@ -348,10 +362,22 @@
 
   function collectMissingTranslations(lang) {
     const missingMap = new Map();
+    const activeWrap = getActiveWrap();
 
     cacheTextNodes();
     translatableNodes.forEach((node) => {
       if (!node.isConnected) return;
+      const parent = node.parentElement;
+      if (!parent) return;
+
+      const ownerWrap = parent.closest('.phone-wrap');
+      const insideProfileOverlay = Boolean(parent.closest('#profile-overlay'));
+      const insideToast = Boolean(parent.closest('#prototype-toast'));
+
+      // fokus ke layar aktif agar terjemahan cepat dan tidak timeout/rate-limit
+      if (activeWrap && ownerWrap && ownerWrap !== activeWrap) return;
+      if (!ownerWrap && !insideProfileOverlay && !insideToast) return;
+
       if (lang === 'id' && typeof node.nodeValue === 'string' && node.nodeValue.trim()) {
         // sinkronkan baseline saat kembali ke bahasa asal untuk node dinamis
         node.__baseText = node.nodeValue;
@@ -434,6 +460,8 @@
   }
 
   function goToScreen(idx) {
+    if (typeof idx !== 'number' || idx < 0 || idx >= wraps.length) return;
+
     wraps.forEach((wrap, i) => {
       wrap.style.display = i === idx ? 'flex' : 'none';
     });
@@ -481,7 +509,23 @@
       if (requestId !== state.languageRequestId || state.language !== lang) return;
 
       const chunk = keys.slice(i, i + CHUNK_SIZE);
-      const translated = await fetchUiTranslationsChunk(lang, chunk);
+      let translated = null;
+      try {
+        translated = await fetchUiTranslationsChunk(lang, chunk);
+      } catch (chunkErr) {
+        // fallback: jika batch gagal, coba satu per satu agar progress tetap jalan
+        translated = [];
+        for (let j = 0; j < chunk.length; j += 1) {
+          if (requestId !== state.languageRequestId || state.language !== lang) return;
+          const source = chunk[j];
+          try {
+            const one = await fetchUiTranslationsChunk(lang, [source]);
+            translated.push(one[0] || source);
+          } catch (_singleErr) {
+            translated.push(source);
+          }
+        }
+      }
 
       if (requestId !== state.languageRequestId || state.language !== lang) return;
 
@@ -612,8 +656,8 @@
 
   // expose globally to support existing inline onclick attributes
   window.openChapter = function (num) {
-    const target = SCREEN.CHAPTER_START + Number(num) - 1;
-    if (target >= SCREEN.CHAPTER_START && target <= SCREEN.CHAPTER_END) {
+    const target = CHAPTER_SCREENS[Number(num) - 1];
+    if (typeof target === 'number') {
       goToScreen(target);
     }
   };
@@ -918,8 +962,8 @@
   }
 
   function wireChapterDetails() {
-    for (let i = SCREEN.CHAPTER_START; i <= SCREEN.CHAPTER_END; i += 1) {
-      const chapter = wraps[i];
+    CHAPTER_SCREENS.forEach((screenIdx, chapterPos) => {
+      const chapter = wraps[screenIdx];
       const backBtn = chapter.querySelector('.back-btn');
       const navBtns = chapter.querySelectorAll('.chapter-nav-btns .cnav-btn');
       const prevBtn = navBtns[0];
@@ -932,21 +976,25 @@
         backBtn.addEventListener('click', () => goToScreen(SCREEN.PANDUAN));
       }
 
-      if (prevBtn && !prevBtn.classList.contains('disabled')) {
+      if (prevBtn && !prevBtn.classList.contains('disabled') && chapterPos > 0) {
         prevBtn.style.cursor = 'pointer';
-        prevBtn.addEventListener('click', () => goToScreen(i - 1));
+        prevBtn.addEventListener('click', () => goToScreen(CHAPTER_SCREENS[chapterPos - 1]));
       }
 
-      if (nextBtn && !nextBtn.classList.contains('disabled')) {
+      if (
+        nextBtn &&
+        !nextBtn.classList.contains('disabled') &&
+        chapterPos < CHAPTER_SCREENS.length - 1
+      ) {
         nextBtn.style.cursor = 'pointer';
-        nextBtn.addEventListener('click', () => goToScreen(i + 1));
+        nextBtn.addEventListener('click', () => goToScreen(CHAPTER_SCREENS[chapterPos + 1]));
       }
 
       if (nextActionBtn) {
         nextActionBtn.style.cursor = 'pointer';
         nextActionBtn.addEventListener('click', () => {
-          if (i < SCREEN.CHAPTER_END) {
-            goToScreen(i + 1);
+          if (chapterPos < CHAPTER_SCREENS.length - 1) {
+            goToScreen(CHAPTER_SCREENS[chapterPos + 1]);
           } else {
             goToScreen(SCREEN.PANDUAN);
           }
@@ -956,8 +1004,8 @@
       if (bookmarkBtn) {
         bookmarkBtn.style.cursor = 'pointer';
         bookmarkBtn.addEventListener('click', () => {
-          if (i > SCREEN.CHAPTER_START) {
-            goToScreen(i - 1);
+          if (chapterPos > 0) {
+            goToScreen(CHAPTER_SCREENS[chapterPos - 1]);
             showToast(tr('toastBackChapter'));
           } else {
             goToScreen(SCREEN.PANDUAN);
@@ -965,7 +1013,7 @@
           }
         });
       }
-    }
+    });
   }
 
   initChatHistory();
