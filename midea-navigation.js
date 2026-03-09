@@ -249,6 +249,7 @@
   const state = {
     language: loadSavedLanguage(),
     languageRequestId: 0,
+    translationDebounceTimer: null,
     chatMode: 'support',
     chatBusy: false,
     chatHistory: { support: [], recipe: [] },
@@ -259,6 +260,7 @@
   };
 
   const translatableNodes = [];
+  const trackedTextNodes = new WeakSet();
 
   function loadSavedLanguage() {
     const saved = localStorage.getItem('midea_lang') || 'id';
@@ -285,8 +287,6 @@
   }
 
   function cacheTextNodes() {
-    if (translatableNodes.length > 0) return;
-
     const walker = document.createTreeWalker(
       document.body,
       NodeFilter.SHOW_TEXT,
@@ -304,7 +304,9 @@
 
     let node;
     while ((node = walker.nextNode())) {
+      if (trackedTextNodes.has(node)) continue;
       node.__baseText = node.nodeValue;
+      trackedTextNodes.add(node);
       translatableNodes.push(node);
     }
   }
@@ -343,6 +345,12 @@
 
     cacheTextNodes();
     translatableNodes.forEach((node) => {
+      if (!node.isConnected) return;
+      if (lang === 'id' && typeof node.nodeValue === 'string' && node.nodeValue.trim()) {
+        // sinkronkan baseline saat kembali ke bahasa asal untuk node dinamis
+        node.__baseText = node.nodeValue;
+      }
+
       const baseText = node.__baseText;
       const trimmed = baseText.trim();
       if (!trimmed) {
@@ -424,6 +432,7 @@
       wrap.style.display = i === idx ? 'flex' : 'none';
     });
     window.scrollTo({ top: 0, behavior: 'auto' });
+    scheduleLanguageRefresh();
   }
 
   async function fetchUiTranslationsChunk(lang, texts) {
@@ -482,6 +491,25 @@
       const translated = state.runtimeTranslationCache[lang][sourceText] || sourceText;
       nodes.forEach((node) => applyTextToNode(node, translated));
     });
+  }
+
+  function scheduleLanguageRefresh() {
+    if (state.language === 'id') return;
+
+    if (state.translationDebounceTimer) {
+      clearTimeout(state.translationDebounceTimer);
+    }
+
+    state.translationDebounceTimer = setTimeout(() => {
+      state.translationDebounceTimer = null;
+      const requestId = ++state.languageRequestId;
+      const missingMap = collectMissingTranslations(state.language);
+      translateMissingTexts(state.language, missingMap, requestId).catch((error) => {
+        if (requestId !== state.languageRequestId || state.language === 'id') return;
+        const msg = (error?.message || 'Unknown error').replace(/\s+/g, ' ').slice(0, 90);
+        showToast(`Terjemahan gagal: ${msg}`);
+      });
+    }, 140);
   }
 
   function applyLanguage(lang, options = {}) {
@@ -796,6 +824,7 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         mode: state.chatMode,
+        lang: state.language,
         messages: history.slice(-12),
       }),
     });
@@ -923,6 +952,18 @@
   wirePanduanList();
   wireTanyaKami();
   wireChapterDetails();
+
+  const observer = new MutationObserver((mutations) => {
+    let hasAddedNodes = false;
+    for (const mutation of mutations) {
+      if (mutation.addedNodes && mutation.addedNodes.length > 0) {
+        hasAddedNodes = true;
+        break;
+      }
+    }
+    if (hasAddedNodes) scheduleLanguageRefresh();
+  });
+  observer.observe(document.body, { childList: true, subtree: true });
 
   goToScreen(SCREEN.SPLASH);
   applyLanguage(state.language, { resetChat: true });

@@ -53,21 +53,37 @@ function text(res, status, body, contentType = 'text/plain; charset=utf-8') {
   res.end(body);
 }
 
-function getSystemPrompt(mode) {
+function normalizeLang(lang) {
+  if (lang === 'en' || lang === 'zh') return lang;
+  return 'id';
+}
+
+function languageName(lang) {
+  const code = normalizeLang(lang);
+  if (code === 'en') return 'English';
+  if (code === 'zh') return 'Simplified Chinese';
+  return 'Bahasa Indonesia';
+}
+
+function getSystemPrompt(mode, lang) {
+  const outputLanguage = languageName(lang);
+
   if (mode === 'recipe') {
     return [
-      'Kamu adalah asisten resep Midea berbahasa Indonesia.',
+      'Kamu adalah asisten resep Midea.',
       'Berikan jawaban praktis, jelas, dan aman.',
       'Saat memberi resep: tampilkan bahan, langkah, waktu, suhu/daya, dan tips alat Midea.',
       'Jika info kurang, ajukan maksimal 2 pertanyaan klarifikasi.',
+      `Selalu jawab dalam ${outputLanguage}.`,
     ].join(' ');
   }
 
   return [
-    'Kamu adalah asisten support Midea berbahasa Indonesia.',
+    'Kamu adalah asisten support Midea.',
     'Fokus pada troubleshooting, penggunaan produk, garansi, dan service center.',
     'Jawab ringkas, berurutan, aman, dan tidak mengarang data lokasi service center.',
     'Jika perlu data tambahan, minta data penting saja (model, gejala, kota).',
+    `Selalu jawab dalam ${outputLanguage}.`,
   ].join(' ');
 }
 
@@ -140,8 +156,8 @@ function parseTranslationsOutput(rawText, fallbackTexts) {
   return result;
 }
 
-async function tryChatCompletions(mode, messages, model) {
-  const ccMessages = [{ role: 'system', content: getSystemPrompt(mode) }];
+async function tryChatCompletions(mode, messages, model, lang) {
+  const ccMessages = [{ role: 'system', content: getSystemPrompt(mode, lang) }];
   for (const msg of messages) {
     if (!msg || (msg.role !== 'user' && msg.role !== 'assistant') || typeof msg.content !== 'string') {
       continue;
@@ -207,12 +223,12 @@ async function tryChatCompletionsRaw(systemPrompt, userPrompt, model) {
   return answer.trim();
 }
 
-async function callOpenAI(mode, messages) {
+async function callOpenAI(mode, messages, lang) {
   if (!OPENAI_API_KEY) {
     throw new Error('OPENAI_API_KEY belum terbaca. Isi file .env lalu restart server.');
   }
 
-  const input = [{ role: 'system', content: getSystemPrompt(mode) }];
+  const input = [{ role: 'system', content: getSystemPrompt(mode, lang) }];
   for (const msg of messages) {
     if (!msg || (msg.role !== 'user' && msg.role !== 'assistant') || typeof msg.content !== 'string') {
       continue;
@@ -260,7 +276,7 @@ async function callOpenAI(mode, messages) {
 
       // fallback compatibility: sebagian akun/library lebih stabil di endpoint chat/completions
       try {
-        return await tryChatCompletions(mode, messages, model);
+        return await tryChatCompletions(mode, messages, model, lang);
       } catch (ccErr) {
         lastError = new Error(`OpenAI API error: ${detail}. ${ccErr.message}`);
         continue;
@@ -445,8 +461,9 @@ const server = http.createServer(async (req, res) => {
     try {
       const body = await parseBody(req);
       const mode = body?.mode === 'recipe' ? 'recipe' : 'support';
+      const lang = normalizeLang(body?.lang);
       const messages = Array.isArray(body?.messages) ? body.messages.slice(-12) : [];
-      const reply = await callOpenAI(mode, messages);
+      const reply = await callOpenAI(mode, messages, lang);
       json(res, 200, { reply });
     } catch (err) {
       json(res, 500, { error: err.message || 'Unknown error' });
