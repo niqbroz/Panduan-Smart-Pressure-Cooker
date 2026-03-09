@@ -12,6 +12,16 @@
   };
 
   const CHAT_API_URL = window.MIDEA_CHAT_API_URL || 'http://localhost:8787/api/chat';
+
+  function deriveTranslateApiUrl(chatUrl) {
+    if (window.MIDEA_TRANSLATE_API_URL) return window.MIDEA_TRANSLATE_API_URL;
+    if (/\/api\/chat\/?$/.test(chatUrl)) {
+      return chatUrl.replace(/\/api\/chat\/?$/, '/api/translate-ui');
+    }
+    return 'http://localhost:8787/api/translate-ui';
+  }
+
+  const TRANSLATE_API_URL = deriveTranslateApiUrl(CHAT_API_URL);
   const SUPPORTED_LANGS = ['id', 'en', 'zh'];
 
   const UI_TEXT = {
@@ -235,9 +245,14 @@
 
   const state = {
     language: loadSavedLanguage(),
+    languageRequestId: 0,
     chatMode: 'support',
     chatBusy: false,
     chatHistory: { support: [], recipe: [] },
+    runtimeTranslationCache: {
+      en: Object.create(null),
+      zh: Object.create(null),
+    },
   };
 
   const translatableNodes = [];
@@ -304,11 +319,58 @@
     return baseText.replace(trimmed, translated);
   }
 
-  function translatePageText(lang) {
+  function applyTextToNode(node, translatedCore) {
+    const baseText = node.__baseText;
+    const trimmed = baseText.trim();
+    if (!trimmed) {
+      node.nodeValue = baseText;
+      return;
+    }
+
+    if (!translatedCore || translatedCore === trimmed) {
+      node.nodeValue = baseText;
+      return;
+    }
+
+    node.nodeValue = baseText.replace(trimmed, translatedCore);
+  }
+
+  function collectMissingTranslations(lang) {
+    const missingMap = new Map();
+
     cacheTextNodes();
     translatableNodes.forEach((node) => {
-      node.nodeValue = translateStaticText(node.__baseText, lang);
+      const baseText = node.__baseText;
+      const trimmed = baseText.trim();
+      if (!trimmed) {
+        node.nodeValue = baseText;
+        return;
+      }
+
+      if (lang === 'id') {
+        node.nodeValue = baseText;
+        return;
+      }
+
+      const staticTranslatedText = translateStaticText(baseText, lang);
+      if (staticTranslatedText !== baseText) {
+        node.nodeValue = staticTranslatedText;
+        return;
+      }
+
+      const cacheValue = state.runtimeTranslationCache[lang]?.[trimmed];
+      if (cacheValue) {
+        applyTextToNode(node, cacheValue);
+        return;
+      }
+
+      // default sementara ke teks asli, nanti akan diisi hasil auto-translate
+      node.nodeValue = baseText;
+      if (!missingMap.has(trimmed)) missingMap.set(trimmed, []);
+      missingMap.get(trimmed).push(node);
     });
+
+    return missingMap;
   }
 
   function updateLanguageButtons() {
@@ -361,15 +423,74 @@
     window.scrollTo({ top: 0, behavior: 'auto' });
   }
 
+  async function fetchUiTranslationsChunk(lang, texts) {
+    const response = await fetch(TRANSLATE_API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ lang, texts }),
+    });
+
+    if (!response.ok) {
+      let detail = `API ${response.status}`;
+      try {
+        const errJson = await response.json();
+        if (errJson?.error) detail = String(errJson.error);
+      } catch (_err) {
+        const errText = await response.text().catch(() => '');
+        if (errText) detail = `${detail}: ${errText}`;
+      }
+      throw new Error(detail);
+    }
+
+    const data = await response.json();
+    if (!Array.isArray(data?.translations)) {
+      throw new Error('Format respons translate tidak valid.');
+    }
+    return data.translations.map((v) => (typeof v === 'string' ? v : ''));
+  }
+
+  async function translateMissingTexts(lang, missingMap, requestId) {
+    if (lang === 'id') return;
+    if (!missingMap || missingMap.size === 0) return;
+
+    const keys = Array.from(missingMap.keys()).filter(
+      (textKey) => !state.runtimeTranslationCache[lang]?.[textKey]
+    );
+    if (keys.length === 0) return;
+
+    const CHUNK_SIZE = 40;
+    for (let i = 0; i < keys.length; i += CHUNK_SIZE) {
+      if (requestId !== state.languageRequestId || state.language !== lang) return;
+
+      const chunk = keys.slice(i, i + CHUNK_SIZE);
+      const translated = await fetchUiTranslationsChunk(lang, chunk);
+
+      if (requestId !== state.languageRequestId || state.language !== lang) return;
+
+      chunk.forEach((sourceText, index) => {
+        const t = translated[index] && translated[index].trim() ? translated[index].trim() : sourceText;
+        state.runtimeTranslationCache[lang][sourceText] = t;
+      });
+    }
+
+    if (requestId !== state.languageRequestId || state.language !== lang) return;
+
+    missingMap.forEach((nodes, sourceText) => {
+      const translated = state.runtimeTranslationCache[lang][sourceText] || sourceText;
+      nodes.forEach((node) => applyTextToNode(node, translated));
+    });
+  }
+
   function applyLanguage(lang, options = {}) {
     const safeLang = SUPPORTED_LANGS.includes(lang) ? lang : 'id';
     const resetChat = options.resetChat !== false;
+    const requestId = ++state.languageRequestId;
 
     state.language = safeLang;
     localStorage.setItem('midea_lang', safeLang);
     document.documentElement.lang = safeLang === 'zh' ? 'zh-CN' : safeLang;
 
-    translatePageText(safeLang);
+    const missingMap = collectMissingTranslations(safeLang);
     updateLanguageButtons();
 
     if (resetChat) {
@@ -377,6 +498,14 @@
     }
 
     setChatMode(state.chatMode);
+
+    if (safeLang !== 'id') {
+      translateMissingTexts(safeLang, missingMap, requestId).catch((error) => {
+        if (requestId !== state.languageRequestId || state.language !== safeLang) return;
+        const msg = (error?.message || 'Unknown error').replace(/\s+/g, ' ').slice(0, 90);
+        showToast(`${tr('toastChatErrorPrefix')}: ${msg}`);
+      });
+    }
   }
 
   function getProfileCardHtml() {

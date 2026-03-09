@@ -93,6 +93,120 @@ function extractOutputText(data) {
   return '';
 }
 
+function normalizeCodeBlock(textValue) {
+  if (typeof textValue !== 'string') return '';
+  let out = textValue.trim();
+  if (out.startsWith('```')) {
+    out = out.replace(/^```[a-zA-Z]*\n?/, '').replace(/```$/, '').trim();
+  }
+  return out;
+}
+
+function parseJsonObjectFromText(textValue) {
+  const normalized = normalizeCodeBlock(textValue);
+  if (!normalized) return null;
+
+  try {
+    return JSON.parse(normalized);
+  } catch (_err) {
+    // try extract first JSON object block
+    const start = normalized.indexOf('{');
+    const end = normalized.lastIndexOf('}');
+    if (start >= 0 && end > start) {
+      const maybe = normalized.slice(start, end + 1);
+      try {
+        return JSON.parse(maybe);
+      } catch (_err2) {
+        return null;
+      }
+    }
+    return null;
+  }
+}
+
+function parseTranslationsOutput(rawText, fallbackTexts) {
+  const parsed = parseJsonObjectFromText(rawText);
+  if (!parsed || !Array.isArray(parsed.translations)) return null;
+
+  const result = [];
+  for (let i = 0; i < fallbackTexts.length; i += 1) {
+    const value = parsed.translations[i];
+    if (typeof value === 'string' && value.trim()) {
+      result.push(value.trim());
+    } else {
+      result.push(fallbackTexts[i]);
+    }
+  }
+  return result;
+}
+
+async function tryChatCompletions(mode, messages, model) {
+  const ccMessages = [{ role: 'system', content: getSystemPrompt(mode) }];
+  for (const msg of messages) {
+    if (!msg || (msg.role !== 'user' && msg.role !== 'assistant') || typeof msg.content !== 'string') {
+      continue;
+    }
+    ccMessages.push({ role: msg.role, content: msg.content });
+  }
+
+  const resp = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${OPENAI_API_KEY}`,
+    },
+    body: JSON.stringify({
+      model,
+      messages: ccMessages,
+      temperature: 0.4,
+    }),
+  });
+
+  const data = await resp.json().catch(() => ({}));
+  if (!resp.ok) {
+    const detail = data?.error?.message || `HTTP ${resp.status}`;
+    throw new Error(`chat/completions error: ${detail}`);
+  }
+
+  const answer = data?.choices?.[0]?.message?.content;
+  if (!answer || typeof answer !== 'string') {
+    throw new Error('chat/completions respons kosong.');
+  }
+
+  return answer.trim();
+}
+
+async function tryChatCompletionsRaw(systemPrompt, userPrompt, model) {
+  const resp = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${OPENAI_API_KEY}`,
+    },
+    body: JSON.stringify({
+      model,
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: userPrompt },
+      ],
+      temperature: 0.2,
+    }),
+  });
+
+  const data = await resp.json().catch(() => ({}));
+  if (!resp.ok) {
+    const detail = data?.error?.message || `HTTP ${resp.status}`;
+    throw new Error(`chat/completions error: ${detail}`);
+  }
+
+  const answer = data?.choices?.[0]?.message?.content;
+  if (!answer || typeof answer !== 'string') {
+    throw new Error('chat/completions respons kosong.');
+  }
+
+  return answer.trim();
+}
+
 async function callOpenAI(mode, messages) {
   if (!OPENAI_API_KEY) {
     throw new Error('OPENAI_API_KEY belum terbaca. Isi file .env lalu restart server.');
@@ -144,7 +258,13 @@ async function callOpenAI(mode, messages) {
         continue;
       }
 
-      throw new Error(`OpenAI API error: ${detail}`);
+      // fallback compatibility: sebagian akun/library lebih stabil di endpoint chat/completions
+      try {
+        return await tryChatCompletions(mode, messages, model);
+      } catch (ccErr) {
+        lastError = new Error(`OpenAI API error: ${detail}. ${ccErr.message}`);
+        continue;
+      }
     }
 
     const answer = extractOutputText(data);
@@ -156,6 +276,93 @@ async function callOpenAI(mode, messages) {
   }
 
   throw lastError || new Error('Gagal memanggil model OpenAI.');
+}
+
+async function translateUiTexts(lang, texts) {
+  if (!OPENAI_API_KEY) {
+    throw new Error('OPENAI_API_KEY belum terbaca. Isi file .env lalu restart server.');
+  }
+
+  if (!Array.isArray(texts) || texts.length === 0) return [];
+
+  const targetLanguage =
+    lang === 'en'
+      ? 'English'
+      : lang === 'zh'
+      ? 'Simplified Chinese'
+      : 'Indonesian';
+
+  const systemPrompt = [
+    'You are a professional UI translator.',
+    'Translate each source text accurately into the requested target language.',
+    'Do not add extra explanations.',
+    'Return ONLY strict JSON object: {"translations":["..."]}.',
+    'The output array must have exactly the same number and order as the input array.',
+  ].join(' ');
+
+  const userPrompt = JSON.stringify({
+    task: 'translate_ui_texts',
+    target_language: targetLanguage,
+    texts,
+  });
+
+  const models = [...new Set([OPENAI_MODEL, 'gpt-4o-mini'])];
+  let lastError = null;
+
+  for (const model of models) {
+    const resp = await fetch('https://api.openai.com/v1/responses', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${OPENAI_API_KEY}`,
+      },
+      body: JSON.stringify({
+        model,
+        input: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userPrompt },
+        ],
+        temperature: 0.2,
+      }),
+    });
+
+    const data = await resp.json().catch(() => ({}));
+
+    if (!resp.ok) {
+      const code = data?.error?.code || '';
+      const detail = data?.error?.message || `HTTP ${resp.status}`;
+      const lower = String(detail).toLowerCase();
+
+      if (resp.status === 401 || code === 'invalid_api_key') {
+        throw new Error('API key OpenAI tidak valid atau salah project.');
+      }
+      if (resp.status === 429 || code === 'insufficient_quota') {
+        throw new Error('Kuota/billing OpenAI habis. Cek usage dan billing project.');
+      }
+      if (code === 'model_not_found' || (lower.includes('model') && lower.includes('not found'))) {
+        lastError = new Error(`Model ${model} tidak tersedia. Mencoba model fallback...`);
+        continue;
+      }
+
+      try {
+        const fallbackRaw = await tryChatCompletionsRaw(systemPrompt, userPrompt, model);
+        const fallbackParsed = parseTranslationsOutput(fallbackRaw, texts);
+        if (fallbackParsed) return fallbackParsed;
+        lastError = new Error('Format terjemahan tidak valid dari chat/completions.');
+        continue;
+      } catch (ccErr) {
+        lastError = new Error(`OpenAI API error: ${detail}. ${ccErr.message}`);
+        continue;
+      }
+    }
+
+    const rawText = extractOutputText(data);
+    const parsed = parseTranslationsOutput(rawText, texts);
+    if (parsed) return parsed;
+    lastError = new Error('Format output terjemahan tidak valid.');
+  }
+
+  throw lastError || new Error('Gagal menerjemahkan teks UI.');
 }
 
 function parseBody(req) {
@@ -241,6 +448,30 @@ const server = http.createServer(async (req, res) => {
       const messages = Array.isArray(body?.messages) ? body.messages.slice(-12) : [];
       const reply = await callOpenAI(mode, messages);
       json(res, 200, { reply });
+    } catch (err) {
+      json(res, 500, { error: err.message || 'Unknown error' });
+    }
+    return;
+  }
+
+  if (req.method === 'POST' && req.url.startsWith('/api/translate-ui')) {
+    try {
+      const body = await parseBody(req);
+      const lang = body?.lang === 'en' || body?.lang === 'zh' ? body.lang : 'id';
+      const rawTexts = Array.isArray(body?.texts) ? body.texts : [];
+      const texts = rawTexts
+        .filter((v) => typeof v === 'string')
+        .map((v) => v.trim())
+        .filter(Boolean)
+        .slice(0, 200);
+
+      if (lang === 'id') {
+        json(res, 200, { translations: texts });
+        return;
+      }
+
+      const translations = await translateUiTexts(lang, texts);
+      json(res, 200, { translations });
     } catch (err) {
       json(res, 500, { error: err.message || 'Unknown error' });
     }
