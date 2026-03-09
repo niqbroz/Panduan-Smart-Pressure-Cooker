@@ -1,5 +1,5 @@
 (function () {
-  const NAV_VERSION = 'lang-sync-2026-03-09-v8';
+  const NAV_VERSION = 'lang-sync-2026-03-09-v9';
   window.MIDEA_NAV_VERSION = NAV_VERSION;
 
   const wraps = Array.from(document.querySelectorAll('.phone-wrap'));
@@ -370,6 +370,16 @@
     return `${String(mm).padStart(2, '0')}:${String(ss).padStart(2, '0')}`;
   }
 
+  function resolveAssetUrl(src) {
+    const raw = String(src || '').trim();
+    if (!raw) return '';
+    try {
+      return new URL(raw.replace(/^\.\//, ''), window.location.href).href;
+    } catch (_err) {
+      return raw;
+    }
+  }
+
   function captureVideoThumbnail(src, seekAtSeconds = 1) {
     return new Promise((resolve) => {
       const video = document.createElement('video');
@@ -449,7 +459,7 @@
         { once: true }
       );
 
-      video.src = src;
+      video.src = resolveAssetUrl(src);
     });
   }
 
@@ -975,9 +985,10 @@
 
     const safeSrc = String(src || '').trim();
     if (!safeSrc) return;
+    const resolvedSrc = resolveAssetUrl(safeSrc);
 
     if (titleEl) titleEl.textContent = title || 'Video Panduan';
-    player.src = safeSrc;
+    player.src = resolvedSrc;
     overlay.classList.add('open');
     overlay.setAttribute('aria-hidden', 'false');
 
@@ -1001,6 +1012,13 @@
     closeButtons.forEach((btn) => {
       btn.addEventListener('click', closeVideoPlayer);
     });
+
+    const player = document.getElementById('video-player');
+    if (player) {
+      player.addEventListener('error', () => {
+        showToast('Video gagal dimuat. Pastikan server aktif dan file video tersedia.');
+      });
+    }
 
     window.addEventListener('keydown', (event) => {
       if (event.key === 'Escape') {
