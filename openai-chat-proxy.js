@@ -33,7 +33,30 @@ loadEnvFile(path.join(process.cwd(), '.env'));
 const PORT = Number(process.env.PORT || 8787);
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY || process.env.OPENAI_KEY || '';
 const OPENAI_MODEL = process.env.OPENAI_MODEL || 'gpt-4o-mini';
+const RAW_BASE_URL =
+  process.env.OPENAI_BASE_URL ||
+  process.env.OPENAI_API_BASE_URL ||
+  process.env.OPENAI_API_BASE ||
+  process.env.LITELLM_BASE_URL ||
+  process.env.HOME_BASE ||
+  '';
 const ROOT = process.cwd();
+
+function normalizeBaseUrl(value) {
+  const raw = String(value || '').trim();
+  if (!raw) return 'https://api.openai.com/v1';
+  const noSlash = raw.replace(/\/+$/, '');
+  if (/\/v\d+$/i.test(noSlash)) return noSlash;
+  return `${noSlash}/v1`;
+}
+
+const OPENAI_BASE_URL = normalizeBaseUrl(RAW_BASE_URL);
+const PREFER_CHAT_COMPLETIONS = !/api\.openai\.com\/v1$/i.test(OPENAI_BASE_URL);
+
+function apiUrl(pathname) {
+  const path = String(pathname || '');
+  return `${OPENAI_BASE_URL}${path.startsWith('/') ? path : `/${path}`}`;
+}
 
 function json(res, status, body) {
   res.writeHead(status, {
@@ -212,7 +235,7 @@ async function tryChatCompletions(mode, messages, model, lang) {
     ccMessages.push({ role: msg.role, content: msg.content });
   }
 
-  const resp = await fetch('https://api.openai.com/v1/chat/completions', {
+  const resp = await fetch(apiUrl('/chat/completions'), {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -240,7 +263,7 @@ async function tryChatCompletions(mode, messages, model, lang) {
 }
 
 async function tryChatCompletionsRaw(systemPrompt, userPrompt, model) {
-  const resp = await fetch('https://api.openai.com/v1/chat/completions', {
+  const resp = await fetch(apiUrl('/chat/completions'), {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -290,7 +313,15 @@ async function callOpenAI(mode, messages, lang) {
   let lastError = null;
 
   for (const model of models) {
-    const resp = await fetch('https://api.openai.com/v1/responses', {
+    if (PREFER_CHAT_COMPLETIONS) {
+      try {
+        return await tryChatCompletions(mode, messages, model, lang);
+      } catch (ccErr) {
+        lastError = ccErr;
+      }
+    }
+
+    const resp = await fetch(apiUrl('/responses'), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -316,7 +347,7 @@ async function callOpenAI(mode, messages, lang) {
       if (resp.status === 429 || code === 'insufficient_quota') {
         throw new Error('Kuota/billing OpenAI habis. Cek usage dan billing project.');
       }
-      if (code === 'model_not_found' || lower.includes('model') && lower.includes('not found')) {
+      if (code === 'model_not_found' || (lower.includes('model') && lower.includes('not found'))) {
         lastError = new Error(`Model ${model} tidak tersedia. Mencoba model fallback...`);
         continue;
       }
@@ -332,10 +363,30 @@ async function callOpenAI(mode, messages, lang) {
 
     const answer = extractOutputText(data);
     if (!answer) {
+      if (PREFER_CHAT_COMPLETIONS) {
+        // jika base custom dan responses kosong, balik ke chat/completions
+        try {
+          return await tryChatCompletions(mode, messages, model, lang);
+        } catch (ccErr) {
+          lastError = new Error(`Respons kosong dari /responses. ${ccErr.message}`);
+          continue;
+        }
+      }
       throw new Error('Respons OpenAI kosong.');
     }
 
     return answer;
+  }
+
+  // fallback terakhir lintas model
+  if (PREFER_CHAT_COMPLETIONS) {
+    for (const model of models) {
+      try {
+        return await tryChatCompletions(mode, messages, model, lang);
+      } catch (ccErr) {
+        lastError = ccErr;
+      }
+    }
   }
 
   throw lastError || new Error('Gagal memanggil model OpenAI.');
@@ -373,7 +424,18 @@ async function translateUiTexts(lang, texts) {
   let lastError = null;
 
   for (const model of models) {
-    const resp = await fetch('https://api.openai.com/v1/responses', {
+    if (PREFER_CHAT_COMPLETIONS) {
+      try {
+        const fallbackRaw = await tryChatCompletionsRaw(systemPrompt, userPrompt, model);
+        const fallbackParsed = parseTranslationsOutput(fallbackRaw, texts);
+        if (fallbackParsed) return fallbackParsed;
+        lastError = new Error('Format terjemahan tidak valid dari chat/completions.');
+      } catch (ccErr) {
+        lastError = ccErr;
+      }
+    }
+
+    const resp = await fetch(apiUrl('/responses'), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -498,6 +560,7 @@ const server = http.createServer(async (req, res) => {
     json(res, 200, {
       ok: true,
       model: OPENAI_MODEL,
+      baseUrl: OPENAI_BASE_URL,
       apiKeyConfigured: Boolean(OPENAI_API_KEY),
       date: new Date().toISOString(),
     });
@@ -553,8 +616,10 @@ const server = http.createServer(async (req, res) => {
 server.listen(PORT, () => {
   console.log(`Midea chat proxy running on http://localhost:${PORT}`);
   console.log(`Model default: ${OPENAI_MODEL}`);
+  console.log(`Base URL: ${OPENAI_BASE_URL}`);
   console.log(`OpenAI key: ${OPENAI_API_KEY ? 'configured' : 'missing'}`);
   if (!OPENAI_API_KEY) {
     console.log('Tip: buat file .env berisi OPENAI_API_KEY=sk-... lalu restart server.');
   }
+  console.log('Tip: untuk LiteLLM, isi OPENAI_BASE_URL=https://.../v1 di file .env.');
 });
