@@ -1084,6 +1084,224 @@
   }
   .error-chip .code { font-size: 15px; font-weight: 800; margin-bottom: 3px; }
   .error-chip .desc { font-size: 10.5px; color: var(--mid-gray); }
+
+  /* video guide */
+  .video-grid {
+    display: grid;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .video-card {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    width: 100%;
+    border: 1.5px solid var(--light-gray);
+    border-radius: 14px;
+    background: #fff;
+    padding: 12px 14px;
+    cursor: pointer;
+    text-align: left;
+  }
+  .video-card:hover {
+    border-color: rgba(30,58,95,0.35);
+  }
+  .video-thumb {
+    width: 54px;
+    height: 54px;
+    border-radius: 12px;
+    background: linear-gradient(160deg,#1E3A5F 0%,#12253E 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .video-thumb svg { width: 22px; height: 22px; }
+  .video-meta { flex: 1; min-width: 0; }
+  .video-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--charcoal);
+    margin-bottom: 2px;
+  }
+  .video-desc {
+    font-size: 11px;
+    color: var(--mid-gray);
+    line-height: 1.45;
+  }
+  .video-open {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--red);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+  }
+  .video-gallery-cta {
+    width: 100%;
+    border: 1.5px solid rgba(30,58,95,0.26);
+    border-radius: 12px;
+    background: #f5f8ff;
+    color: #1E3A5F;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 11px 12px;
+    cursor: pointer;
+    margin-bottom: 14px;
+  }
+  .video-gallery-cta:hover { border-color: rgba(30,58,95,0.42); }
+
+  .video-gallery-screen {
+    width: 100%;
+    height: 100%;
+    background: var(--cream);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .video-gallery-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px 18px 22px;
+    scrollbar-width: none;
+  }
+  .video-gallery-body::-webkit-scrollbar { display: none; }
+  .video-gallery-search {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border: 1.5px solid var(--light-gray);
+    background: #fff;
+    border-radius: 12px;
+    padding: 11px 12px;
+    margin-bottom: 14px;
+  }
+  .video-gallery-search svg {
+    width: 16px;
+    height: 16px;
+    color: var(--mid-gray);
+    opacity: 0.65;
+    flex-shrink: 0;
+  }
+  .video-gallery-search input {
+    width: 100%;
+    border: 0;
+    outline: none;
+    background: transparent;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12.5px;
+    color: var(--charcoal);
+  }
+  .video-gallery-search input::placeholder { color: var(--mid-gray); }
+  .video-gallery-list {
+    display: grid;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+  .gallery-video-card {
+    align-items: flex-start;
+    padding: 10px;
+  }
+  .video-gallery-thumb {
+    width: 96px;
+    height: 64px;
+    border-radius: 10px;
+    background: linear-gradient(145deg,#1E3A5F 0%,#12253E 100%);
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    overflow: hidden;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .video-gallery-thumb::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg,rgba(0,0,0,0.05),rgba(0,0,0,0.18));
+  }
+  .video-gallery-thumb svg {
+    width: 20px;
+    height: 20px;
+    position: relative;
+    z-index: 1;
+  }
+  .video-duration {
+    position: absolute;
+    right: 6px;
+    bottom: 5px;
+    z-index: 1;
+    font-size: 9px;
+    font-weight: 700;
+    color: #fff;
+    background: rgba(0,0,0,0.55);
+    border-radius: 10px;
+    padding: 2px 6px;
+  }
+  .video-gallery-empty {
+    border: 1.5px dashed #cfd6e4;
+    border-radius: 12px;
+    background: #fff;
+    color: var(--mid-gray);
+    font-size: 12px;
+    text-align: center;
+    padding: 18px 12px;
+  }
+
+  .video-overlay {
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 10020;
+  }
+  .video-overlay.open { display: flex; }
+  .video-overlay-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(10, 14, 26, 0.78);
+    backdrop-filter: blur(2px);
+  }
+  .video-modal {
+    position: relative;
+    width: min(780px, calc(100vw - 24px));
+    background: #0d1324;
+    border-radius: 18px;
+    padding: 14px 14px 12px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    z-index: 1;
+  }
+  .video-modal-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .video-modal-title {
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+  }
+  .video-close-btn {
+    width: 30px;
+    height: 30px;
+    border: 0;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.12);
+    color: #fff;
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+  }
+  .video-player {
+    width: 100%;
+    max-height: min(70vh, 560px);
+    border-radius: 12px;
+    background: #000;
+  }
 </style>
 
 <div class="phone-wrap">
@@ -1131,6 +1349,48 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="#C9963A" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
           <p>Jangan buka tutup sebelum tekanan benar-benar habis. Uap panas dapat menyebabkan luka bakar serius.</p>
         </div>
+
+        <div class="section-title">Video Panduan</div>
+        <div class="video-grid">
+          <button
+            type="button"
+            class="video-card video-open-btn"
+            data-video-src="./Panduan.mp4"
+            data-video-title="Video Panduan Utama"
+          >
+            <div class="video-thumb">
+              <svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="2">
+                <polygon points="9 7 18 12 9 17 9 7" fill="rgba(255,255,255,0.9)" stroke="none"></polygon>
+                <rect x="3" y="5" width="18" height="14" rx="3"></rect>
+              </svg>
+            </div>
+            <div class="video-meta">
+              <div class="video-title">Video Panduan Utama</div>
+              <div class="video-desc">Penjelasan lengkap penggunaan pressure cooker MY-CS5039P.</div>
+            </div>
+            <div class="video-open">Play</div>
+          </button>
+
+          <button
+            type="button"
+            class="video-card video-open-btn"
+            data-video-src="./Bahan.mp4"
+            data-video-title="Video Persiapan Bahan"
+          >
+            <div class="video-thumb">
+              <svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="2">
+                <polygon points="9 7 18 12 9 17 9 7" fill="rgba(255,255,255,0.9)" stroke="none"></polygon>
+                <rect x="3" y="5" width="18" height="14" rx="3"></rect>
+              </svg>
+            </div>
+            <div class="video-meta">
+              <div class="video-title">Video Persiapan Bahan</div>
+              <div class="video-desc">Tutorial menyiapkan bahan agar hasil masak lebih konsisten.</div>
+            </div>
+            <div class="video-open">Play</div>
+          </button>
+        </div>
+        <button type="button" class="video-gallery-cta open-video-gallery-btn">Buka Galeri Video Lengkap</button>
 
         <div class="section-title">Daftar Isi</div>
 
@@ -2720,12 +2980,65 @@ function closeChapter() {
   <span class="screen-label">Layar 12 · Detail Bab 8 — Pemecahan Masalah</span>
 </div>
 
+<!-- ══════════════════════════════════════════ -->
+<!--  SCREEN 13 – GALERI VIDEO                 -->
+<!-- ══════════════════════════════════════════ -->
+<div class="phone-wrap">
+  <div class="phone">
+    <div id="screen-video-gallery" class="video-gallery-screen">
+      <div class="sub-header">
+        <div class="sub-deco1"></div><div class="sub-deco2"></div>
+        <div class="status-bar" style="top:0">
+          <span class="time" style="color:#fff">9:41</span>
+          <div class="status-icons" style="color:#fff"><span>●●●</span><span>WiFi</span><span>🔋</span></div>
+        </div>
+        <div class="back-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+          Buku Panduan
+        </div>
+        <div class="sub-header-title">Galeri Video</div>
+        <div class="sub-header-sub">Tutorial visual untuk penggunaan produk Midea</div>
+      </div>
+
+      <div class="video-gallery-body">
+        <div class="video-gallery-search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input id="video-gallery-search" type="text" placeholder="Cari video (contoh: panduan, bahan, pressure cooker)...">
+        </div>
+
+        <div class="section-title">Daftar Video</div>
+        <div id="video-gallery-list" class="video-gallery-list"></div>
+        <div id="video-gallery-empty" class="video-gallery-empty" style="display:none;">Video tidak ditemukan. Coba kata kunci lain.</div>
+      </div>
+
+      <div class="bottom-nav">
+        <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="var(--mid-gray)" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span>Beranda</span></div>
+        <div class="nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg><span>Panduan</span></div>
+        <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="var(--mid-gray)" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>Bantuan</span></div>
+        <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="var(--mid-gray)" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>Profil</span></div>
+      </div>
+    </div>
+  </div>
+  <span class="screen-label">Layar 13 · Galeri Video</span>
+</div>
+
+<div id="video-player-overlay" class="video-overlay" aria-hidden="true">
+  <div class="video-overlay-backdrop" data-video-close></div>
+  <div class="video-modal" role="dialog" aria-modal="true" aria-label="Video Panduan">
+    <div class="video-modal-head">
+      <div id="video-player-title" class="video-modal-title">Video Panduan</div>
+      <button type="button" class="video-close-btn" data-video-close>✕</button>
+    </div>
+    <video id="video-player" class="video-player" controls playsinline preload="metadata"></video>
+  </div>
+</div>
+
 <script>
   // Opsional untuk produksi:
   // window.MIDEA_CHAT_API_URL = "https://domain-backend-anda.com/api/chat";
   // window.MIDEA_TRANSLATE_API_URL = "https://domain-backend-anda.com/api/translate-ui";
 </script>
-<script src="midea-navigation.js?v=20260309-v6"></script>
+<script src="midea-navigation.js?v=20260309-v8"></script>
 
 </body>
 </html>

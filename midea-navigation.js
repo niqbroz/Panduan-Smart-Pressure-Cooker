@@ -1,5 +1,5 @@
 (function () {
-  const NAV_VERSION = 'lang-sync-2026-03-09-v6';
+  const NAV_VERSION = 'lang-sync-2026-03-09-v8';
   window.MIDEA_NAV_VERSION = NAV_VERSION;
 
   const wraps = Array.from(document.querySelectorAll('.phone-wrap'));
@@ -16,6 +16,7 @@
     PANDUAN: screenIndexBySelector('#screen-panduan', 2),
     TANYA: screenIndexBySelector('#screen-tanya', 3),
   };
+  SCREEN.VIDEO_GALLERY = screenIndexBySelector('#screen-video-gallery', SCREEN.PANDUAN);
 
   const CHAPTER_SCREENS = wraps
     .map((wrap, idx) => (wrap.querySelector('.chapter-progress-bar') ? idx : -1))
@@ -46,6 +47,8 @@
       profileChatHistory: 'Riwayat Chat Bantuan',
       profileRegisteredProducts: 'Produk Terdaftar',
       profileLanguageSettings: 'Pengaturan Bahasa',
+      gallerySearchPlaceholder: 'Cari video (contoh: panduan, bahan, pressure cooker)...',
+      galleryEmpty: 'Video tidak ditemukan. Coba kata kunci lain.',
       fallbackRecipeAirfryer:
         'Coba: ayam fillet 180°C 16-18 menit, marinasi bawang putih, garam, lada, sedikit minyak. Balik di menit ke-9.',
       fallbackRecipeGeneral:
@@ -68,6 +71,8 @@
       profileChatHistory: 'Support Chat History',
       profileRegisteredProducts: 'Registered Products',
       profileLanguageSettings: 'Language Settings',
+      gallerySearchPlaceholder: 'Search videos (example: guide, ingredients, pressure cooker)...',
+      galleryEmpty: 'No videos found. Try another keyword.',
       fallbackRecipeAirfryer:
         'Try this: chicken fillet at 180°C for 16-18 minutes. Marinate with garlic, salt, pepper, and a little oil. Flip at minute 9.',
       fallbackRecipeGeneral:
@@ -90,6 +95,8 @@
       profileChatHistory: '客服聊天记录',
       profileRegisteredProducts: '已注册产品',
       profileLanguageSettings: '语言设置',
+      gallerySearchPlaceholder: '搜索视频（例如：教程、食材、压力锅）...',
+      galleryEmpty: '未找到视频，请尝试其他关键词。',
       fallbackRecipeAirfryer:
         '可尝试：鸡胸肉 180°C 烤 16-18 分钟，蒜末+盐+胡椒+少量油腌制，第 9 分钟翻面。',
       fallbackRecipeGeneral: '我可以根据您的美的设备推荐食谱，请提供设备、主要食材和目标烹饪时间。',
@@ -150,6 +157,37 @@
     },
   };
 
+  const VIDEO_LIBRARY = [
+    {
+      src: './Panduan.mp4',
+      title: {
+        id: 'Video Panduan Utama',
+        en: 'Main Guide Video',
+        zh: '主教程视频',
+      },
+      description: {
+        id: 'Penjelasan lengkap penggunaan pressure cooker MY-CS5039P.',
+        en: 'Complete walkthrough for using pressure cooker MY-CS5039P.',
+        zh: 'MY-CS5039P 压力锅完整使用讲解。',
+      },
+      tags: ['panduan', 'guide', 'pressure cooker', 'my-cs5039p', 'tutorial'],
+    },
+    {
+      src: './Bahan.mp4',
+      title: {
+        id: 'Video Persiapan Bahan',
+        en: 'Ingredient Preparation Video',
+        zh: '食材准备视频',
+      },
+      description: {
+        id: 'Tutorial menyiapkan bahan agar hasil masak lebih konsisten.',
+        en: 'How to prepare ingredients for more consistent cooking results.',
+        zh: '食材预处理教程，让烹饪结果更稳定。',
+      },
+      tags: ['bahan', 'ingredients', 'prep', 'tutorial', 'midea'],
+    },
+  ];
+
   const STATIC_TEXT_MAP = {
     en: {
       'Pilihan Bahasa': 'Language',
@@ -167,6 +205,18 @@
       'Chat langsung dengan tim support Midea': 'Chat directly with Midea support team',
       'Rekomendasi Resep': 'Recipe Recommendations',
       'Resep spesial untuk produk masak Midea': 'Special recipes for Midea cooking products',
+      'Video Panduan': 'Guide Videos',
+      'Buka Galeri Video Lengkap': 'Open Full Video Gallery',
+      'Galeri Video': 'Video Gallery',
+      'Tutorial visual untuk penggunaan produk Midea': 'Visual tutorials for using Midea products',
+      'Daftar Video': 'Video List',
+      'Video Panduan Utama': 'Main Guide Video',
+      'Penjelasan lengkap penggunaan pressure cooker MY-CS5039P.':
+        'Complete walkthrough for using pressure cooker MY-CS5039P.',
+      'Video Persiapan Bahan': 'Ingredient Preparation Video',
+      'Tutorial menyiapkan bahan agar hasil masak lebih konsisten.':
+        'How to prepare ingredients for more consistent cooking results.',
+      'Layar 13 · Galeri Video': 'Screen 13 · Video Gallery',
       'Info Produk Terkini': 'Latest Product Info',
       'AC Inverter Series Terbaru': 'Latest Inverter AC Series',
       'Hemat energi hingga 70% lebih efisien': 'Save energy up to 70%',
@@ -221,6 +271,16 @@
       'Chat langsung dengan tim support Midea': '与美的客服团队在线聊天',
       'Rekomendasi Resep': '食谱推荐',
       'Resep spesial untuk produk masak Midea': '适用于美的烹饪产品的精选食谱',
+      'Video Panduan': '视频教程',
+      'Buka Galeri Video Lengkap': '打开完整视频库',
+      'Galeri Video': '视频库',
+      'Tutorial visual untuk penggunaan produk Midea': '美的产品使用可视化教程',
+      'Daftar Video': '视频列表',
+      'Video Panduan Utama': '主教程视频',
+      'Penjelasan lengkap penggunaan pressure cooker MY-CS5039P.': 'MY-CS5039P 压力锅完整使用讲解。',
+      'Video Persiapan Bahan': '食材准备视频',
+      'Tutorial menyiapkan bahan agar hasil masak lebih konsisten.': '食材预处理教程，让烹饪结果更稳定。',
+      'Layar 13 · Galeri Video': '第 13 屏 · 视频库',
       'Info Produk Terkini': '最新产品信息',
       'AC Inverter Series Terbaru': '最新变频空调系列',
       'Hemat energi hingga 70% lebih efisien': '最高可节能 70%',
@@ -274,6 +334,7 @@
 
   const translatableNodes = [];
   const trackedTextNodes = new WeakSet();
+  const videoThumbCache = Object.create(null);
 
   function loadSavedLanguage() {
     const saved = localStorage.getItem('midea_lang') || 'id';
@@ -290,6 +351,106 @@
     if (Array.isArray(value)) return value;
     if (typeof value === 'string') return value;
     return value[state.language] || value.id;
+  }
+
+  function langValue(valueByLang) {
+    if (!valueByLang || typeof valueByLang !== 'object') return '';
+    return valueByLang[state.language] || valueByLang.id || '';
+  }
+
+  function formatDuration(seconds) {
+    if (!Number.isFinite(seconds) || seconds <= 0) return '';
+    const total = Math.round(seconds);
+    const hh = Math.floor(total / 3600);
+    const mm = Math.floor((total % 3600) / 60);
+    const ss = total % 60;
+    if (hh > 0) {
+      return `${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}:${String(ss).padStart(2, '0')}`;
+    }
+    return `${String(mm).padStart(2, '0')}:${String(ss).padStart(2, '0')}`;
+  }
+
+  function captureVideoThumbnail(src, seekAtSeconds = 1) {
+    return new Promise((resolve) => {
+      const video = document.createElement('video');
+      video.preload = 'metadata';
+      video.muted = true;
+      video.playsInline = true;
+
+      let settled = false;
+      const canvas = document.createElement('canvas');
+      const cleanup = () => {
+        try {
+          video.pause();
+        } catch (_err) {}
+        video.removeAttribute('src');
+        video.load();
+      };
+
+      const done = (payload) => {
+        if (settled) return;
+        settled = true;
+        cleanup();
+        resolve(payload);
+      };
+
+      const tryCapture = () => {
+        if (!video.videoWidth || !video.videoHeight) {
+          done({ dataUrl: '', duration: video.duration || 0 });
+          return;
+        }
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          done({ dataUrl: '', duration: video.duration || 0 });
+          return;
+        }
+        try {
+          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+          done({ dataUrl: canvas.toDataURL('image/jpeg', 0.78), duration: video.duration || 0 });
+        } catch (_err) {
+          done({ dataUrl: '', duration: video.duration || 0 });
+        }
+      };
+
+      video.addEventListener(
+        'loadedmetadata',
+        () => {
+          const duration = Number.isFinite(video.duration) ? video.duration : 0;
+          if (duration <= 0.3) {
+            tryCapture();
+            return;
+          }
+          const target = Math.min(Math.max(seekAtSeconds, 0.1), Math.max(duration - 0.2, 0.1));
+          try {
+            video.currentTime = target;
+          } catch (_err) {
+            tryCapture();
+          }
+        },
+        { once: true }
+      );
+      video.addEventListener('seeked', tryCapture, { once: true });
+      video.addEventListener(
+        'loadeddata',
+        () => {
+          if (!settled && (video.currentTime <= 0.1 || !Number.isFinite(video.duration))) {
+            tryCapture();
+          }
+        },
+        { once: true }
+      );
+      video.addEventListener(
+        'error',
+        () => {
+          done({ dataUrl: '', duration: 0 });
+        },
+        { once: true }
+      );
+
+      video.src = src;
+    });
   }
 
   function nowTimeText() {
@@ -617,6 +778,7 @@
     }
 
     setChatMode(state.chatMode);
+    syncVideoGalleryLanguage();
 
     if (safeLang !== 'id') {
       translateMissingTexts(safeLang, missingMap, requestId).catch((error) => {
@@ -691,6 +853,186 @@
     });
 
     panel.style.display = 'flex';
+  }
+
+  function applyThumbnailToCard(card, thumbData) {
+    if (!card || !card.isConnected || !thumbData) return;
+    const thumbEl = card.querySelector('.video-gallery-thumb');
+    if (!thumbEl) return;
+    if (thumbData.dataUrl) {
+      thumbEl.style.backgroundImage = `url(${thumbData.dataUrl})`;
+    }
+    const durationEl = card.querySelector('.video-duration');
+    if (durationEl) {
+      durationEl.textContent = formatDuration(thumbData.duration) || '';
+    }
+  }
+
+  function hydrateVideoGalleryThumbnails(listEl) {
+    if (!listEl) return;
+
+    const cards = listEl.querySelectorAll('.gallery-video-card');
+    cards.forEach((card) => {
+      const src = card.getAttribute('data-video-src') || '';
+      if (!src) return;
+
+      const cached = videoThumbCache[src];
+      if (cached && cached.ready) {
+        applyThumbnailToCard(card, cached.payload);
+        return;
+      }
+
+      if (cached && cached.promise) {
+        cached.promise.then((payload) => applyThumbnailToCard(card, payload)).catch(() => {});
+        return;
+      }
+
+      const promise = captureVideoThumbnail(src, 1).then((payload) => {
+        const safePayload = payload || { dataUrl: '', duration: 0 };
+        videoThumbCache[src] = { ready: true, payload: safePayload };
+        return safePayload;
+      });
+
+      videoThumbCache[src] = { ready: false, promise };
+      promise.then((payload) => applyThumbnailToCard(card, payload)).catch(() => {});
+    });
+  }
+
+  function renderVideoGallery() {
+    const screen = wraps[SCREEN.VIDEO_GALLERY];
+    if (!screen) return;
+
+    const listEl = screen.querySelector('#video-gallery-list');
+    const emptyEl = screen.querySelector('#video-gallery-empty');
+    const input = screen.querySelector('#video-gallery-search');
+    if (!listEl || !emptyEl) return;
+
+    const query = (input?.value || '').trim().toLowerCase();
+    const filtered = VIDEO_LIBRARY.filter((item) => {
+      if (!query) return true;
+      const title = langValue(item.title).toLowerCase();
+      const desc = langValue(item.description).toLowerCase();
+      const tags = Array.isArray(item.tags) ? item.tags.join(' ').toLowerCase() : '';
+      return `${title} ${desc} ${tags}`.includes(query);
+    });
+
+    listEl.innerHTML = '';
+    filtered.forEach((item) => {
+      const title = langValue(item.title);
+      const desc = langValue(item.description);
+
+      const card = document.createElement('button');
+      card.type = 'button';
+      card.className = 'video-card video-open-btn gallery-video-card';
+      card.setAttribute('data-video-src', item.src);
+      card.setAttribute('data-video-title', title);
+      card.innerHTML = `
+        <div class="video-gallery-thumb">
+          <svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.92)" stroke-width="2">
+            <polygon points="9 7 18 12 9 17 9 7" fill="rgba(255,255,255,0.92)" stroke="none"></polygon>
+            <rect x="3" y="5" width="18" height="14" rx="3"></rect>
+          </svg>
+          <span class="video-duration"></span>
+        </div>
+        <div class="video-meta">
+          <div class="video-title">${title}</div>
+          <div class="video-desc">${desc}</div>
+        </div>
+        <div class="video-open">Play</div>
+      `;
+      listEl.appendChild(card);
+    });
+
+    emptyEl.textContent = tr('galleryEmpty');
+    emptyEl.style.display = filtered.length ? 'none' : 'block';
+    hydrateVideoGalleryThumbnails(listEl);
+  }
+
+  function syncVideoGalleryLanguage() {
+    const screen = wraps[SCREEN.VIDEO_GALLERY];
+    if (!screen) return;
+    const input = screen.querySelector('#video-gallery-search');
+    if (input) input.placeholder = tr('gallerySearchPlaceholder');
+    renderVideoGallery();
+  }
+
+  function closeVideoPlayer() {
+    const overlay = document.getElementById('video-player-overlay');
+    const player = document.getElementById('video-player');
+    if (!overlay || !player) return;
+    player.pause();
+    player.removeAttribute('src');
+    player.load();
+    overlay.classList.remove('open');
+    overlay.setAttribute('aria-hidden', 'true');
+  }
+
+  function openVideoPlayer(src, title) {
+    const overlay = document.getElementById('video-player-overlay');
+    const player = document.getElementById('video-player');
+    const titleEl = document.getElementById('video-player-title');
+    if (!overlay || !player) return;
+
+    const safeSrc = String(src || '').trim();
+    if (!safeSrc) return;
+
+    if (titleEl) titleEl.textContent = title || 'Video Panduan';
+    player.src = safeSrc;
+    overlay.classList.add('open');
+    overlay.setAttribute('aria-hidden', 'false');
+
+    const playPromise = player.play();
+    if (playPromise && typeof playPromise.catch === 'function') {
+      playPromise.catch(() => {});
+    }
+  }
+
+  function wireVideoPlayer() {
+    document.addEventListener('click', (event) => {
+      const btn = event.target.closest('.video-open-btn');
+      if (!btn) return;
+      const src = btn.getAttribute('data-video-src') || '';
+      const cardTitle = btn.querySelector('.video-title')?.textContent?.trim();
+      const title = cardTitle || btn.getAttribute('data-video-title') || btn.textContent.trim();
+      openVideoPlayer(src, title);
+    });
+
+    const closeButtons = document.querySelectorAll('[data-video-close]');
+    closeButtons.forEach((btn) => {
+      btn.addEventListener('click', closeVideoPlayer);
+    });
+
+    window.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') {
+        closeVideoPlayer();
+      }
+    });
+  }
+
+  function wireVideoGallery() {
+    const galleryWrap = wraps[SCREEN.VIDEO_GALLERY];
+    if (!galleryWrap) return;
+
+    const backBtn = galleryWrap.querySelector('.back-btn');
+    const searchInput = galleryWrap.querySelector('#video-gallery-search');
+    if (backBtn) backBtn.addEventListener('click', () => goToScreen(SCREEN.PANDUAN));
+    if (searchInput) {
+      searchInput.addEventListener('input', () => renderVideoGallery());
+    }
+
+    const navItems = galleryWrap.querySelectorAll('.bottom-nav .nav-item');
+    const actions = [
+      () => goToScreen(SCREEN.HOME),
+      () => goToScreen(SCREEN.PANDUAN),
+      () => openSupportChat(),
+      () => openProfilePanel(),
+    ];
+    navItems.forEach((item, index) => {
+      item.style.cursor = 'pointer';
+      if (actions[index]) item.addEventListener('click', actions[index]);
+    });
+
+    syncVideoGalleryLanguage();
   }
 
   // expose globally to support existing inline onclick attributes
@@ -790,8 +1132,15 @@
     const panduan = wraps[SCREEN.PANDUAN];
     const backBtn = panduan.querySelector('.back-btn');
     const chapterCards = panduan.querySelectorAll('.chapter-card');
+    const openGalleryBtn = panduan.querySelector('.open-video-gallery-btn');
 
     if (backBtn) backBtn.addEventListener('click', () => goToScreen(SCREEN.HOME));
+    if (openGalleryBtn) {
+      openGalleryBtn.addEventListener('click', () => {
+        goToScreen(SCREEN.VIDEO_GALLERY);
+        renderVideoGallery();
+      });
+    }
 
     chapterCards.forEach((card, i) => {
       card.style.cursor = 'pointer';
@@ -1065,6 +1414,8 @@
   wireSplash();
   wireHome();
   wirePanduanList();
+  wireVideoGallery();
+  wireVideoPlayer();
   wireTanyaKami();
   wireChapterDetails();
 

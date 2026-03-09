@@ -94,18 +94,22 @@ function getSystemPrompt(mode, lang) {
   if (mode === 'recipe') {
     return [
       'Kamu adalah asisten resep Midea.',
+      'Produk yang digunakan selalu Pressure Cooker Midea model MY-CS5039P.',
+      'Jangan menanyakan jenis/model produk ke user.',
       'Berikan jawaban praktis, jelas, dan aman.',
       'Saat memberi resep: tampilkan bahan, langkah, waktu, suhu/daya, dan tips alat Midea.',
-      'Jika info kurang, ajukan maksimal 2 pertanyaan klarifikasi.',
+      'Jika info kurang, ajukan maksimal 2 pertanyaan klarifikasi (misal bahan yang tersedia atau target waktu).',
       `Selalu jawab dalam ${outputLanguage}.`,
     ].join(' ');
   }
 
   return [
     'Kamu adalah asisten support Midea.',
+    'Produk yang dibahas selalu Pressure Cooker Midea model MY-CS5039P.',
+    'Jangan menanyakan jenis/model produk ke user.',
     'Fokus pada troubleshooting, penggunaan produk, garansi, dan service center.',
     'Jawab ringkas, berurutan, aman, dan tidak mengarang data lokasi service center.',
-    'Jika perlu data tambahan, minta data penting saja (model, gejala, kota).',
+    'Jika perlu data tambahan, minta data penting saja (gejala, kapan terjadi, kota).',
     `Selalu jawab dalam ${outputLanguage}.`,
   ].join(' ');
 }
@@ -538,6 +542,9 @@ function serveStatic(req, res) {
       '.jpg': 'image/jpeg',
       '.jpeg': 'image/jpeg',
       '.webp': 'image/webp',
+      '.mp4': 'video/mp4',
+      '.mov': 'video/quicktime',
+      '.webm': 'video/webm',
     }[ext] || 'application/octet-stream';
 
     fs.readFile(fullPath, (readErr, content) => {
