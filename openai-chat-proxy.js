@@ -60,6 +60,12 @@ function apiUrl(pathname) {
   return `${OPENAI_BASE_URL}${path.startsWith('/') ? path : `/${path}`}`;
 }
 
+function fail(status, message) {
+  const err = new Error(message);
+  err.status = status;
+  return err;
+}
+
 function json(res, status, body) {
   res.writeHead(status, {
     'Content-Type': 'application/json; charset=utf-8',
@@ -348,10 +354,10 @@ async function callOpenAI(mode, messages, lang) {
       const lower = String(detail).toLowerCase();
 
       if (resp.status === 401 || code === 'invalid_api_key') {
-        throw new Error('API key OpenAI tidak valid atau salah project.');
+        throw fail(401, 'API key OpenAI tidak valid atau salah project.');
       }
       if (resp.status === 429 || code === 'insufficient_quota') {
-        throw new Error('Kuota/billing OpenAI habis. Cek usage dan billing project.');
+        throw fail(429, 'Kuota/billing OpenAI habis. Cek usage dan billing project.');
       }
       if (code === 'model_not_found' || (lower.includes('model') && lower.includes('not found'))) {
         lastError = new Error(`Model ${model} tidak tersedia. Mencoba model fallback...`);
@@ -465,10 +471,10 @@ async function translateUiTexts(lang, texts) {
       const lower = String(detail).toLowerCase();
 
       if (resp.status === 401 || code === 'invalid_api_key') {
-        throw new Error('API key OpenAI tidak valid atau salah project.');
+        throw fail(401, 'API key OpenAI tidak valid atau salah project.');
       }
       if (resp.status === 429 || code === 'insufficient_quota') {
-        throw new Error('Kuota/billing OpenAI habis. Cek usage dan billing project.');
+        throw fail(429, 'Kuota/billing OpenAI habis. Cek usage dan billing project.');
       }
       if (code === 'model_not_found' || (lower.includes('model') && lower.includes('not found'))) {
         lastError = new Error(`Model ${model} tidak tersedia. Mencoba model fallback...`);
@@ -565,7 +571,10 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  if (req.method === 'GET' && req.url.startsWith('/health')) {
+  if (
+    req.method === 'GET' &&
+    (req.url.startsWith('/health') || req.url.startsWith('/api/health'))
+  ) {
     json(res, 200, {
       ok: true,
       model: OPENAI_MODEL,
@@ -585,7 +594,8 @@ const server = http.createServer(async (req, res) => {
       const reply = await callOpenAI(mode, messages, lang);
       json(res, 200, { reply });
     } catch (err) {
-      json(res, 500, { error: err.message || 'Unknown error' });
+      const status = Number(err?.status) || 500;
+      json(res, status, { error: err.message || 'Unknown error' });
     }
     return;
   }
@@ -609,7 +619,8 @@ const server = http.createServer(async (req, res) => {
       const translations = await translateUiTexts(lang, texts);
       json(res, 200, { translations });
     } catch (err) {
-      json(res, 500, { error: err.message || 'Unknown error' });
+      const status = Number(err?.status) || 500;
+      json(res, status, { error: err.message || 'Unknown error' });
     }
     return;
   }
