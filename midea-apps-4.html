@@ -1,0 +1,2708 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Midea Apps</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --red: #D72638;
+    --red-dark: #A81C2A;
+    --red-light: #F4626F;
+    --cream: #FDF6EE;
+    --warm-white: #FFFAF5;
+    --charcoal: #1E1E2E;
+    --mid-gray: #6B6B80;
+    --light-gray: #E8E4DF;
+    --gold: #C9963A;
+    --gold-light: #F0C96E;
+  }
+
+  body {
+    background: #1A1A2A;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'DM Sans', sans-serif;
+    padding: 40px 20px;
+    gap: 40px;
+    flex-wrap: wrap;
+  }
+
+  /* ─── PHONE FRAME ─── */
+  .phone-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+  .screen-label {
+    color: rgba(255,255,255,0.35);
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+  .phone {
+    width: 320px;
+    height: 680px;
+    background: var(--warm-white);
+    border-radius: 44px;
+    overflow: hidden;
+    box-shadow:
+      0 0 0 2px #2e2e45,
+      0 0 0 6px #1a1a2a,
+      0 40px 80px rgba(0,0,0,0.7);
+    position: relative;
+  }
+
+  /* ─── STATUS BAR ─── */
+  .status-bar {
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    background: transparent;
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    z-index: 10;
+  }
+  .status-bar .time { font-size: 12px; font-weight: 600; }
+  .status-icons { display: flex; gap: 5px; align-items: center; }
+  .status-icons span { font-size: 10px; }
+
+  /* ─── SCREEN 1: SPLASH / LANG SELECT ─── */
+  #screen-splash {
+    width: 100%; height: 100%;
+    background: linear-gradient(160deg, #1E0A10 0%, #3D0F1C 40%, #6B1A2A 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .splash-deco {
+    position: absolute;
+    width: 400px; height: 400px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(215,38,56,0.18) 0%, transparent 70%);
+    top: -80px; left: 50%;
+    transform: translateX(-50%);
+  }
+  .splash-deco2 {
+    position: absolute;
+    width: 200px; height: 200px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(201,150,58,0.12) 0%, transparent 70%);
+    bottom: 80px; right: -30px;
+  }
+
+  /* wave pattern */
+  .wave-top {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 160px;
+    opacity: 0.06;
+    background-image: repeating-linear-gradient(
+      45deg,
+      var(--red-light) 0px, var(--red-light) 1px,
+      transparent 1px, transparent 20px
+    );
+  }
+
+  .splash-logo-area {
+    margin-top: 90px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 2;
+    animation: fadeSlideDown 0.8s ease both;
+  }
+
+  @keyframes fadeSlideDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .logo-icon {
+    width: 72px; height: 72px;
+    background: linear-gradient(135deg, var(--red) 0%, var(--red-dark) 100%);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 32px rgba(215,38,56,0.5);
+    margin-bottom: 16px;
+    position: relative;
+  }
+  .logo-icon::after {
+    content: '';
+    position: absolute;
+    inset: 2px;
+    border-radius: 18px;
+    border: 1px solid rgba(255,255,255,0.15);
+  }
+  .logo-icon svg { width: 38px; height: 38px; }
+
+  .logo-brand {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 1px;
+  }
+  .logo-tagline {
+    font-size: 11px;
+    color: rgba(255,255,255,0.4);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  .lang-card {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    background: var(--warm-white);
+    border-radius: 28px 28px 0 0;
+    padding: 32px 28px 40px;
+    animation: slideUp 0.7s 0.3s ease both;
+  }
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(40px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .lang-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--charcoal);
+    margin-bottom: 6px;
+  }
+  .lang-sub {
+    font-size: 12px;
+    color: var(--mid-gray);
+    margin-bottom: 22px;
+  }
+  .lang-options { display: flex; flex-direction: column; gap: 10px; }
+
+  .lang-btn {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 18px;
+    border-radius: 14px;
+    border: 1.5px solid var(--light-gray);
+    background: #fff;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .lang-btn.active {
+    border-color: var(--red);
+    background: linear-gradient(135deg, #fff5f6 0%, #fff 100%);
+  }
+  .lang-btn.active::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--red);
+    border-radius: 0 2px 2px 0;
+  }
+
+  .lang-flag {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+
+  .lang-info { flex: 1; }
+  .lang-name { font-size: 14px; font-weight: 600; color: var(--charcoal); }
+  .lang-native { font-size: 11px; color: var(--mid-gray); }
+
+  .lang-check {
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: var(--red);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0;
+  }
+  .lang-btn.active .lang-check { opacity: 1; }
+  .lang-check svg { width: 10px; height: 10px; }
+
+  .lang-continue {
+    margin-top: 20px;
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(135deg, var(--red) 0%, var(--red-dark) 100%);
+    color: #fff;
+    border: none;
+    border-radius: 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(215,38,56,0.35);
+  }
+
+  /* ─── SCREEN 2: HOME MENU ─── */
+  #screen-home {
+    width: 100%; height: 100%;
+    background: var(--cream);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .home-header {
+    background: linear-gradient(160deg, #1E0A10 0%, #5C1323 100%);
+    padding: 52px 24px 56px;
+    position: relative;
+    overflow: hidden;
+  }
+  .home-header::after {
+    content: '';
+    position: absolute;
+    bottom: -1px; left: 0; right: 0;
+    height: 28px;
+    background: var(--cream);
+    border-radius: 24px 24px 0 0;
+  }
+
+  .header-deco {
+    position: absolute;
+    width: 220px; height: 220px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.05);
+    top: -60px; right: -60px;
+  }
+  .header-deco2 {
+    position: absolute;
+    width: 120px; height: 120px;
+    border-radius: 50%;
+    border: 1px solid rgba(215,38,56,0.2);
+    bottom: 20px; right: 20px;
+  }
+
+  .home-top-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    position: relative; z-index: 1;
+  }
+  .home-logo-sm {
+    display: flex; align-items: center; gap: 10px;
+  }
+  .logo-sm-icon {
+    width: 34px; height: 34px;
+    background: var(--red);
+    border-radius: 9px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .logo-sm-icon svg { width: 18px; height: 18px; }
+  .logo-sm-text {
+    font-family: 'Playfair Display', serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: #fff;
+  }
+  .notif-btn {
+    width: 34px; height: 34px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+  .notif-btn svg { width: 16px; height: 16px; }
+
+  .home-greeting {
+    position: relative; z-index: 1;
+  }
+  .greeting-hi {
+    font-size: 12px;
+    color: rgba(255,255,255,0.5);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .greeting-main {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.2;
+  }
+  .greeting-main span { color: var(--gold-light); }
+
+  .home-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px 20px 24px;
+    scrollbar-width: none;
+  }
+  .home-body::-webkit-scrollbar { display: none; }
+
+  .section-title {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--mid-gray);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin: 20px 0 14px;
+  }
+
+  .menu-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 4px;
+  }
+
+  .menu-card {
+    border-radius: 18px;
+    padding: 20px 16px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    min-height: 130px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.15s;
+  }
+  .menu-card:active { transform: scale(0.97); }
+
+  .card-panduan {
+    background: linear-gradient(140deg, #1E3A5F 0%, #12253E 100%);
+    grid-column: span 2;
+    min-height: 120px;
+    flex-direction: row;
+    align-items: center;
+    padding: 22px 24px;
+  }
+  .card-tanya {
+    background: linear-gradient(140deg, #1E0A10 0%, #3D1018 100%);
+  }
+  .card-resep {
+    background: linear-gradient(140deg, #1A2D1A 0%, #0E1F0E 100%);
+  }
+
+  .card-deco-circle {
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0.08;
+  }
+
+  .card-icon-wrap {
+    width: 44px; height: 44px;
+    border-radius: 13px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 14px;
+    flex-shrink: 0;
+  }
+  .panduan-icon { background: rgba(99,157,255,0.15); margin-bottom: 0; margin-right: 16px; width: 52px; height: 52px; border-radius: 15px; }
+  .tanya-icon { background: rgba(215,38,56,0.15); }
+  .resep-icon  { background: rgba(80,180,80,0.15); }
+
+  .card-icon-wrap svg { width: 24px; height: 24px; }
+  .panduan-icon svg { width: 28px; height: 28px; }
+
+  .card-content { flex: 1; }
+  .card-label {
+    font-family: 'Playfair Display', serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 5px;
+    line-height: 1.2;
+  }
+  .panduan-label { font-size: 17px; }
+  .card-desc {
+    font-size: 11px;
+    color: rgba(255,255,255,0.45);
+    line-height: 1.5;
+  }
+
+  .card-arrow {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.08);
+    display: flex; align-items: center; justify-content: center;
+    position: absolute;
+    bottom: 14px; right: 14px;
+  }
+  .card-arrow svg { width: 12px; height: 12px; }
+
+  /* panduan arrow right side */
+  .panduan-arrow {
+    position: relative; bottom: auto; right: auto;
+    margin-left: auto;
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.1);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .panduan-arrow svg { width: 14px; height: 14px; }
+
+  /* badge */
+  .badge-new {
+    position: absolute;
+    top: 12px; right: 12px;
+    background: var(--gold);
+    color: #fff;
+    font-size: 9px;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 20px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  /* bottom nav */
+  .bottom-nav {
+    height: 64px;
+    background: #fff;
+    border-top: 1px solid var(--light-gray);
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 0 16px;
+    flex-shrink: 0;
+  }
+  .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    flex: 1;
+    cursor: pointer;
+  }
+  .nav-item svg { width: 20px; height: 20px; opacity: 0.35; }
+  .nav-item.active svg { opacity: 1; color: var(--red); }
+  .nav-item span { font-size: 9px; color: var(--mid-gray); letter-spacing: 0.3px; }
+  .nav-item.active span { color: var(--red); font-weight: 600; }
+  .nav-dot {
+    width: 4px; height: 4px; border-radius: 50%;
+    background: var(--red);
+    position: absolute;
+    bottom: 10px;
+  }
+
+  /* ─── SCREEN 3: MENU DETAIL (Buku Panduan) ─── */
+  #screen-panduan {
+    width: 100%; height: 100%;
+    background: var(--cream);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .sub-header {
+    background: linear-gradient(160deg, #1E3A5F 0%, #12253E 100%);
+    padding: 52px 22px 40px;
+    position: relative;
+    overflow: hidden;
+  }
+  .sub-header::after {
+    content: '';
+    position: absolute;
+    bottom: -1px; left: 0; right: 0;
+    height: 24px;
+    background: var(--cream);
+    border-radius: 20px 20px 0 0;
+  }
+
+  .back-btn {
+    display: flex; align-items: center; gap: 8px;
+    color: rgba(255,255,255,0.7);
+    font-size: 13px;
+    margin-bottom: 18px;
+    position: relative; z-index: 1;
+    cursor: pointer;
+  }
+  .back-btn svg { width: 16px; height: 16px; }
+
+  .sub-header-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: #fff;
+    position: relative; z-index: 1;
+  }
+  .sub-header-sub {
+    font-size: 12px;
+    color: rgba(255,255,255,0.4);
+    margin-top: 4px;
+    position: relative; z-index: 1;
+  }
+
+  .sub-deco1 {
+    position: absolute;
+    width: 160px; height: 160px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.05);
+    top: -50px; right: -30px;
+    pointer-events: none;
+  }
+  .sub-deco2 {
+    position: absolute;
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    background: rgba(99,157,255,0.06);
+    bottom: 20px; right: 30px;
+    pointer-events: none;
+  }
+
+  .panduan-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px 20px 20px;
+    scrollbar-width: none;
+  }
+  .panduan-body::-webkit-scrollbar { display: none; }
+
+  .search-bar {
+    display: flex;
+    align-items: center;
+    background: #fff;
+    border-radius: 12px;
+    padding: 12px 14px;
+    gap: 10px;
+    border: 1.5px solid var(--light-gray);
+    margin-bottom: 18px;
+  }
+  .search-bar svg { width: 16px; height: 16px; opacity: 0.35; flex-shrink: 0; }
+  .search-bar input {
+    border: none; outline: none;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    color: var(--charcoal);
+    background: transparent;
+    width: 100%;
+  }
+  .search-bar input::placeholder { color: var(--mid-gray); }
+
+  .panduan-list { display: flex; flex-direction: column; gap: 10px; }
+
+  .panduan-item {
+    background: #fff;
+    border-radius: 14px;
+    padding: 16px 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    border: 1.5px solid var(--light-gray);
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+  .panduan-item:hover { border-color: rgba(99,157,255,0.4); }
+
+  .pi-icon {
+    width: 40px; height: 40px; border-radius: 11px;
+    background: linear-gradient(135deg, #1E3A5F, #12253E);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .pi-icon svg { width: 18px; height: 18px; color: rgba(255,255,255,0.8); }
+
+  .pi-text { flex: 1; }
+  .pi-title { font-size: 13px; font-weight: 600; color: var(--charcoal); margin-bottom: 3px; }
+  .pi-meta  { font-size: 11px; color: var(--mid-gray); }
+
+  .pi-arrow { opacity: 0.25; }
+  .pi-arrow svg { width: 14px; height: 14px; }
+
+  .pi-badge {
+    font-size: 9px; font-weight: 700;
+    padding: 2px 7px; border-radius: 20px;
+    text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .pi-badge.new { background: #FFF0E0; color: var(--gold); }
+  .pi-badge.updated { background: #E8F5E8; color: #2D8B2D; }
+
+  /* ─── SCREEN 4: Tanya Kami ─── */
+  #screen-tanya {
+    width: 100%; height: 100%;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .tanya-header {
+    background: linear-gradient(160deg, #1E0A10 0%, #5C1323 100%);
+    padding: 52px 22px 40px;
+    position: relative;
+    overflow: hidden;
+  }
+  .tanya-header::after {
+    content: '';
+    position: absolute;
+    bottom: -1px; left: 0; right: 0;
+    height: 24px;
+    background: #fff;
+    border-radius: 20px 20px 0 0;
+  }
+
+  .chat-area {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    scrollbar-width: none;
+  }
+  .chat-area::-webkit-scrollbar { display: none; }
+
+  .chat-bubble {
+    max-width: 80%;
+    padding: 12px 14px;
+    border-radius: 16px;
+    font-size: 12.5px;
+    line-height: 1.55;
+  }
+  .chat-bubble.bot {
+    background: var(--cream);
+    color: var(--charcoal);
+    border-radius: 4px 16px 16px 16px;
+    align-self: flex-start;
+    border: 1px solid var(--light-gray);
+  }
+  .chat-bubble.user {
+    background: linear-gradient(135deg, var(--red) 0%, var(--red-dark) 100%);
+    color: #fff;
+    border-radius: 16px 4px 16px 16px;
+    align-self: flex-end;
+  }
+
+  .chat-meta {
+    display: flex; align-items: center; gap: 8px; margin-bottom: 6px;
+  }
+  .chat-avatar {
+    width: 24px; height: 24px;
+    background: var(--red);
+    border-radius: 7px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .chat-avatar svg { width: 12px; height: 12px; }
+  .chat-sender { font-size: 11px; font-weight: 600; color: var(--charcoal); }
+  .chat-time   { font-size: 10px; color: var(--mid-gray); }
+
+  .chat-quick-btns {
+    display: flex; flex-wrap: wrap; gap: 6px;
+    margin-top: 8px;
+  }
+  .quick-btn {
+    padding: 6px 12px;
+    border-radius: 20px;
+    border: 1.5px solid var(--red);
+    color: var(--red);
+    font-size: 11px;
+    font-weight: 500;
+    cursor: pointer;
+    background: transparent;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .chat-input-bar {
+    padding: 14px 16px;
+    background: #fff;
+    border-top: 1px solid var(--light-gray);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .chat-input {
+    flex: 1;
+    background: var(--cream);
+    border: 1.5px solid var(--light-gray);
+    border-radius: 22px;
+    padding: 10px 16px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12.5px;
+    color: var(--charcoal);
+    outline: none;
+  }
+  .chat-input::placeholder { color: var(--mid-gray); }
+  .send-btn {
+    width: 38px; height: 38px;
+    background: var(--red);
+    border-radius: 50%;
+    border: none;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(215,38,56,0.35);
+  }
+  .send-btn svg { width: 16px; height: 16px; }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════ -->
+<!--  SCREEN 1 – PILIHAN BAHASA                -->
+<!-- ══════════════════════════════════════════ -->
+<div class="phone-wrap">
+  <div class="phone">
+    <div id="screen-splash">
+      <div class="splash-deco"></div>
+      <div class="splash-deco2"></div>
+      <div class="wave-top"></div>
+
+      <div class="status-bar">
+        <span class="time" style="color:#fff">9:41</span>
+        <div class="status-icons" style="color:#fff">
+          <span>●●●</span><span>WiFi</span><span>🔋</span>
+        </div>
+      </div>
+
+      <div class="splash-logo-area">
+        <div class="logo-icon">
+          <svg viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M8 28 C8 28 10 16 19 12 C28 8 30 16 30 16" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+            <circle cx="19" cy="22" r="7" stroke="white" stroke-width="2.5"/>
+            <circle cx="19" cy="22" r="2.5" fill="white"/>
+          </svg>
+        </div>
+        <div class="logo-brand">Midea Apps</div>
+        <div class="logo-tagline">Smart Home Experience</div>
+      </div>
+
+      <div class="lang-card">
+        <div class="lang-title">Pilihan Bahasa</div>
+        <div class="lang-sub">Silakan pilih bahasa yang Anda inginkan</div>
+
+        <div class="lang-options">
+          <div class="lang-btn active">
+            <div class="lang-flag">🇮🇩</div>
+            <div class="lang-info">
+              <div class="lang-name">Bahasa Indonesia</div>
+              <div class="lang-native">Indonesian</div>
+            </div>
+            <div class="lang-check">
+              <svg viewBox="0 0 10 10" fill="white"><path d="M2 5l2.5 2.5L8 3" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+          </div>
+
+          <div class="lang-btn">
+            <div class="lang-flag">🇺🇸</div>
+            <div class="lang-info">
+              <div class="lang-name">English</div>
+              <div class="lang-native">English (US)</div>
+            </div>
+            <div class="lang-check">
+              <svg viewBox="0 0 10 10" fill="white"><path d="M2 5l2.5 2.5L8 3" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+          </div>
+
+          <div class="lang-btn">
+            <div class="lang-flag">🇨🇳</div>
+            <div class="lang-info">
+              <div class="lang-name">中文</div>
+              <div class="lang-native">Chinese (Simplified)</div>
+            </div>
+            <div class="lang-check">
+              <svg viewBox="0 0 10 10" fill="white"><path d="M2 5l2.5 2.5L8 3" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+          </div>
+        </div>
+
+        <button class="lang-continue">Lanjutkan →</button>
+      </div>
+    </div>
+  </div>
+  <span class="screen-label">Layar 1 · Pilihan Bahasa</span>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!--  SCREEN 2 – HOME / MAIN MENU              -->
+<!-- ══════════════════════════════════════════ -->
+<div class="phone-wrap">
+  <div class="phone">
+    <div id="screen-home">
+      <div class="home-header">
+        <div class="header-deco"></div>
+        <div class="header-deco2"></div>
+
+        <div class="status-bar" style="top:0">
+          <span class="time" style="color:#fff">9:41</span>
+          <div class="status-icons" style="color:#fff">
+            <span>●●●</span><span>WiFi</span><span>🔋</span>
+          </div>
+        </div>
+
+        <div class="home-top-row">
+          <div class="home-logo-sm">
+            <div class="logo-sm-icon">
+              <svg viewBox="0 0 38 38" fill="none">
+                <path d="M8 28 C8 28 10 16 19 12 C28 8 30 16 30 16" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+                <circle cx="19" cy="22" r="7" stroke="white" stroke-width="2.5"/>
+                <circle cx="19" cy="22" r="2.5" fill="white"/>
+              </svg>
+            </div>
+            <span class="logo-sm-text">Midea Apps</span>
+          </div>
+          <div class="notif-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="2">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+            </svg>
+          </div>
+        </div>
+
+        <div class="home-greeting">
+          <div class="greeting-hi">Selamat Datang</div>
+          <div class="greeting-main">Ada yang bisa kami<br>bantu <span>hari ini?</span></div>
+        </div>
+      </div>
+
+      <div class="home-body">
+        <div class="section-title">Menu Utama</div>
+
+        <div class="menu-grid">
+          <!-- Buku Panduan – full width -->
+          <div class="menu-card card-panduan">
+            <div style="position:absolute;width:180px;height:180px;border-radius:50%;background:rgba(99,157,255,0.06);top:-40px;right:-40px;" class="card-deco-circle"></div>
+            <div class="card-icon-wrap panduan-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="rgba(99,157,255,0.9)" stroke-width="2">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                <line x1="9" y1="7" x2="15" y2="7"/><line x1="9" y1="11" x2="15" y2="11"/>
+              </svg>
+            </div>
+            <div class="card-content">
+              <div class="card-label panduan-label">Buku Panduan</div>
+              <div class="card-desc">Panduan lengkap penggunaan & perawatan produk Midea</div>
+            </div>
+            <div class="panduan-arrow">
+              <svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </div>
+          </div>
+
+          <!-- Tanya Kami -->
+          <div class="menu-card card-tanya">
+            <div style="position:absolute;width:120px;height:120px;border-radius:50%;background:rgba(215,38,56,0.08);bottom:-20px;right:-20px;"></div>
+            <div class="badge-new">Baru</div>
+            <div class="card-icon-wrap tanya-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="rgba(244,98,111,0.9)" stroke-width="2">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                <line x1="9" y1="10" x2="15" y2="10"/>
+                <line x1="12" y1="7" x2="12" y2="13"/>
+              </svg>
+            </div>
+            <div>
+              <div class="card-label">Tanya Kami</div>
+              <div class="card-desc">Chat langsung dengan tim support Midea</div>
+            </div>
+            <div class="card-arrow">
+              <svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </div>
+          </div>
+
+          <!-- Rekomendasi Resep -->
+          <div class="menu-card card-resep">
+            <div style="position:absolute;width:100px;height:100px;border-radius:50%;background:rgba(80,180,80,0.07);bottom:-10px;left:-10px;"></div>
+            <div class="card-icon-wrap resep-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="rgba(80,200,80,0.9)" stroke-width="2">
+                <path d="M18 8h1a4 4 0 0 1 0 8h-1"/>
+                <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/>
+                <line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/>
+              </svg>
+            </div>
+            <div>
+              <div class="card-label">Rekomendasi Resep</div>
+              <div class="card-desc">Resep spesial untuk produk masak Midea</div>
+            </div>
+            <div class="card-arrow">
+              <svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-title" style="margin-top:18px">Info Produk Terkini</div>
+        <div style="background:#fff;border-radius:14px;border:1.5px solid var(--light-gray);padding:14px 16px;display:flex;align-items:center;gap:12px">
+          <div style="width:42px;height:42px;border-radius:11px;background:linear-gradient(135deg,#FFF0E0,#FFD9A0);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          </div>
+          <div style="flex:1">
+            <div style="font-size:12.5px;font-weight:600;color:var(--charcoal);margin-bottom:2px">AC Inverter Series Terbaru</div>
+            <div style="font-size:11px;color:var(--mid-gray)">Hemat energi hingga 70% lebih efisien</div>
+          </div>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--mid-gray)" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </div>
+      </div>
+
+      <!-- Bottom Nav -->
+      <div class="bottom-nav">
+        <div class="nav-item active">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          <span>Beranda</span>
+        </div>
+        <div class="nav-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--mid-gray)" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <span>Cari</span>
+        </div>
+        <div class="nav-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--mid-gray)" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          <span>Bantuan</span>
+        </div>
+        <div class="nav-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--mid-gray)" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <span>Profil</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <span class="screen-label">Layar 2 · Menu Utama</span>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!--  SCREEN 3 – BUKU PANDUAN (MY-CS5039P)    -->
+<!-- ══════════════════════════════════════════ -->
+<style>
+  .product-banner {
+    background: linear-gradient(135deg, #1E3A5F 0%, #12253E 100%);
+    border-radius: 14px; padding: 14px 16px;
+    display: flex; align-items: center; gap: 12px; margin-bottom: 16px;
+  }
+  .product-banner-icon {
+    width: 44px; height: 44px; background: rgba(99,157,255,0.15);
+    border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .product-banner-icon svg { width: 22px; height: 22px; }
+  .product-banner-info { flex: 1; }
+  .product-banner-name { font-size: 13px; font-weight: 700; color: #fff; margin-bottom: 2px; }
+  .product-banner-model { font-size: 10px; color: rgba(255,255,255,0.45); letter-spacing: 1px; }
+  .spec-row { display: flex; gap: 7px; flex-wrap: wrap; margin-bottom: 16px; }
+  .spec-chip {
+    padding: 5px 11px; background: #fff; border: 1.5px solid var(--light-gray);
+    border-radius: 20px; font-size: 10.5px; color: var(--charcoal); font-weight: 500;
+  }
+  .spec-chip span { color: var(--mid-gray); font-weight: 400; }
+
+  /* Chapter list — title only */
+  .chapter-card {
+    background: #fff; border-radius: 14px;
+    border: 1.5px solid var(--light-gray);
+    margin-bottom: 9px; cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .chapter-card:hover { border-color: rgba(99,157,255,0.4); box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+  .chapter-header {
+    display: flex; align-items: center; gap: 12px; padding: 15px 14px;
+  }
+  .chapter-num {
+    width: 30px; height: 30px; border-radius: 9px;
+    background: linear-gradient(135deg, #1E3A5F, #12253E);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700; color: #fff; flex-shrink: 0;
+  }
+  .chapter-title { flex: 1; font-size: 13px; font-weight: 600; color: var(--charcoal); line-height: 1.3; }
+  .chapter-go { opacity: 0.25; transition: opacity 0.2s, transform 0.2s; }
+  .chapter-card:hover .chapter-go { opacity: 0.6; transform: translateX(3px); }
+  .chapter-go svg { width: 14px; height: 14px; }
+
+  /* warning strip */
+  .warning-strip {
+    background: #FFF8E0; border: 1.5px solid #F0C96E; border-radius: 12px;
+    padding: 12px 14px; display: flex; gap: 10px; align-items: flex-start; margin-bottom: 14px;
+  }
+  .warning-strip svg { width: 16px; height: 16px; flex-shrink: 0; margin-top: 1px; }
+  .warning-strip p { font-size: 11px; color: #7A5B00; line-height: 1.5; }
+
+  /* ── DETAIL SCREEN overlay ── */
+  .detail-overlay {
+    position: absolute; inset: 0;
+    background: var(--cream);
+    display: flex; flex-direction: column;
+    transform: translateX(100%);
+    transition: transform 0.32s cubic-bezier(0.4,0,0.2,1);
+    z-index: 20;
+    overflow: hidden;
+  }
+  .detail-overlay.open { transform: translateX(0); }
+
+  .detail-header {
+    padding: 52px 22px 28px;
+    position: relative; overflow: hidden; flex-shrink: 0;
+  }
+  .detail-header::after {
+    content: ''; position: absolute; bottom: -1px; left: 0; right: 0;
+    height: 20px; background: var(--cream); border-radius: 18px 18px 0 0;
+  }
+  .detail-body {
+    flex: 1; overflow-y: auto; padding: 14px 20px 24px; scrollbar-width: none;
+  }
+  .detail-body::-webkit-scrollbar { display: none; }
+
+  .detail-section { margin-bottom: 18px; }
+  .detail-section-title {
+    font-size: 10px; font-weight: 700; letter-spacing: 2px;
+    text-transform: uppercase; color: var(--mid-gray); margin-bottom: 10px;
+  }
+  .detail-item {
+    background: #fff; border-radius: 12px;
+    border: 1.5px solid var(--light-gray);
+    padding: 13px 14px; margin-bottom: 8px;
+    display: flex; gap: 11px; align-items: flex-start;
+  }
+  .detail-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--light-gray); flex-shrink: 0; margin-top: 4px;
+  }
+  .detail-item-text { font-size: 12px; color: var(--charcoal); line-height: 1.6; flex: 1; }
+  .detail-item-text b { color: var(--charcoal); }
+
+  /* trouble items in detail */
+  .trouble-detail {
+    background: #fff; border-radius: 12px;
+    border: 1.5px solid var(--light-gray);
+    padding: 13px 14px; margin-bottom: 8px;
+  }
+  .trouble-prob { font-size: 12.5px; font-weight: 700; color: var(--charcoal); margin-bottom: 4px; }
+  .trouble-cause { font-size: 11.5px; color: var(--mid-gray); margin-bottom: 6px; line-height: 1.45; }
+  .trouble-sol {
+    font-size: 11.5px; color: #1A6B1A; background: #E8F5E8;
+    border-radius: 7px; padding: 6px 10px; display: inline-block; line-height: 1.4;
+  }
+  .error-grid { display: flex; gap: 8px; flex-wrap: wrap; }
+  .error-chip {
+    border-radius: 10px; padding: 10px 12px; flex: 1; min-width: 110px;
+  }
+  .error-chip .code { font-size: 15px; font-weight: 800; margin-bottom: 3px; }
+  .error-chip .desc { font-size: 10.5px; color: var(--mid-gray); }
+</style>
+
+<div class="phone-wrap">
+  <div class="phone" style="position:relative;">
+    <div id="screen-panduan" style="background:var(--cream);width:100%;height:100%;display:flex;flex-direction:column;overflow:hidden;">
+
+      <!-- Header -->
+      <div style="background:linear-gradient(160deg,#1E3A5F 0%,#12253E 100%);padding:52px 22px 40px;position:relative;overflow:hidden;flex-shrink:0;">
+        <div class="sub-deco1"></div><div class="sub-deco2"></div>
+        <div class="status-bar" style="top:0">
+          <span class="time" style="color:#fff">9:41</span>
+          <div class="status-icons" style="color:#fff"><span>●●●</span><span>WiFi</span><span>🔋</span></div>
+        </div>
+        <div class="back-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>Kembali</div>
+        <div class="sub-header-title">Buku Panduan</div>
+        <div class="sub-header-sub">Pressure Cooker · Model MY-CS5039P</div>
+        <div style="position:absolute;bottom:-1px;left:0;right:0;height:24px;background:var(--cream);border-radius:20px 20px 0 0;"></div>
+      </div>
+
+      <!-- Body: daftar judul bab saja -->
+      <div class="panduan-body" style="flex:1;overflow-y:auto;">
+
+        <!-- Product Banner -->
+        <div class="product-banner">
+          <div class="product-banner-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="rgba(99,157,255,0.9)" stroke-width="2">
+              <path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/>
+              <line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/>
+            </svg>
+          </div>
+          <div class="product-banner-info">
+            <div class="product-banner-name">Electric Pressure Cooker</div>
+            <div class="product-banner-model">MODEL · MY-CS5039P · 5.0L · 900–1070W</div>
+          </div>
+        </div>
+
+        <div class="spec-row">
+          <div class="spec-chip">220–240V~ <span>50/60Hz</span></div>
+          <div class="spec-chip">Volume <span>5.0L</span></div>
+          <div class="spec-chip">Tekanan <span>70 kPa</span></div>
+          <div class="spec-chip">Hangat <span>60–80°C</span></div>
+        </div>
+
+        <div class="warning-strip">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#C9963A" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          <p>Jangan buka tutup sebelum tekanan benar-benar habis. Uap panas dapat menyebabkan luka bakar serius.</p>
+        </div>
+
+        <div class="section-title">Daftar Isi</div>
+
+        <div class="chapter-card" onclick="openChapter(1)">
+          <div class="chapter-header">
+            <div class="chapter-num">1</div>
+            <div class="chapter-title">Keselamatan Penting</div>
+            <div class="chapter-go"><svg viewBox="0 0 24 24" fill="none" stroke="var(--charcoal)" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg></div>
+          </div>
+        </div>
+
+        <div class="chapter-card" onclick="openChapter(2)">
+          <div class="chapter-header">
+            <div class="chapter-num">2</div>
+            <div class="chapter-title">Spesifikasi & Struktur Produk</div>
+            <div class="chapter-go"><svg viewBox="0 0 24 24" fill="none" stroke="var(--charcoal)" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg></div>
+          </div>
+        </div>
+
+        <div class="chapter-card" onclick="openChapter(3)">
+          <div class="chapter-header">
+            <div class="chapter-num">3</div>
+            <div class="chapter-title">Panel Kontrol & Status Pemasak</div>
+            <div class="chapter-go"><svg viewBox="0 0 24 24" fill="none" stroke="var(--charcoal)" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg></div>
+          </div>
+        </div>
+
+        <div class="chapter-card" onclick="openChapter(4)">
+          <div class="chapter-header">
+            <div class="chapter-num">4</div>
+            <div class="chapter-title">Persiapan Sebelum Penggunaan Pertama</div>
+            <div class="chapter-go"><svg viewBox="0 0 24 24" fill="none" stroke="var(--charcoal)" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg></div>
+          </div>
+        </div>
+
+        <div class="chapter-card" onclick="openChapter(5)">
+          <div class="chapter-header">
+            <div class="chapter-num">5</div>
+            <div class="chapter-title">Cara Memasak dengan Pressure Cooker</div>
+            <div class="chapter-go"><svg viewBox="0 0 24 24" fill="none" stroke="var(--charcoal)" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg></div>
+          </div>
+        </div>
+
+        <div class="chapter-card" onclick="openChapter(6)">
+          <div class="chapter-header">
+            <div class="chapter-num">6</div>
+            <div class="chapter-title">Cara Membuka Tutup dengan Aman</div>
+            <div class="chapter-go"><svg viewBox="0 0 24 24" fill="none" stroke="var(--charcoal)" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg></div>
+          </div>
+        </div>
+
+        <div class="chapter-card" onclick="openChapter(7)">
+          <div class="chapter-header">
+            <div class="chapter-num">7</div>
+            <div class="chapter-title">Perawatan & Pembersihan</div>
+            <div class="chapter-go"><svg viewBox="0 0 24 24" fill="none" stroke="var(--charcoal)" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg></div>
+          </div>
+        </div>
+
+        <div class="chapter-card" onclick="openChapter(8)">
+          <div class="chapter-header">
+            <div class="chapter-num">8</div>
+            <div class="chapter-title">Pemecahan Masalah & Kode Error</div>
+            <div class="chapter-go"><svg viewBox="0 0 24 24" fill="none" stroke="var(--charcoal)" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg></div>
+          </div>
+        </div>
+
+      </div><!-- /panduan-body -->
+
+      <!-- Bottom Nav -->
+      <div class="bottom-nav">
+        <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="var(--mid-gray)" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span>Beranda</span></div>
+        <div class="nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg><span>Panduan</span></div>
+        <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="var(--mid-gray)" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>Bantuan</span></div>
+        <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="var(--mid-gray)" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>Profil</span></div>
+      </div>
+
+      <!-- ── DETAIL OVERLAY (slides in from right) ── -->
+      <div class="detail-overlay" id="detail-overlay">
+        <!-- Header changes per chapter -->
+        <div class="detail-header" id="detail-header-bg" style="background:linear-gradient(160deg,#1E3A5F 0%,#12253E 100%);">
+          <div class="status-bar" style="top:0">
+            <span class="time" style="color:#fff">9:41</span>
+            <div class="status-icons" style="color:#fff"><span>●●●</span><span>WiFi</span><span>🔋</span></div>
+          </div>
+          <div class="back-btn" onclick="closeChapter()" style="cursor:pointer;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+            Buku Panduan
+          </div>
+          <div class="sub-header-title" id="detail-title">—</div>
+          <div class="sub-header-sub" id="detail-sub">—</div>
+        </div>
+
+        <div class="detail-body" id="detail-body">
+          <!-- filled by JS -->
+        </div>
+      </div>
+
+    </div><!-- /screen-panduan -->
+  </div>
+  <span class="screen-label">Layar 3 · Buku Panduan MY-CS5039P</span>
+</div>
+
+<script>
+const chapters = {
+  1: {
+    title: "Keselamatan Penting",
+    sub: "Baca sebelum penggunaan pertama",
+    bg: "linear-gradient(160deg,#3D0F1C 0%,#6B1A2A 100%)",
+    sections: [
+      {
+        label: "Perhatian Umum",
+        dotColor: "#D72638",
+        items: [
+          "Baca Buku Panduan ini dengan seksama sebelum menggunakan produk.",
+          "Jangan letakkan alat di tempat tidak stabil atau di atas koran/busa yang dapat menutupi lubang ventilasi di bagian bawah.",
+          "Jangan gunakan di dekat air atau api. Jauhkan dari paparan sinar matahari langsung atau percikan minyak.",
+          "Jangan masukkan produk, kabel, atau steker ke dalam air atau cairan lainnya.",
+          "Jumlah masakan tidak boleh melebihi batas MAX yang tertera di panci dalam.",
+          "Saat beroperasi, jangan pindahkan alat dan dilarang membuka paksa.",
+        ]
+      },
+      {
+        label: "Peringatan Uap Panas",
+        dotColor: "#D72638",
+        items: [
+          "Saat beroperasi, jauhkan tangan dan wajah dari katup buang dan float valve untuk menghindari luka bakar.",
+          "Jangan sentuh tutup dengan tangan saat beroperasi.",
+          "Setelah memasak, jangan buka tutup sebelum memastikan tidak ada tekanan di dalam.",
+          "Jangan menyentuh panci dalam dan bagian dalam tutup langsung dengan tangan saat selesai memasak.",
+        ]
+      },
+      {
+        label: "Peringatan Listrik",
+        dotColor: "#C9963A",
+        items: [
+          "Jika kabel atau steker rusak, hentikan penggunaan segera dan kirim ke service center.",
+          "Dilarang keras mengganti suku cadang di dalam pressure cooker tanpa izin.",
+          "Alat ini tidak boleh dihubungkan ke perangkat pengalih eksternal seperti timer.",
+          "Alat ini tidak diperuntukkan bagi anak-anak. Jauhkan dari jangkauan anak.",
+        ]
+      }
+    ]
+  },
+  2: {
+    title: "Spesifikasi & Struktur Produk",
+    sub: "Model MY-CS5039P",
+    bg: "linear-gradient(160deg,#1E3A5F 0%,#12253E 100%)",
+    sections: [
+      {
+        label: "Spesifikasi Teknis",
+        dotColor: "#3B82F6",
+        items: [
+          "Tegangan / Frekuensi: 220–240V~ 50/60Hz",
+          "Daya: 900–1070 W",
+          "Volume Panci Dalam: 5.0 L",
+          "Diameter Panci: 22 cm",
+          "Tekanan Kerja: 70 kPa",
+          "Suhu Keep Warm: 60°C – 80°C",
+        ]
+      },
+      {
+        label: "Komponen Utama",
+        dotColor: "#2D8B2D",
+        items: [
+          "Katup uap (Steam Vent), Float lever, Tombol buang (Exhaust button)",
+          "Housing atas dan bawah, Sealing Ring, Panci dalam (Inner pot)",
+          "Panel kontrol, Anti-block Shield, Float Valve, Kabel daya",
+        ]
+      },
+      {
+        label: "Aksesori Bawaan",
+        dotColor: "#C9963A",
+        items: [
+          "Sendok nasi (Rice paddle)",
+          "Sendok sup (Soup spoon)",
+          "Gelas takar (Measuring cup)",
+          "Pengumpul kondensasi (Condensation collector)",
+          "Buku panduan pengguna",
+        ]
+      }
+    ]
+  },
+  3: {
+    title: "Panel Kontrol & Status Pemasak",
+    sub: "Tombol operasi dan indikator",
+    bg: "linear-gradient(160deg,#1A2D1A 0%,#0E1F0E 100%)",
+    sections: [
+      {
+        label: "Status Tampilan LED",
+        dotColor: "#3B82F6",
+        items: [
+          "OPEN — tutup dalam kondisi terbuka.",
+          "Standby — menampilkan simbol standby, alat siap digunakan.",
+          "Preset — menampilkan waktu hitung mundur; indikator fungsi menyala.",
+          "Program Berjalan — menampilkan simbol masak; indikator fungsi menyala.",
+          "Keep-Warm — menampilkan waktu yang terus bertambah; indikator Warm menyala.",
+        ]
+      },
+      {
+        label: "Tombol Operasi (6 Tombol)",
+        dotColor: "#2D8B2D",
+        items: [
+          "Cancel — membatalkan pengaturan atau program yang sedang berjalan.",
+          "Timer — mengatur waktu preset (hitung mundur).",
+          "Warm — mengaktifkan mode Keep Warm.",
+          "Hot Pot — memasak dengan tutup terbuka.",
+          "Texture — mengatur tekstur masakan (Light / Med / High).",
+          "Menu — memilih fungsi masak dari daftar menu.",
+        ]
+      },
+      {
+        label: "Tombol Fungsi Cepat (5 Tombol)",
+        dotColor: "#C9963A",
+        items: [
+          "Fast Cook — memasak cepat.",
+          "Porridge — memasak bubur.",
+          "Start — memulai program masak.",
+          "Soup — memasak sup.",
+          "Stew — memasak semur/rebusan.",
+        ]
+      }
+    ]
+  },
+  4: {
+    title: "Persiapan Sebelum Penggunaan Pertama",
+    sub: "Langkah wajib sebelum memasak pertama kali",
+    bg: "linear-gradient(160deg,#1E3A5F 0%,#12253E 100%)",
+    sections: [
+      {
+        label: "Pembersihan Awal",
+        dotColor: "#2D8B2D",
+        items: [
+          "Keluarkan semua aksesori dari kemasan dan baca manual ini terlebih dahulu.",
+          "Cuci bagian dalam tutup dan panci dalam dengan air sabun hangat, bilas dan keringkan.",
+          "Lap bagian luar housing dengan kain lembap yang bersih.",
+          "Jangan rendam housing alat ke dalam air atau cairan apapun.",
+          "Panci dalam, sealing ring, katup buang, dan semua aksesori aman untuk dicuci di mesin cuci piring.",
+          "Jangan cuci tutup dan housing di mesin cuci piring.",
+        ]
+      },
+      {
+        label: "Memasang Anti-Block Shield",
+        dotColor: "#3B82F6",
+        items: [
+          "Untuk melepas: dorong ke samping untuk mengangkatnya ke atas.",
+          "Untuk memasang: posisikan di tempat dan tekan ke bawah hingga terpasang.",
+          "Pastikan anti-block shield terpasang dengan benar sebelum setiap penggunaan.",
+        ]
+      },
+      {
+        label: "Memasang Sealing Ring",
+        dotColor: "#3B82F6",
+        items: [
+          "Untuk melepas: tarik ke atas dari rak penahan secara bertahap.",
+          "Untuk memasang: tekan ke dalam rak bagian per bagian.",
+          "Sealing ring dapat dipasang dengan salah satu sisi menghadap ke atas.",
+          "Jangan tarik sealing ring dengan paksa; dapat menyebabkan deformasi.",
+          "Jangan gunakan sealing ring yang retak, tergores, atau rusak.",
+        ]
+      }
+    ]
+  },
+  5: {
+    title: "Cara Memasak dengan Pressure Cooker",
+    sub: "Pressure cooking & pengaturan menu",
+    bg: "linear-gradient(160deg,#1E3A5F 0%,#12253E 100%)",
+    sections: [
+      {
+        label: "Persiapan Bahan & Panci",
+        dotColor: "#3B82F6",
+        items: [
+          "Total bahan dan air TIDAK BOLEH melebihi batas MAX di panci dalam.",
+          "Dianjurkan tidak mengisi lebih dari 2/3 penuh.",
+          "Untuk bahan yang mengembang (nasi, kacang, sayur kering) jangan melebihi 1/2 penuh.",
+          "Putar panci sedikit setelah dimasukkan untuk memastikan kontak baik dengan elemen pemanas.",
+        ]
+      },
+      {
+        label: "Cara Menutup & Memulai Memasak",
+        dotColor: "#2D8B2D",
+        items: [
+          "Sejajarkan tanda pada tutup dengan tanda pada bodi housing.",
+          "Putar tutup searah jarum jam ±30 derajat hingga mentok.",
+          "Tekan tombol Menu untuk memilih fungsi (contoh: Rice, Soup, Stew).",
+          "Tekan tombol Start untuk memulai memasak.",
+          "Setelah selesai, alat otomatis beralih ke mode Keep Warm.",
+        ]
+      },
+      {
+        label: "Fungsi Menu yang Tersedia",
+        dotColor: "#C9963A",
+        items: [
+          "Rice, Multigrain, Congee — untuk memasak nasi dan bubur.",
+          "Soup, Broth, Stew — untuk masakan berkuah.",
+          "Meat/Chicken, Beef/Mutton, Ribs, Fish — untuk memasak daging.",
+          "Bean/Tendons, Baby food, Steam — untuk bahan khusus.",
+          "Reheat — untuk memanaskan kembali (maks. 4 cup nasi, 8–20 menit).",
+        ]
+      }
+    ]
+  },
+  6: {
+    title: "Cara Membuka Tutup dengan Aman",
+    sub: "Quick Release vs Nature Release",
+    bg: "linear-gradient(160deg,#3D0F1C 0%,#6B1A2A 100%)",
+    sections: [
+      {
+        label: "Sebelum Membuka Tutup",
+        dotColor: "#D72638",
+        items: [
+          "Pastikan program memasak telah selesai atau tekan Cancel untuk menghentikan program.",
+          "Jangan buka tutup sebelum memastikan tidak ada tekanan di dalam.",
+          "Sebagai fitur keselamatan, tutup terkunci dan tidak bisa dibuka selama float valve masih terangkat.",
+        ]
+      },
+      {
+        label: "Metode 1 — Quick Release",
+        dotColor: "#D72638",
+        items: [
+          "Tekan tombol Steam Release di pegangan tutup untuk melepaskan uap.",
+          "Tunggu hingga float valve turun sebelum membuka tutup.",
+          "Jauhkan tangan dan wajah dari lubang katup buang — uap sangat panas.",
+          "JANGAN gunakan untuk masakan berkuah banyak atau bertepung tinggi (bubur, sup kental, congee) karena isi dapat muncrat.",
+        ]
+      },
+      {
+        label: "Metode 2 — Nature Release",
+        dotColor: "#2D8B2D",
+        items: [
+          "Biarkan alat mendingin secara alami hingga float valve turun sendiri.",
+          "Proses ini membutuhkan 10–15 menit setelah memasak selesai.",
+          "Meletakkan handuk basah di atas tutup dapat mempercepat pendinginan.",
+          "Disarankan untuk masakan berkuah atau bertepung tinggi.",
+        ]
+      },
+      {
+        label: "Cara Membuka Tutup",
+        dotColor: "#3B82F6",
+        items: [
+          "Pegang pegangan tutup, putar berlawanan arah jarum jam ±30 derajat hingga mentok.",
+          "Angkat tutup ke atas untuk membuka.",
+          "Jika float valve macet karena sisa makanan, tekan ke bawah dengan pena atau sumpit setelah menekan tombol Steam Release.",
+        ]
+      }
+    ]
+  },
+  7: {
+    title: "Perawatan & Pembersihan",
+    sub: "Lakukan setelah setiap penggunaan",
+    bg: "linear-gradient(160deg,#1A2D1A 0%,#0E1F0E 100%)",
+    sections: [
+      {
+        label: "Perhatian Sebelum Membersihkan",
+        dotColor: "#D72638",
+        items: [
+          "Pastikan alat sudah dingin dan kabel dicabut sebelum dibersihkan.",
+          "Hentikan penggunaan segera jika: kabel/steker mengembang, berubah warna, atau rusak; ada bau terbakar; ada suara atau getaran tidak wajar.",
+          "Jika ada debu pada steker, bersihkan dengan kuas kering.",
+        ]
+      },
+      {
+        label: "Cara Membersihkan",
+        dotColor: "#2D8B2D",
+        items: [
+          "Bersihkan produk setelah setiap penggunaan.",
+          "Lap kering bagian dalam rim bodi dan celah dengan kain untuk mencegah karat.",
+          "Lepaskan tutup dan panci dalam, cuci dengan deterjen, bilas, dan keringkan.",
+          "Cuci tutup termasuk sealing ring (bisa dilepas), katup buang, dan anti-block shield dengan air; lap dengan kain lembut kering.",
+          "Jangan bongkar rakitan pipa steam release.",
+          "Bersihkan bodi dengan kain lembap yang bersih. Jangan rendam bodi ke dalam air.",
+        ]
+      },
+      {
+        label: "Yang Aman Dicuci di Mesin Cuci Piring",
+        dotColor: "#3B82F6",
+        items: [
+          "✓ Panci dalam (Inner pot)",
+          "✓ Sealing ring",
+          "✓ Katup buang (Exhaust valve)",
+          "✓ Semua aksesori bawaan",
+          "✗ Tutup (Lid) — TIDAK BOLEH dicuci di mesin cuci piring",
+          "✗ Bodi housing — TIDAK BOLEH dicuci di mesin cuci piring",
+        ]
+      }
+    ]
+  },
+  8: {
+    title: "Pemecahan Masalah & Kode Error",
+    sub: "Diagnosa dan solusi masalah umum",
+    bg: "linear-gradient(160deg,#1E3A5F 0%,#12253E 100%)",
+    isTrouble: true,
+    troubles: [
+      { icon:"⚠️", prob:"Tutup sulit ditutup", cause:"Sealing ring tidak terpasang dengan benar, atau tekanan masih ada di dalam", sol:"Pasang ulang sealing ring → buka lalu tutup kembali" },
+      { icon:"🔒", prob:"Tutup sulit dibuka", cause:"Masih ada tekanan di dalam — float valve belum turun, atau float valve macet karena sisa makanan", sol:"Tekan Steam Release hingga float valve turun, lalu buka" },
+      { icon:"💨", prob:"Uap bocor dari sisi tutup", cause:"Sealing ring rusak, kotor, atau tidak terpasang sempurna; atau tutup tidak tertutup rapat", sol:"Bersihkan / ganti sealing ring, tutup kembali dengan benar" },
+      { icon:"💧", prob:"Uap bocor dari float valve > 2 menit", cause:"Float valve tersumbat, silikon aus, atau handle release tidak di posisi seal", sol:"Bersihkan / ganti silikon float valve; pastikan handle di posisi sealing" },
+      { icon:"📟", prob:"Layar kosong setelah dinyalakan", cause:"Sambungan listrik buruk atau sekring alat putus", sol:"Periksa kabel & stop kontak. Hubungi service center jika berlanjut" },
+      { icon:"🍚", prob:"Nasi setengah matang / terlalu keras", cause:"Terlalu sedikit air atau tutup dibuka terlalu cepat", sol:"Sesuaikan rasio nasi-air; biarkan 5 menit setelah program selesai" },
+      { icon:"💧", prob:"Nasi terlalu lembek / basah", cause:"Terlalu banyak air", sol:"Kurangi jumlah air sesuai resep yang dianjurkan" },
+    ],
+    errors: [
+      { code:"E1", desc:"Sensor bawah open circuit", bg:"#FFF0F0", border:"#FFCCCC", color:"#D72638" },
+      { code:"E2", desc:"Sensor bawah short circuit", bg:"#FFF0F0", border:"#FFCCCC", color:"#D72638" },
+      { code:"E8", desc:"Open circuit pressure switch", bg:"#FFF0F0", border:"#FFCCCC", color:"#D72638" },
+      { code:"C1", desc:"Proteksi suhu berlebih (overtemperature)", bg:"#FFF8E0", border:"#F0C96E", color:"#C9963A" },
+    ]
+  }
+};
+
+function openChapter(num) {
+  const ch = chapters[num];
+  document.getElementById('detail-title').textContent = ch.title;
+  document.getElementById('detail-sub').textContent = ch.sub;
+  document.getElementById('detail-header-bg').style.background = ch.bg;
+
+  let html = '';
+
+  if (ch.isTrouble) {
+    html += '<div class="detail-section"><div class="detail-section-title">Masalah & Solusi</div>';
+    ch.troubles.forEach(t => {
+      html += `<div class="trouble-detail">
+        <div class="trouble-prob">${t.icon} ${t.prob}</div>
+        <div class="trouble-cause">${t.cause}</div>
+        <div class="trouble-sol">→ ${t.sol}</div>
+      </div>`;
+    });
+    html += '</div>';
+
+    html += '<div class="detail-section"><div class="detail-section-title">Kode Error</div><div class="error-grid">';
+    ch.errors.forEach(e => {
+      html += `<div class="error-chip" style="background:${e.bg};border:1.5px solid ${e.border};">
+        <div class="code" style="color:${e.color};">${e.code}</div>
+        <div class="desc">${e.desc}</div>
+      </div>`;
+    });
+    html += '</div></div>';
+
+    html += `<div style="background:#F0F4FF;border:1.5px solid #BFD0FF;border-radius:12px;padding:12px 14px;margin-top:4px;">
+      <div style="font-size:11.5px;color:#1E3A8A;line-height:1.6;">
+        <b>Jika masalah berlanjut,</b> hubungi service center resmi Midea atau kirimkan alat untuk diperiksa oleh teknisi bersertifikat.
+      </div>
+    </div>`;
+  } else {
+    ch.sections.forEach(sec => {
+      html += `<div class="detail-section"><div class="detail-section-title">${sec.label}</div>`;
+      sec.items.forEach(item => {
+        html += `<div class="detail-item">
+          <div class="detail-dot" style="background:${sec.dotColor};"></div>
+          <div class="detail-item-text">${item}</div>
+        </div>`;
+      });
+      html += '</div>';
+    });
+  }
+
+  document.getElementById('detail-body').innerHTML = html;
+  document.getElementById('detail-overlay').classList.add('open');
+}
+
+function closeChapter() {
+  document.getElementById('detail-overlay').classList.remove('open');
+}
+</script>
+
+<!-- ══════════════════════════════════════════ -->
+<!--  SCREEN 4 – TANYA KAMI                    -->
+<!-- ══════════════════════════════════════════ -->
+<div class="phone-wrap">
+  <div class="phone">
+    <div id="screen-tanya">
+      <div class="tanya-header" style="padding-bottom:30px;">
+        <div class="sub-deco1"></div>
+        <div class="status-bar" style="top:0">
+          <span class="time" style="color:#fff">9:41</span>
+          <div class="status-icons" style="color:#fff"><span>●●●</span><span>WiFi</span><span>🔋</span></div>
+        </div>
+        <div class="back-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+          Kembali
+        </div>
+        <div class="sub-header-title">Tanya Kami</div>
+        <div class="sub-header-sub">Tim kami siap membantu Anda 24/7</div>
+      </div>
+
+      <div class="chat-area">
+        <div>
+          <div class="chat-meta">
+            <div class="chat-avatar"><svg viewBox="0 0 38 38" fill="none" width="12" height="12"><path d="M8 28 C8 28 10 16 19 12 C28 8 30 16 30 16" stroke="white" stroke-width="2.5" stroke-linecap="round"/><circle cx="19" cy="22" r="7" stroke="white" stroke-width="2.5"/><circle cx="19" cy="22" r="2.5" fill="white"/></svg></div>
+            <span class="chat-sender">Midea Support</span>
+            <span class="chat-time">09:41</span>
+          </div>
+          <div class="chat-bubble bot">
+            Halo! 👋 Selamat datang di layanan Tanya Kami Midea. Saya siap membantu Anda. Ada yang bisa kami bantu hari ini?
+            <div class="chat-quick-btns">
+              <button class="quick-btn">Garansi Produk</button>
+              <button class="quick-btn">Service Center</button>
+              <button class="quick-btn">Cara Penggunaan</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="chat-bubble user">
+          Halo, AC saya tidak dingin. Apa yang harus saya lakukan?
+        </div>
+
+        <div>
+          <div class="chat-meta">
+            <div class="chat-avatar"><svg viewBox="0 0 38 38" fill="none" width="12" height="12"><path d="M8 28 C8 28 10 16 19 12 C28 8 30 16 30 16" stroke="white" stroke-width="2.5" stroke-linecap="round"/><circle cx="19" cy="22" r="7" stroke="white" stroke-width="2.5"/><circle cx="19" cy="22" r="2.5" fill="white"/></svg></div>
+            <span class="chat-sender">Midea Support</span>
+            <span class="chat-time">09:42</span>
+          </div>
+          <div class="chat-bubble bot">
+            Coba beberapa langkah ini ya: <br>1. Pastikan suhu sudah diatur di bawah suhu ruangan<br>2. Bersihkan filter setiap 2 minggu<br>3. Cek apakah freon perlu diisi ulang
+          </div>
+        </div>
+      </div>
+
+      <div class="chat-input-bar">
+        <input class="chat-input" type="text" placeholder="Ketik pertanyaan Anda..." readonly>
+        <button class="send-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+  <span class="screen-label">Layar 4 · Tanya Kami</span>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!--  SCREEN 5 – DETAIL BAB: KESELAMATAN       -->
+<!-- ══════════════════════════════════════════ -->
+<style>
+  /* ── progress bar ── */
+  .chapter-progress-bar {
+    height: 3px;
+    background: rgba(255,255,255,0.12);
+    border-radius: 2px;
+    margin-top: 14px;
+    overflow: hidden;
+    position: relative; z-index: 1;
+  }
+  .chapter-progress-fill {
+    height: 100%;
+    width: 12.5%; /* 1 of 8 chapters */
+    background: rgba(255,255,255,0.55);
+    border-radius: 2px;
+  }
+  .chapter-nav-row {
+    display: flex; align-items: center; justify-content: space-between;
+    position: relative; z-index: 1; margin-top: 10px;
+  }
+  .chapter-nav-label { font-size: 10px; color: rgba(255,255,255,0.4); letter-spacing: 1px; }
+  .chapter-nav-btns { display: flex; gap: 8px; }
+  .cnav-btn {
+    width: 28px; height: 28px;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+  }
+  .cnav-btn.disabled { opacity: 0.25; }
+  .cnav-btn svg { width: 12px; height: 12px; }
+
+  /* ── section label ── */
+  .sec-label {
+    font-size: 9.5px; font-weight: 700; letter-spacing: 2px;
+    text-transform: uppercase; color: var(--mid-gray);
+    margin: 18px 0 9px;
+  }
+
+  /* ── danger card ── */
+  .danger-card {
+    border-radius: 14px; padding: 14px 15px;
+    margin-bottom: 9px; display: flex; gap: 12px; align-items: flex-start;
+  }
+  .danger-card.red   { background: #FFF1F2; border: 1.5px solid #FECDD3; }
+  .danger-card.amber { background: #FFFBEB; border: 1.5px solid #FDE68A; }
+  .danger-card.blue  { background: #EFF6FF; border: 1.5px solid #BFDBFE; }
+
+  .danger-icon-wrap {
+    width: 34px; height: 34px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .danger-icon-wrap.red   { background: rgba(215,38,56,0.12); }
+  .danger-icon-wrap.amber { background: rgba(201,150,58,0.12); }
+  .danger-icon-wrap.blue  { background: rgba(59,130,246,0.1); }
+  .danger-icon-wrap svg   { width: 16px; height: 16px; }
+
+  .danger-text { flex: 1; }
+  .danger-title { font-size: 12px; font-weight: 700; margin-bottom: 3px; }
+  .danger-card.red   .danger-title { color: #9B1C2A; }
+  .danger-card.amber .danger-title { color: #7A5B00; }
+  .danger-card.blue  .danger-title { color: #1E40AF; }
+  .danger-desc  { font-size: 11.5px; line-height: 1.55; }
+  .danger-card.red   .danger-desc { color: #7F1D1D; }
+  .danger-card.amber .danger-desc { color: #78350F; }
+  .danger-card.blue  .danger-desc { color: #1E3A8A; }
+
+  /* ── step card ── */
+  .step-row {
+    display: flex; gap: 10px; align-items: flex-start;
+    background: #fff; border-radius: 12px;
+    border: 1.5px solid var(--light-gray);
+    padding: 12px 14px; margin-bottom: 8px;
+  }
+  .step-num {
+    width: 22px; height: 22px; border-radius: 50%;
+    background: var(--charcoal);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 700; color: #fff; flex-shrink: 0; margin-top: 1px;
+  }
+  .step-text { font-size: 12px; color: var(--charcoal); line-height: 1.6; flex: 1; }
+  .step-text b { color: var(--red); }
+
+  /* ── note box ── */
+  .note-box {
+    background: #F0F4FF; border: 1.5px solid #C7D7FF;
+    border-radius: 12px; padding: 12px 14px;
+    display: flex; gap: 10px; align-items: flex-start; margin-top: 4px;
+  }
+  .note-box svg { width: 15px; height: 15px; flex-shrink: 0; margin-top: 1px; }
+  .note-box p  { font-size: 11.5px; color: #1E3A8A; line-height: 1.55; }
+
+  /* ── bottom action bar ── */
+  .detail-action-bar {
+    flex-shrink: 0;
+    background: #fff;
+    border-top: 1px solid var(--light-gray);
+    padding: 12px 16px;
+    display: flex; gap: 10px; align-items: center;
+  }
+  .dab-bookmark {
+    width: 40px; height: 40px;
+    border: 1.5px solid var(--light-gray);
+    border-radius: 11px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; flex-shrink: 0;
+  }
+  .dab-bookmark svg { width: 16px; height: 16px; }
+  .dab-next {
+    flex: 1;
+    background: linear-gradient(135deg, #1E3A5F 0%, #12253E 100%);
+    color: #fff; border: none; border-radius: 11px;
+    font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600;
+    padding: 12px 16px; cursor: pointer;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .dab-next span { opacity: 0.5; font-size: 11px; }
+</style>
+
+<div class="phone-wrap">
+  <div class="phone" style="display:flex;flex-direction:column;overflow:hidden;background:var(--cream);">
+
+    <!-- ── Header ── -->
+    <div style="background:linear-gradient(160deg,#3D0F1C 0%,#6B1A2A 100%);padding:52px 20px 22px;position:relative;overflow:hidden;flex-shrink:0;">
+      <!-- deco circles -->
+      <div style="position:absolute;width:180px;height:180px;border-radius:50%;border:1px solid rgba(255,255,255,0.05);top:-60px;right:-50px;pointer-events:none;"></div>
+      <div style="position:absolute;width:90px;height:90px;border-radius:50%;background:rgba(215,38,56,0.1);bottom:10px;right:20px;pointer-events:none;"></div>
+
+      <div class="status-bar" style="top:0">
+        <span class="time" style="color:#fff">9:41</span>
+        <div class="status-icons" style="color:#fff"><span>●●●</span><span>WiFi</span><span>🔋</span></div>
+      </div>
+
+      <!-- back -->
+      <div class="back-btn" style="margin-bottom:14px;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+        Buku Panduan
+      </div>
+
+      <!-- chapter badge + title -->
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;position:relative;z-index:1;">
+        <div style="background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.18);border-radius:8px;padding:3px 10px;font-size:10px;font-weight:700;color:rgba(255,255,255,0.7);letter-spacing:1.5px;">BAB 1</div>
+        <div style="width:1px;height:14px;background:rgba(255,255,255,0.2);"></div>
+        <div style="font-size:10px;color:rgba(255,255,255,0.4);letter-spacing:1px;">MY-CS5039P</div>
+      </div>
+      <div style="font-family:'Playfair Display',serif;font-size:21px;font-weight:700;color:#fff;line-height:1.2;position:relative;z-index:1;">Keselamatan<br>Penting</div>
+
+      <!-- progress bar -->
+      <div class="chapter-progress-bar">
+        <div class="chapter-progress-fill"></div>
+      </div>
+      <div class="chapter-nav-row">
+        <div class="chapter-nav-label">1 dari 8 bab</div>
+        <div class="chapter-nav-btns">
+          <div class="cnav-btn disabled">
+            <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
+          </div>
+          <div class="cnav-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
+          </div>
+        </div>
+      </div>
+
+      <div style="position:absolute;bottom:-1px;left:0;right:0;height:22px;background:var(--cream);border-radius:18px 18px 0 0;"></div>
+    </div>
+
+    <!-- ── Body ── -->
+    <div style="flex:1;overflow-y:auto;padding:12px 16px 8px;scrollbar-width:none;">
+
+      <!-- Umum -->
+      <div class="sec-label">⚠ Peringatan Umum</div>
+
+      <div class="danger-card red">
+        <div class="danger-icon-wrap red">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#D72638" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        </div>
+        <div class="danger-text">
+          <div class="danger-title">Lokasi Penempatan</div>
+          <div class="danger-desc">Jangan letakkan di tempat tidak stabil atau di atas koran/busa yang dapat menutup <b style="color:#9B1C2A;">lubang ventilasi</b> di bagian bawah alat.</div>
+        </div>
+      </div>
+
+      <div class="danger-card red">
+        <div class="danger-icon-wrap red">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#D72638" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <div class="danger-text">
+          <div class="danger-title">Jauhkan dari Anak-anak</div>
+          <div class="danger-desc">Alat ini tidak diperuntukkan bagi anak-anak. Jangan gunakan di dekat air atau api, dan jauhkan dari paparan sinar matahari langsung.</div>
+        </div>
+      </div>
+
+      <div class="danger-card red">
+        <div class="danger-icon-wrap red">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#D72638" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        </div>
+        <div class="danger-text">
+          <div class="danger-title">Batas Isi Maksimum</div>
+          <div class="danger-desc">Jumlah bahan dan air <b style="color:#9B1C2A;">TIDAK BOLEH melebihi</b> batas MAX yang tertera di panci dalam. Kelebihan isi dapat menyumbat katup dan menimbulkan tekanan berlebih.</div>
+        </div>
+      </div>
+
+      <!-- Uap panas -->
+      <div class="sec-label">🔥 Peringatan Uap Panas</div>
+
+      <div class="step-row">
+        <div class="step-num" style="background:#D72638;">!</div>
+        <div class="step-text">Jauhkan <b>tangan dan wajah</b> dari katup buang dan float valve saat alat sedang beroperasi — uap yang keluar sangat panas.</div>
+      </div>
+      <div class="step-row">
+        <div class="step-num" style="background:#D72638;">!</div>
+        <div class="step-text">Jangan menyentuh tutup dengan tangan langsung saat memasak berlangsung.</div>
+      </div>
+      <div class="step-row">
+        <div class="step-num" style="background:#D72638;">!</div>
+        <div class="step-text"><b>Jangan buka tutup</b> sebelum memastikan tidak ada tekanan di dalam. Tunggu float valve turun sepenuhnya.</div>
+      </div>
+
+      <!-- Listrik -->
+      <div class="sec-label">⚡ Peringatan Listrik</div>
+
+      <div class="danger-card amber">
+        <div class="danger-icon-wrap amber">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#C9963A" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        </div>
+        <div class="danger-text">
+          <div class="danger-title">Kabel atau Steker Rusak</div>
+          <div class="danger-desc">Hentikan penggunaan segera dan kirim ke <b style="color:#7A5B00;">service center resmi</b> jika kabel atau steker menunjukkan tanda kerusakan. Perbaikan mandiri dilarang.</div>
+        </div>
+      </div>
+
+      <div class="danger-card amber">
+        <div class="danger-icon-wrap amber">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#C9963A" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+        </div>
+        <div class="danger-text">
+          <div class="danger-title">Dilarang Pakai Timer Eksternal</div>
+          <div class="danger-desc">Alat ini <b style="color:#7A5B00;">tidak boleh dihubungkan</b> ke perangkat pengalih daya eksternal seperti timer otomatis atau remote control.</div>
+        </div>
+      </div>
+
+      <!-- Note -->
+      <div class="note-box" style="margin-bottom:16px;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <p>Alat ini dapat digunakan oleh orang dengan keterbatasan fisik atau pengalaman, <b>jika</b> telah diberikan pengawasan atau instruksi penggunaan yang aman oleh orang yang bertanggung jawab.</p>
+      </div>
+
+    </div><!-- /body -->
+
+    <!-- ── Action Bar ── -->
+    <div class="detail-action-bar">
+      <div class="dab-bookmark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--mid-gray)" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+      </div>
+      <button class="dab-next">
+        Bab Selanjutnya
+        <span>Spesifikasi & Struktur →</span>
+      </button>
+    </div>
+
+  </div><!-- /phone -->
+  <span class="screen-label">Layar 5 · Detail Bab 1 — Keselamatan Penting</span>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!--  SCREEN 6 – DETAIL BAB 2: SPESIFIKASI     -->
+<!-- ══════════════════════════════════════════ -->
+<style>
+  /* spec table */
+  .spec-table { width:100%; border-collapse:collapse; margin-bottom:10px; }
+  .spec-table tr { border-bottom:1px solid var(--light-gray); }
+  .spec-table tr:last-child { border-bottom:none; }
+  .spec-table td { padding:10px 12px; font-size:11.5px; }
+  .spec-table td:first-child { color:var(--mid-gray); font-weight:500; width:45%; background:#FAFAFA; border-radius:0; }
+  .spec-table td:last-child { color:var(--charcoal); font-weight:600; }
+  .spec-table-wrap { background:#fff; border-radius:14px; border:1.5px solid var(--light-gray); overflow:hidden; margin-bottom:14px; }
+
+  /* part diagram card */
+  .part-card {
+    background:#fff; border:1.5px solid var(--light-gray); border-radius:12px;
+    padding:12px 14px; margin-bottom:8px; display:flex; gap:12px; align-items:center;
+  }
+  .part-icon { width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0; }
+  .part-name { font-size:12.5px;font-weight:600;color:var(--charcoal);margin-bottom:2px; }
+  .part-desc { font-size:11px;color:var(--mid-gray);line-height:1.4; }
+
+  /* accessory pill */
+  .acc-row { display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px; }
+  .acc-pill {
+    display:flex;align-items:center;gap:7px;
+    background:#fff;border:1.5px solid var(--light-gray);border-radius:22px;
+    padding:7px 13px;font-size:11.5px;font-weight:500;color:var(--charcoal);
+  }
+  .acc-pill span { font-size:15px; }
+</style>
+
+<div class="phone-wrap">
+  <div class="phone" style="display:flex;flex-direction:column;overflow:hidden;background:var(--cream);">
+    <div style="background:linear-gradient(160deg,#1E3A5F 0%,#0D2240 100%);padding:52px 20px 22px;position:relative;overflow:hidden;flex-shrink:0;">
+      <div style="position:absolute;width:160px;height:160px;border-radius:50%;border:1px solid rgba(255,255,255,0.06);top:-50px;right:-40px;"></div>
+      <div class="status-bar" style="top:0"><span class="time" style="color:#fff">9:41</span><div class="status-icons" style="color:#fff"><span>●●●</span><span>WiFi</span><span>🔋</span></div></div>
+      <div class="back-btn" style="margin-bottom:14px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>Buku Panduan</div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;position:relative;z-index:1;">
+        <div style="background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.18);border-radius:8px;padding:3px 10px;font-size:10px;font-weight:700;color:rgba(255,255,255,0.7);letter-spacing:1.5px;">BAB 2</div>
+      </div>
+      <div style="font-family:'Playfair Display',serif;font-size:21px;font-weight:700;color:#fff;line-height:1.2;position:relative;z-index:1;">Spesifikasi &<br>Struktur Produk</div>
+      <div class="chapter-progress-bar"><div class="chapter-progress-fill" style="width:25%;"></div></div>
+      <div class="chapter-nav-row">
+        <div class="chapter-nav-label">2 dari 8 bab</div>
+        <div class="chapter-nav-btns">
+          <div class="cnav-btn"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg></div>
+          <div class="cnav-btn"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg></div>
+        </div>
+      </div>
+      <div style="position:absolute;bottom:-1px;left:0;right:0;height:22px;background:var(--cream);border-radius:18px 18px 0 0;"></div>
+    </div>
+
+    <div style="flex:1;overflow-y:auto;padding:12px 16px 8px;scrollbar-width:none;">
+      <div class="sec-label">📋 Spesifikasi Teknis</div>
+      <div class="spec-table-wrap">
+        <table class="spec-table">
+          <tr><td>Model</td><td>MY-CS5039P</td></tr>
+          <tr><td>Tegangan</td><td>220–240V~ 50/60Hz</td></tr>
+          <tr><td>Daya</td><td>900 – 1070 W</td></tr>
+          <tr><td>Volume Panci</td><td>5.0 Liter</td></tr>
+          <tr><td>Diameter Panci</td><td>22 cm</td></tr>
+          <tr><td>Tekanan Kerja</td><td>70 kPa</td></tr>
+          <tr><td>Suhu Keep Warm</td><td>60°C – 80°C</td></tr>
+        </table>
+      </div>
+
+      <div class="sec-label">🔩 Komponen Utama</div>
+      <div class="part-card">
+        <div class="part-icon" style="background:#FFF1F2;"><svg viewBox="0 0 24 24" fill="none" stroke="#D72638" stroke-width="2" width="18" height="18"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4"/></svg></div>
+        <div><div class="part-name">Katup Uap (Steam Vent)</div><div class="part-desc">Melepaskan uap tekanan saat memasak selesai atau ditekan manual</div></div>
+      </div>
+      <div class="part-card">
+        <div class="part-icon" style="background:#FFFBEB;"><svg viewBox="0 0 24 24" fill="none" stroke="#C9963A" stroke-width="2" width="18" height="18"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="8"/></svg></div>
+        <div><div class="part-name">Float Valve</div><div class="part-desc">Indikator tekanan — terangkat saat bertekanan, turun saat aman dibuka</div></div>
+      </div>
+      <div class="part-card">
+        <div class="part-icon" style="background:#EFF6FF;"><svg viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" width="18" height="18"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+        <div><div class="part-name">Sealing Ring</div><div class="part-desc">Cincin karet untuk memastikan tutup kedap tekanan saat memasak</div></div>
+      </div>
+      <div class="part-card">
+        <div class="part-icon" style="background:#F0FDF4;"><svg viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2" width="18" height="18"><path d="M12 22V12M12 12C12 7 7 4 2 4M12 12C12 7 17 4 22 4"/></svg></div>
+        <div><div class="part-name">Anti-Block Shield</div><div class="part-desc">Pelindung pipa uap agar tidak tersumbat sisa makanan</div></div>
+      </div>
+      <div class="part-card">
+        <div class="part-icon" style="background:#F5F3FF;"><svg viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="2" width="18" height="18"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
+        <div><div class="part-name">Panel Kontrol</div><div class="part-desc">Layar LED + 6 tombol operasi + 5 tombol fungsi cepat</div></div>
+      </div>
+
+      <div class="sec-label">🎁 Aksesori Bawaan</div>
+      <div class="acc-row">
+        <div class="acc-pill"><span>🥄</span>Sendok Nasi</div>
+        <div class="acc-pill"><span>🍜</span>Sendok Sup</div>
+        <div class="acc-pill"><span>🥛</span>Gelas Takar</div>
+        <div class="acc-pill"><span>💧</span>Pengumpul Kondensasi</div>
+        <div class="acc-pill"><span>📖</span>Buku Panduan</div>
+      </div>
+    </div>
+
+    <div class="detail-action-bar">
+      <div class="dab-bookmark"><svg viewBox="0 0 24 24" fill="none" stroke="var(--mid-gray)" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></div>
+      <button class="dab-next">Bab Selanjutnya<span>Panel Kontrol →</span></button>
+    </div>
+  </div>
+  <span class="screen-label">Layar 6 · Detail Bab 2 — Spesifikasi & Struktur</span>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!--  SCREEN 7 – DETAIL BAB 3: PANEL KONTROL   -->
+<!-- ══════════════════════════════════════════ -->
+<style>
+  /* LED state card */
+  .led-card {
+    background:#fff; border:1.5px solid var(--light-gray); border-radius:12px;
+    padding:12px 14px; margin-bottom:8px; display:flex; align-items:center; gap:12px;
+  }
+  .led-dot { width:12px;height:12px;border-radius:50%;flex-shrink:0; }
+  .led-display {
+    background:var(--charcoal); color:#4AFF91; font-size:11px; font-weight:700;
+    font-family:monospace; padding:4px 8px; border-radius:5px; flex-shrink:0; min-width:56px; text-align:center;
+  }
+  .led-info { flex:1; }
+  .led-name { font-size:12px;font-weight:700;color:var(--charcoal);margin-bottom:2px; }
+  .led-desc { font-size:11px;color:var(--mid-gray);line-height:1.4; }
+
+  /* button grid */
+  .btn-grid { display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px; }
+  .btn-card {
+    background:#fff;border:1.5px solid var(--light-gray);border-radius:12px;
+    padding:12px 12px; cursor:pointer; transition:border-color 0.2s;
+  }
+  .btn-card:hover { border-color:rgba(30,58,95,0.4); }
+  .btn-label { font-size:11.5px;font-weight:700;color:var(--charcoal);margin-bottom:3px; }
+  .btn-fn { font-size:10.5px;color:var(--mid-gray);line-height:1.4; }
+  .btn-tag {
+    display:inline-block; font-size:9px;font-weight:700;letter-spacing:0.5px;
+    padding:2px 7px;border-radius:20px;margin-bottom:5px;
+  }
+  .btn-tag.op  { background:#EFF6FF;color:#1E40AF; }
+  .btn-tag.fn  { background:#F0FDF4;color:#15803D; }
+
+  /* function menu grid */
+  .menu-fn-grid { display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px; }
+  .menu-fn-chip {
+    padding:6px 12px; background:#fff; border:1.5px solid var(--light-gray);
+    border-radius:20px; font-size:11px; font-weight:500; color:var(--charcoal);
+  }
+</style>
+
+<div class="phone-wrap">
+  <div class="phone" style="display:flex;flex-direction:column;overflow:hidden;background:var(--cream);">
+    <div style="background:linear-gradient(160deg,#1A2D1A 0%,#0E1F0E 100%);padding:52px 20px 22px;position:relative;overflow:hidden;flex-shrink:0;">
+      <div style="position:absolute;width:150px;height:150px;border-radius:50%;border:1px solid rgba(255,255,255,0.05);top:-40px;right:-30px;"></div>
+      <div class="status-bar" style="top:0"><span class="time" style="color:#fff">9:41</span><div class="status-icons" style="color:#fff"><span>●●●</span><span>WiFi</span><span>🔋</span></div></div>
+      <div class="back-btn" style="margin-bottom:14px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>Buku Panduan</div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;position:relative;z-index:1;">
+        <div style="background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.18);border-radius:8px;padding:3px 10px;font-size:10px;font-weight:700;color:rgba(255,255,255,0.7);letter-spacing:1.5px;">BAB 3</div>
+      </div>
+      <div style="font-family:'Playfair Display',serif;font-size:21px;font-weight:700;color:#fff;line-height:1.2;position:relative;z-index:1;">Panel Kontrol &<br>Status Pemasak</div>
+      <div class="chapter-progress-bar"><div class="chapter-progress-fill" style="width:37.5%;"></div></div>
+      <div class="chapter-nav-row">
+        <div class="chapter-nav-label">3 dari 8 bab</div>
+        <div class="chapter-nav-btns">
+          <div class="cnav-btn"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg></div>
+          <div class="cnav-btn"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg></div>
+        </div>
+      </div>
+      <div style="position:absolute;bottom:-1px;left:0;right:0;height:22px;background:var(--cream);border-radius:18px 18px 0 0;"></div>
+    </div>
+
+    <div style="flex:1;overflow-y:auto;padding:12px 16px 8px;scrollbar-width:none;">
+      <div class="sec-label">💡 Status Tampilan LED</div>
+
+      <div class="led-card">
+        <div class="led-dot" style="background:#4AFF91;box-shadow:0 0 6px #4AFF91;"></div>
+        <div class="led-display">OPEN</div>
+        <div class="led-info"><div class="led-name">Tutup Terbuka</div><div class="led-desc">Tutup dalam kondisi terbuka, alat belum siap memasak</div></div>
+      </div>
+      <div class="led-card">
+        <div class="led-dot" style="background:#FCD34D;box-shadow:0 0 6px #FCD34D;"></div>
+        <div class="led-display">- - -</div>
+        <div class="led-info"><div class="led-name">Standby</div><div class="led-desc">Alat siap, menunggu perintah fungsi dari pengguna</div></div>
+      </div>
+      <div class="led-card">
+        <div class="led-dot" style="background:#60A5FA;box-shadow:0 0 6px #60A5FA;"></div>
+        <div class="led-display">9:00 ▼</div>
+        <div class="led-info"><div class="led-name">Preset / Hitung Mundur</div><div class="led-desc">Waktu preset tersisa, indikator fungsi menyala</div></div>
+      </div>
+      <div class="led-card">
+        <div class="led-dot" style="background:#F87171;box-shadow:0 0 6px #F87171;"></div>
+        <div class="led-display">≋≋≋≋</div>
+        <div class="led-info"><div class="led-name">Program Berjalan</div><div class="led-desc">Proses memasak aktif, indikator fungsi menyala</div></div>
+      </div>
+      <div class="led-card">
+        <div class="led-dot" style="background:#FB923C;box-shadow:0 0 6px #FB923C;"></div>
+        <div class="led-display">0:45 ▲</div>
+        <div class="led-info"><div class="led-name">Keep-Warm</div><div class="led-desc">Makanan dijaga hangat, waktu bertambah, indikator Warm menyala</div></div>
+      </div>
+
+      <div class="sec-label">🎛 Tombol Operasi (6 Tombol)</div>
+      <div class="btn-grid">
+        <div class="btn-card"><div class="btn-tag op">OPERASI</div><div class="btn-label">Cancel</div><div class="btn-fn">Batalkan program yang sedang berjalan atau aktifkan Keep-Warm dari standby</div></div>
+        <div class="btn-card"><div class="btn-tag op">OPERASI</div><div class="btn-label">Timer</div><div class="btn-fn">Atur waktu preset (hitung mundur) sebelum mulai memasak</div></div>
+        <div class="btn-card"><div class="btn-tag op">OPERASI</div><div class="btn-label">Warm</div><div class="btn-fn">Aktifkan mode jaga hangat kapan saja dari standby</div></div>
+        <div class="btn-card"><div class="btn-tag op">OPERASI</div><div class="btn-label">Hot Pot</div><div class="btn-fn">Memasak dengan tutup terbuka (mode hot pot)</div></div>
+        <div class="btn-card"><div class="btn-tag op">OPERASI</div><div class="btn-label">Texture</div><div class="btn-fn">Pilih tekstur masakan: Light / Med / High</div></div>
+        <div class="btn-card"><div class="btn-tag op">OPERASI</div><div class="btn-label">Menu</div><div class="btn-fn">Jelajahi & pilih semua fungsi masak yang tersedia</div></div>
+      </div>
+
+      <div class="sec-label">⚡ Tombol Fungsi Cepat (5 Tombol)</div>
+      <div class="btn-grid">
+        <div class="btn-card"><div class="btn-tag fn">CEPAT</div><div class="btn-label">Fast Cook</div><div class="btn-fn">Masak cepat tekanan tinggi</div></div>
+        <div class="btn-card"><div class="btn-tag fn">CEPAT</div><div class="btn-label">Porridge</div><div class="btn-fn">Program khusus bubur lembut</div></div>
+        <div class="btn-card" style="grid-column:span 2;"><div class="btn-tag fn">CEPAT</div><div class="btn-label">Start</div><div class="btn-fn">Mulai program masak yang sudah dipilih</div></div>
+        <div class="btn-card"><div class="btn-tag fn">CEPAT</div><div class="btn-label">Soup</div><div class="btn-fn">Program sup & kaldu</div></div>
+        <div class="btn-card"><div class="btn-tag fn">CEPAT</div><div class="btn-label">Stew</div><div class="btn-fn">Program semur & rebusan</div></div>
+      </div>
+
+      <div class="sec-label">🍽 Semua Menu Fungsi</div>
+      <div class="menu-fn-grid">
+        <div class="menu-fn-chip">Rice</div><div class="menu-fn-chip">Multigrain</div>
+        <div class="menu-fn-chip">Bean/Tendons</div><div class="menu-fn-chip">Ribs</div>
+        <div class="menu-fn-chip">Baby Food</div><div class="menu-fn-chip">Reheat</div>
+        <div class="menu-fn-chip">Fish</div><div class="menu-fn-chip">Meat/Chicken</div>
+        <div class="menu-fn-chip">Steam</div><div class="menu-fn-chip">Congee</div>
+        <div class="menu-fn-chip">Beef/Mutton</div><div class="menu-fn-chip">Broth</div>
+      </div>
+
+      <div class="note-box" style="margin-bottom:16px;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <p>Fungsi <b>Reheat, Hot Pot, Fast Cook, Porridge, Soup</b> dan <b>Stew</b> tidak dapat menggunakan preset timer dan tidak mendukung pemilihan tekstur.</p>
+      </div>
+    </div>
+
+    <div class="detail-action-bar">
+      <div class="dab-bookmark"><svg viewBox="0 0 24 24" fill="none" stroke="var(--mid-gray)" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></div>
+      <button class="dab-next">Bab Selanjutnya<span>Persiapan Pertama →</span></button>
+    </div>
+  </div>
+  <span class="screen-label">Layar 7 · Detail Bab 3 — Panel Kontrol</span>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!--  SCREEN 8 – DETAIL BAB 4: PERSIAPAN       -->
+<!-- ══════════════════════════════════════════ -->
+<style>
+  /* checklist step */
+  .check-step {
+    background:#fff;border:1.5px solid var(--light-gray);border-radius:13px;
+    padding:13px 14px;margin-bottom:9px;display:flex;gap:12px;align-items:flex-start;
+  }
+  .check-circle {
+    width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;
+  }
+  .check-circle svg { width:13px;height:13px; }
+  .check-content { flex:1; }
+  .check-title { font-size:12.5px;font-weight:700;color:var(--charcoal);margin-bottom:3px; }
+  .check-body  { font-size:11.5px;color:var(--mid-gray);line-height:1.55; }
+  .check-body b { color:var(--charcoal); }
+
+  /* do/don't row */
+  .do-dont-grid { display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:14px; }
+  .do-card { background:#F0FDF4;border:1.5px solid #BBF7D0;border-radius:12px;padding:11px 12px; }
+  .dont-card { background:#FFF1F2;border:1.5px solid #FECDD3;border-radius:12px;padding:11px 12px; }
+  .do-label { font-size:9.5px;font-weight:700;letter-spacing:1px;color:#15803D;margin-bottom:6px; }
+  .dont-label { font-size:9.5px;font-weight:700;letter-spacing:1px;color:#9B1C2A;margin-bottom:6px; }
+  .do-item, .dont-item { font-size:11px;line-height:1.55; }
+  .do-item { color:#14532D; }
+  .dont-item { color:#7F1D1D; }
+  .do-item + .do-item, .dont-item + .dont-item { margin-top:5px; }
+</style>
+
+<div class="phone-wrap">
+  <div class="phone" style="display:flex;flex-direction:column;overflow:hidden;background:var(--cream);">
+    <div style="background:linear-gradient(160deg,#1E3A5F 0%,#0D2240 100%);padding:52px 20px 22px;position:relative;overflow:hidden;flex-shrink:0;">
+      <div style="position:absolute;width:140px;height:140px;border-radius:50%;border:1px solid rgba(255,255,255,0.06);top:-40px;right:-30px;"></div>
+      <div class="status-bar" style="top:0"><span class="time" style="color:#fff">9:41</span><div class="status-icons" style="color:#fff"><span>●●●</span><span>WiFi</span><span>🔋</span></div></div>
+      <div class="back-btn" style="margin-bottom:14px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>Buku Panduan</div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;position:relative;z-index:1;">
+        <div style="background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.18);border-radius:8px;padding:3px 10px;font-size:10px;font-weight:700;color:rgba(255,255,255,0.7);letter-spacing:1.5px;">BAB 4</div>
+      </div>
+      <div style="font-family:'Playfair Display',serif;font-size:21px;font-weight:700;color:#fff;line-height:1.2;position:relative;z-index:1;">Persiapan Sebelum<br>Penggunaan Pertama</div>
+      <div class="chapter-progress-bar"><div class="chapter-progress-fill" style="width:50%;"></div></div>
+      <div class="chapter-nav-row">
+        <div class="chapter-nav-label">4 dari 8 bab</div>
+        <div class="chapter-nav-btns">
+          <div class="cnav-btn"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg></div>
+          <div class="cnav-btn"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg></div>
+        </div>
+      </div>
+      <div style="position:absolute;bottom:-1px;left:0;right:0;height:22px;background:var(--cream);border-radius:18px 18px 0 0;"></div>
+    </div>
+
+    <div style="flex:1;overflow-y:auto;padding:12px 16px 8px;scrollbar-width:none;">
+      <div class="sec-label">🧼 Langkah Pembersihan Awal</div>
+
+      <div class="check-step">
+        <div class="check-circle" style="background:#DBEAFE;"><svg viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <div class="check-content"><div class="check-title">Keluarkan Semua Aksesori</div><div class="check-body">Keluarkan seluruh aksesori dari kemasan. Baca manual ini dengan saksama sebelum mulai.</div></div>
+      </div>
+      <div class="check-step">
+        <div class="check-circle" style="background:#DBEAFE;"><svg viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <div class="check-content"><div class="check-title">Cuci Tutup & Panci Dalam</div><div class="check-body">Cuci bagian dalam tutup dan panci dengan <b>air sabun hangat</b>, bilas bersih, lalu keringkan sepenuhnya.</div></div>
+      </div>
+      <div class="check-step">
+        <div class="check-circle" style="background:#DBEAFE;"><svg viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <div class="check-content"><div class="check-title">Lap Bagian Luar Housing</div><div class="check-body">Bersihkan permukaan luar housing dengan kain lembap yang bersih. Jangan rendam ke dalam air.</div></div>
+      </div>
+
+      <div class="sec-label">🔄 Memasang Anti-Block Shield</div>
+      <div class="step-row"><div class="step-num">1</div><div class="step-text"><b>Melepas:</b> Dorong anti-block shield ke samping untuk mengangkatnya ke atas dari pipa uap.</div></div>
+      <div class="step-row"><div class="step-num">2</div><div class="step-text"><b>Memasang:</b> Posisikan di tempat pada pipa uap dan tekan ke bawah hingga berbunyi klik dan terpasang kuat.</div></div>
+      <div class="step-row"><div class="step-num">3</div><div class="step-text">Pastikan anti-block shield <b>terpasang dengan benar</b> sebelum setiap penggunaan untuk mencegah sumbatan.</div></div>
+
+      <div class="sec-label">🔄 Memasang Sealing Ring</div>
+      <div class="step-row"><div class="step-num">1</div><div class="step-text"><b>Melepas:</b> Tarik ke atas dari rak penahan secara bertahap, bagian per bagian.</div></div>
+      <div class="step-row"><div class="step-num">2</div><div class="step-text"><b>Memasang:</b> Tekan ke dalam rak penahan secara merata, bagian per bagian hingga semua terpasang rapat.</div></div>
+      <div class="step-row"><div class="step-num">3</div><div class="step-text">Sealing ring <b>dapat dipasang di kedua sisi</b> (atas/bawah). Untuk menghilangkan bau, cuci dengan air sabun hangat.</div></div>
+
+      <div class="sec-label">✅ Boleh vs Tidak Boleh</div>
+      <div class="do-dont-grid">
+        <div class="do-card">
+          <div class="do-label">✓ BOLEH</div>
+          <div class="do-item">Cuci panci di mesin cuci piring</div>
+          <div class="do-item" style="margin-top:5px;">Cuci sealing ring di mesin cuci piring</div>
+          <div class="do-item" style="margin-top:5px;">Cuci aksesori di mesin cuci piring</div>
+        </div>
+        <div class="dont-card">
+          <div class="dont-label">✗ JANGAN</div>
+          <div class="dont-item">Jangan cuci tutup di mesin cuci piring</div>
+          <div class="dont-item" style="margin-top:5px;">Jangan cuci bodi housing di mesin cuci piring</div>
+          <div class="dont-item" style="margin-top:5px;">Jangan rendam bodi ke dalam air</div>
+        </div>
+      </div>
+
+      <div class="danger-card amber" style="margin-bottom:16px;">
+        <div class="danger-icon-wrap amber"><svg viewBox="0 0 24 24" fill="none" stroke="#C9963A" stroke-width="2" width="16" height="16"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+        <div class="danger-text"><div class="danger-title">Jangan Tarik Sealing Ring Paksa</div><div class="danger-desc">Menarik sealing ring dengan paksa dapat menyebabkan deformasi dan merusak fungsi penyegelan tekanan. Jangan gunakan sealing ring yang retak atau rusak.</div></div>
+      </div>
+    </div>
+
+    <div class="detail-action-bar">
+      <div class="dab-bookmark"><svg viewBox="0 0 24 24" fill="none" stroke="var(--mid-gray)" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></div>
+      <button class="dab-next">Bab Selanjutnya<span>Cara Memasak →</span></button>
+    </div>
+  </div>
+  <span class="screen-label">Layar 8 · Detail Bab 4 — Persiapan Pertama</span>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!--  SCREEN 9 – DETAIL BAB 5: CARA MEMASAK    -->
+<!-- ══════════════════════════════════════════ -->
+<style>
+  /* fill level visual */
+  .fill-visual {
+    background:#fff;border:1.5px solid var(--light-gray);border-radius:13px;
+    padding:14px;margin-bottom:10px;display:flex;gap:14px;align-items:center;
+  }
+  .pot-diagram {
+    width:52px;height:64px;border:2.5px solid var(--charcoal);border-radius:4px 4px 10px 10px;
+    position:relative;overflow:hidden;flex-shrink:0;background:#F8FAFB;
+  }
+  .pot-fill { position:absolute;bottom:0;left:0;right:0;border-radius:0 0 8px 8px; }
+  .pot-line { position:absolute;left:0;right:0;border-top:1.5px dashed rgba(255,255,255,0.7);display:flex;align-items:center;padding:0 3px; }
+  .pot-line-label { font-size:7px;font-weight:700;color:rgba(255,255,255,0.9);margin-left:auto; }
+  .fill-info { flex:1; }
+  .fill-title { font-size:12.5px;font-weight:700;color:var(--charcoal);margin-bottom:4px; }
+  .fill-desc  { font-size:11px;color:var(--mid-gray);line-height:1.5; }
+  .fill-badge {
+    font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;
+    display:inline-block;margin-bottom:5px;
+  }
+</style>
+
+<div class="phone-wrap">
+  <div class="phone" style="display:flex;flex-direction:column;overflow:hidden;background:var(--cream);">
+    <div style="background:linear-gradient(160deg,#1A2D1A 0%,#0E1F0E 100%);padding:52px 20px 22px;position:relative;overflow:hidden;flex-shrink:0;">
+      <div style="position:absolute;width:140px;height:140px;border-radius:50%;background:rgba(80,200,80,0.05);top:-30px;right:-30px;"></div>
+      <div class="status-bar" style="top:0"><span class="time" style="color:#fff">9:41</span><div class="status-icons" style="color:#fff"><span>●●●</span><span>WiFi</span><span>🔋</span></div></div>
+      <div class="back-btn" style="margin-bottom:14px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>Buku Panduan</div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;position:relative;z-index:1;">
+        <div style="background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.18);border-radius:8px;padding:3px 10px;font-size:10px;font-weight:700;color:rgba(255,255,255,0.7);letter-spacing:1.5px;">BAB 5</div>
+      </div>
+      <div style="font-family:'Playfair Display',serif;font-size:21px;font-weight:700;color:#fff;line-height:1.2;position:relative;z-index:1;">Cara Memasak<br>dengan Pressure Cooker</div>
+      <div class="chapter-progress-bar"><div class="chapter-progress-fill" style="width:62.5%;"></div></div>
+      <div class="chapter-nav-row">
+        <div class="chapter-nav-label">5 dari 8 bab</div>
+        <div class="chapter-nav-btns">
+          <div class="cnav-btn"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg></div>
+          <div class="cnav-btn"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg></div>
+        </div>
+      </div>
+      <div style="position:absolute;bottom:-1px;left:0;right:0;height:22px;background:var(--cream);border-radius:18px 18px 0 0;"></div>
+    </div>
+
+    <div style="flex:1;overflow-y:auto;padding:12px 16px 8px;scrollbar-width:none;">
+      <div class="sec-label">🍲 Batas Pengisian Panci</div>
+
+      <div class="fill-visual">
+        <div class="pot-diagram">
+          <div class="pot-fill" style="height:100%;background:#E8F4FF;"></div>
+          <div class="pot-line" style="bottom:66%;"><div class="pot-line-label" style="color:#D72638;font-size:7px;">MAX</div></div>
+          <div class="pot-fill" style="height:66%;background:#BFDBFE;"></div>
+          <div class="pot-line" style="bottom:66%;border-color:rgba(215,38,56,0.8);"><div class="pot-line-label" style="color:#D72638;">MAX</div></div>
+          <div class="pot-fill" style="height:50%;background:#93C5FD;opacity:0.8;"></div>
+          <div class="pot-line" style="bottom:50%;border-color:rgba(30,58,95,0.6);"><div class="pot-line-label" style="color:#1E3A5F;">½</div></div>
+        </div>
+        <div class="fill-info">
+          <div class="fill-badge" style="background:#FFF1F2;color:#9B1C2A;">⚠ Batas Umum</div>
+          <div class="fill-title">Maksimal ⅔ Penuh</div>
+          <div class="fill-desc">Untuk semua jenis masakan, <b style="color:var(--charcoal);">jangan melebihi 2/3</b> kapasitas panci (batas MAX).</div>
+        </div>
+      </div>
+      <div class="fill-visual">
+        <div class="pot-diagram">
+          <div class="pot-fill" style="height:100%;background:#FFF7ED;"></div>
+          <div class="pot-fill" style="height:50%;background:#FED7AA;opacity:0.9;"></div>
+          <div class="pot-line" style="bottom:50%;border-color:rgba(234,88,12,0.7);"><div class="pot-line-label" style="color:#EA580C;">½</div></div>
+        </div>
+        <div class="fill-info">
+          <div class="fill-badge" style="background:#FFF7ED;color:#C2410C;">🌾 Bahan Mengembang</div>
+          <div class="fill-title">Maksimal ½ Penuh</div>
+          <div class="fill-desc">Untuk <b style="color:var(--charcoal);">nasi, kacang, sayur kering</b> yang mengembang saat dimasak, isi maksimal setengah panci.</div>
+        </div>
+      </div>
+
+      <div class="sec-label">📋 Langkah-Langkah Memasak</div>
+      <div class="step-row"><div class="step-num">1</div><div class="step-text">Siapkan bahan masakan, cuci bersih dan potong sesuai kebutuhan.</div></div>
+      <div class="step-row"><div class="step-num">2</div><div class="step-text">Masukkan bahan ke panci dalam. Tambahkan air sesuai resep. <b>Jangan melebihi batas MAX.</b></div></div>
+      <div class="step-row"><div class="step-num">3</div><div class="step-text">Lap kering bagian luar panci dan bagian dalam housing. Masukkan panci ke housing, <b>putar sedikit</b> agar kontak pemanas sempurna.</div></div>
+      <div class="step-row"><div class="step-num">4</div><div class="step-text">Sejajarkan tanda pada tutup dengan tanda pada housing. Putar tutup <b>searah jarum jam ±30°</b> hingga terkunci.</div></div>
+      <div class="step-row"><div class="step-num">5</div><div class="step-text">Hubungkan kabel ke stopkontak.</div></div>
+      <div class="step-row"><div class="step-num">6</div><div class="step-text">Tekan <b>Menu</b> untuk memilih fungsi masak (contoh: Rice, Soup, Stew). Sesuaikan tekstur jika perlu dengan tombol <b>Texture</b>.</div></div>
+      <div class="step-row"><div class="step-num">7</div><div class="step-text">Tekan <b>Start</b> untuk memulai memasak. Alat otomatis beralih ke <b>Keep-Warm</b> setelah selesai.</div></div>
+
+      <div class="sec-label">⏰ Cara Menggunakan Timer Preset</div>
+      <div class="danger-card blue" style="margin-bottom:8px;">
+        <div class="danger-icon-wrap blue"><svg viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" width="16" height="16"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+        <div class="danger-text"><div class="danger-title">Contoh: Preset Nasi Pagi 07:30</div><div class="danger-desc">Jika sekarang 22:30, set preset ke <b style="color:#1E40AF;">9 jam</b>. Tekan Timer, atur waktu, lalu tekan Start. Masakan selesai tepat pukul 07:30.</div></div>
+      </div>
+      <div class="note-box" style="margin-bottom:16px;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <p>Fungsi <b>Reheat, Hot Pot, Fast Cook, Porridge, Soup</b> dan <b>Stew</b> tidak dapat menggunakan preset timer.</p>
+      </div>
+    </div>
+
+    <div class="detail-action-bar">
+      <div class="dab-bookmark"><svg viewBox="0 0 24 24" fill="none" stroke="var(--mid-gray)" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></div>
+      <button class="dab-next">Bab Selanjutnya<span>Membuka Tutup →</span></button>
+    </div>
+  </div>
+  <span class="screen-label">Layar 9 · Detail Bab 5 — Cara Memasak</span>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!--  SCREEN 10 – DETAIL BAB 6: BUKA TUTUP     -->
+<!-- ══════════════════════════════════════════ -->
+<div class="phone-wrap">
+  <div class="phone" style="display:flex;flex-direction:column;overflow:hidden;background:var(--cream);">
+    <div style="background:linear-gradient(160deg,#3D0F1C 0%,#6B1A2A 100%);padding:52px 20px 22px;position:relative;overflow:hidden;flex-shrink:0;">
+      <div style="position:absolute;width:150px;height:150px;border-radius:50%;border:1px solid rgba(255,255,255,0.05);top:-40px;right:-30px;"></div>
+      <div class="status-bar" style="top:0"><span class="time" style="color:#fff">9:41</span><div class="status-icons" style="color:#fff"><span>●●●</span><span>WiFi</span><span>🔋</span></div></div>
+      <div class="back-btn" style="margin-bottom:14px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>Buku Panduan</div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;position:relative;z-index:1;">
+        <div style="background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.18);border-radius:8px;padding:3px 10px;font-size:10px;font-weight:700;color:rgba(255,255,255,0.7);letter-spacing:1.5px;">BAB 6</div>
+      </div>
+      <div style="font-family:'Playfair Display',serif;font-size:21px;font-weight:700;color:#fff;line-height:1.2;position:relative;z-index:1;">Cara Membuka<br>Tutup dengan Aman</div>
+      <div class="chapter-progress-bar"><div class="chapter-progress-fill" style="width:75%;"></div></div>
+      <div class="chapter-nav-row">
+        <div class="chapter-nav-label">6 dari 8 bab</div>
+        <div class="chapter-nav-btns">
+          <div class="cnav-btn"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg></div>
+          <div class="cnav-btn"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg></div>
+        </div>
+      </div>
+      <div style="position:absolute;bottom:-1px;left:0;right:0;height:22px;background:var(--cream);border-radius:18px 18px 0 0;"></div>
+    </div>
+
+    <div style="flex:1;overflow-y:auto;padding:12px 16px 8px;scrollbar-width:none;">
+      <div class="danger-card red" style="margin-top:4px;">
+        <div class="danger-icon-wrap red"><svg viewBox="0 0 24 24" fill="none" stroke="#D72638" stroke-width="2" width="16" height="16"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+        <div class="danger-text"><div class="danger-title">Jangan Buka Sebelum Aman!</div><div class="danger-desc">Tutup terkunci secara otomatis selama ada tekanan. <b style="color:#9B1C2A;">Float valve harus turun</b> sebelum tutup bisa dibuka.</div></div>
+      </div>
+
+      <!-- Two method comparison -->
+      <div class="sec-label">🔵 Metode 1 — Quick Release</div>
+      <div style="background:#EFF6FF;border:1.5px solid #BFDBFE;border-radius:14px;padding:14px;margin-bottom:10px;">
+        <div style="font-size:12px;font-weight:700;color:#1E40AF;margin-bottom:10px;">Cocok untuk: Daging, Sayuran, Nasi</div>
+        <div class="step-row" style="background:#fff;"><div class="step-num" style="background:#2563EB;">1</div><div class="step-text">Pastikan program selesai atau tekan <b>Cancel</b>.</div></div>
+        <div class="step-row" style="background:#fff;"><div class="step-num" style="background:#2563EB;">2</div><div class="step-text">Tekan tombol <b>Steam Release</b> di pegangan tutup untuk melepaskan uap.</div></div>
+        <div class="step-row" style="background:#fff;margin-bottom:0;"><div class="step-num" style="background:#2563EB;">3</div><div class="step-text">Tunggu hingga <b>float valve turun</b>, lalu buka tutup.</div></div>
+        <div style="background:#FFF1F2;border-radius:9px;padding:9px 11px;margin-top:10px;font-size:11px;color:#9B1C2A;line-height:1.5;">
+          ⚠ Jauhkan tangan & wajah dari lubang katup buang. Jangan cabut katup saat uap masih keluar.
+        </div>
+      </div>
+
+      <div class="sec-label">🟢 Metode 2 — Nature Release</div>
+      <div style="background:#F0FDF4;border:1.5px solid #BBF7D0;border-radius:14px;padding:14px;margin-bottom:10px;">
+        <div style="font-size:12px;font-weight:700;color:#15803D;margin-bottom:10px;">Cocok untuk: Sup, Bubur, Congee, Kaldu</div>
+        <div class="step-row" style="background:#fff;"><div class="step-num" style="background:#16A34A;">1</div><div class="step-text">Setelah memasak selesai, <b>biarkan alat mendingin</b> secara alami tanpa menekan apapun.</div></div>
+        <div class="step-row" style="background:#fff;"><div class="step-num" style="background:#16A34A;">2</div><div class="step-text">Tunggu <b>10–15 menit</b> hingga float valve turun dengan sendirinya.</div></div>
+        <div class="step-row" style="background:#fff;margin-bottom:0;"><div class="step-num" style="background:#16A34A;">3</div><div class="step-text">Opsional: Letakkan <b>handuk basah</b> di atas tutup untuk mempercepat pendinginan.</div></div>
+      </div>
+
+      <div class="sec-label">🔓 Cara Membuka Tutup</div>
+      <div class="step-row"><div class="step-num">1</div><div class="step-text">Pegang pegangan tutup dengan tangan.</div></div>
+      <div class="step-row"><div class="step-num">2</div><div class="step-text">Putar <b>berlawanan arah jarum jam ±30°</b> hingga mentok di posisi terbuka.</div></div>
+      <div class="step-row"><div class="step-num">3</div><div class="step-text">Angkat tutup ke atas untuk membuka. Arahkan uap sisa menjauhi tubuh.</div></div>
+
+      <div class="note-box" style="margin-bottom:16px;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <p>Jika float valve macet karena sisa makanan, tekan ke bawah dengan <b>pena atau sumpit</b> setelah menekan tombol Steam Release dan memastikan tekanan sudah habis.</p>
+      </div>
+    </div>
+
+    <div class="detail-action-bar">
+      <div class="dab-bookmark"><svg viewBox="0 0 24 24" fill="none" stroke="var(--mid-gray)" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></div>
+      <button class="dab-next">Bab Selanjutnya<span>Perawatan & Pembersihan →</span></button>
+    </div>
+  </div>
+  <span class="screen-label">Layar 10 · Detail Bab 6 — Membuka Tutup</span>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!--  SCREEN 11 – DETAIL BAB 7: PERAWATAN      -->
+<!-- ══════════════════════════════════════════ -->
+<div class="phone-wrap">
+  <div class="phone" style="display:flex;flex-direction:column;overflow:hidden;background:var(--cream);">
+    <div style="background:linear-gradient(160deg,#1A2D1A 0%,#0E1F0E 100%);padding:52px 20px 22px;position:relative;overflow:hidden;flex-shrink:0;">
+      <div style="position:absolute;width:130px;height:130px;border-radius:50%;background:rgba(80,200,80,0.06);top:-30px;right:-20px;"></div>
+      <div class="status-bar" style="top:0"><span class="time" style="color:#fff">9:41</span><div class="status-icons" style="color:#fff"><span>●●●</span><span>WiFi</span><span>🔋</span></div></div>
+      <div class="back-btn" style="margin-bottom:14px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>Buku Panduan</div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;position:relative;z-index:1;">
+        <div style="background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.18);border-radius:8px;padding:3px 10px;font-size:10px;font-weight:700;color:rgba(255,255,255,0.7);letter-spacing:1.5px;">BAB 7</div>
+      </div>
+      <div style="font-family:'Playfair Display',serif;font-size:21px;font-weight:700;color:#fff;line-height:1.2;position:relative;z-index:1;">Perawatan &<br>Pembersihan</div>
+      <div class="chapter-progress-bar"><div class="chapter-progress-fill" style="width:87.5%;"></div></div>
+      <div class="chapter-nav-row">
+        <div class="chapter-nav-label">7 dari 8 bab</div>
+        <div class="chapter-nav-btns">
+          <div class="cnav-btn"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg></div>
+          <div class="cnav-btn"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg></div>
+        </div>
+      </div>
+      <div style="position:absolute;bottom:-1px;left:0;right:0;height:22px;background:var(--cream);border-radius:18px 18px 0 0;"></div>
+    </div>
+
+    <div style="flex:1;overflow-y:auto;padding:12px 16px 8px;scrollbar-width:none;">
+      <div class="danger-card red" style="margin-top:4px;">
+        <div class="danger-icon-wrap red"><svg viewBox="0 0 24 24" fill="none" stroke="#D72638" stroke-width="2" width="16" height="16"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+        <div class="danger-text"><div class="danger-title">Sebelum Membersihkan</div><div class="danger-desc">Pastikan alat <b style="color:#9B1C2A;">sudah dingin sepenuhnya</b> dan kabel sudah dicabut dari stopkontak.</div></div>
+      </div>
+
+      <div class="sec-label">🧽 Langkah Pembersihan Rutin</div>
+      <div class="check-step">
+        <div class="check-circle" style="background:#DCFCE7;"><svg viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <div class="check-content"><div class="check-title">Lap Rim Bodi</div><div class="check-body">Lap kering bagian dalam rim dan celah bodi dengan kain bersih setelah setiap penggunaan untuk mencegah karat pada tepi luar panci.</div></div>
+      </div>
+      <div class="check-step">
+        <div class="check-circle" style="background:#DCFCE7;"><svg viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <div class="check-content"><div class="check-title">Cuci Panci Dalam & Tutup</div><div class="check-body">Lepaskan tutup dan keluarkan panci dalam. Cuci dengan deterjen, bilas dengan air bersih, lalu keringkan dengan kain lembut.</div></div>
+      </div>
+      <div class="check-step">
+        <div class="check-circle" style="background:#DCFCE7;"><svg viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <div class="check-content"><div class="check-title">Bersihkan Komponen Tutup</div><div class="check-body">Cuci sealing ring (bisa dilepas), katup buang, dan anti-block shield dengan air. Lap hingga kering. <b>Jangan bongkar rakitan pipa steam release.</b></div></div>
+      </div>
+      <div class="check-step">
+        <div class="check-circle" style="background:#DCFCE7;"><svg viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <div class="check-content"><div class="check-title">Lap Bodi Housing</div><div class="check-body">Bersihkan bodi luar dengan kain lembap yang bersih. <b>Jangan rendam bodi ke dalam air</b> dan jangan gunakan kain basah saat kabel masih terpasang.</div></div>
+      </div>
+
+      <div class="sec-label">✅ Panduan Cuci Mesin vs Manual</div>
+      <div class="do-dont-grid">
+        <div class="do-card">
+          <div class="do-label">✓ MESIN CUCI PIRING</div>
+          <div class="do-item">Panci dalam (Inner pot)</div>
+          <div class="do-item" style="margin-top:5px;">Sealing ring</div>
+          <div class="do-item" style="margin-top:5px;">Katup buang</div>
+          <div class="do-item" style="margin-top:5px;">Semua aksesori bawaan</div>
+        </div>
+        <div class="dont-card">
+          <div class="dont-label">✗ JANGAN DI MESIN</div>
+          <div class="dont-item">Tutup (Lid)</div>
+          <div class="dont-item" style="margin-top:5px;">Bodi housing</div>
+          <div class="dont-item" style="margin-top:5px;">Kabel daya</div>
+          <div class="dont-item" style="margin-top:5px;">Panel kontrol</div>
+        </div>
+      </div>
+
+      <div class="sec-label">🚨 Hentikan Penggunaan Jika...</div>
+      <div class="danger-card red"><div class="danger-icon-wrap red"><svg viewBox="0 0 24 24" fill="none" stroke="#D72638" stroke-width="2" width="16" height="16"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg></div><div class="danger-text"><div class="danger-title">Kabel atau Steker Rusak</div><div class="danger-desc">Kabel/steker mengembang, berubah warna, terasa lebih panas dari biasanya, atau terlihat kerusakan fisik.</div></div></div>
+      <div class="danger-card red"><div class="danger-icon-wrap red"><svg viewBox="0 0 24 24" fill="none" stroke="#D72638" stroke-width="2" width="16" height="16"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg></div><div class="danger-text"><div class="danger-title">Panas Abnormal / Bau Terbakar</div><div class="danger-desc">Pressure cooker memanas tidak wajar atau mengeluarkan bau terbakar saat dioperasikan.</div></div></div>
+      <div class="danger-card amber" style="margin-bottom:16px;"><div class="danger-icon-wrap amber"><svg viewBox="0 0 24 24" fill="none" stroke="#C9963A" stroke-width="2" width="16" height="16"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><div class="danger-text"><div class="danger-title">Suara atau Getaran Tidak Wajar</div><div class="danger-desc">Muncul suara aneh atau getaran berlebihan saat alat dinyalakan. Segera cabut dan hubungi service center.</div></div></div>
+    </div>
+
+    <div class="detail-action-bar">
+      <div class="dab-bookmark"><svg viewBox="0 0 24 24" fill="none" stroke="var(--mid-gray)" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></div>
+      <button class="dab-next">Bab Selanjutnya<span>Pemecahan Masalah →</span></button>
+    </div>
+  </div>
+  <span class="screen-label">Layar 11 · Detail Bab 7 — Perawatan & Pembersihan</span>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!--  SCREEN 12 – DETAIL BAB 8: TROUBLESHOOT   -->
+<!-- ══════════════════════════════════════════ -->
+<style>
+  /* trouble card full */
+  .tc-card {
+    background:#fff;border:1.5px solid var(--light-gray);border-radius:14px;
+    padding:14px 15px;margin-bottom:10px;
+  }
+  .tc-head { display:flex;align-items:center;gap:10px;margin-bottom:8px; }
+  .tc-emoji { font-size:18px;flex-shrink:0; }
+  .tc-prob { font-size:13px;font-weight:700;color:var(--charcoal); }
+  .tc-divider { height:1px;background:var(--light-gray);margin-bottom:8px; }
+  .tc-row { display:flex;gap:8px;margin-bottom:6px;align-items:flex-start; }
+  .tc-tag {
+    font-size:9px;font-weight:700;letter-spacing:0.5px;padding:3px 7px;
+    border-radius:20px;white-space:nowrap;flex-shrink:0;margin-top:1px;
+  }
+  .tc-tag.cause { background:#FFF7ED;color:#C2410C; }
+  .tc-tag.sol   { background:#F0FDF4;color:#15803D; }
+  .tc-body { font-size:11.5px;line-height:1.5;color:var(--mid-gray); }
+  .tc-body.sol-text { color:#14532D; }
+
+  /* error card full */
+  .err-full {
+    border-radius:14px;padding:14px 15px;margin-bottom:10px;
+    display:flex;gap:13px;align-items:center;
+  }
+  .err-code-big { font-size:22px;font-weight:900;flex-shrink:0;min-width:38px; }
+  .err-info { flex:1; }
+  .err-name { font-size:12.5px;font-weight:700;margin-bottom:3px; }
+  .err-sol  { font-size:11px;line-height:1.45; }
+</style>
+
+<div class="phone-wrap">
+  <div class="phone" style="display:flex;flex-direction:column;overflow:hidden;background:var(--cream);">
+    <div style="background:linear-gradient(160deg,#1E3A5F 0%,#0D2240 100%);padding:52px 20px 22px;position:relative;overflow:hidden;flex-shrink:0;">
+      <div style="position:absolute;width:140px;height:140px;border-radius:50%;border:1px solid rgba(255,255,255,0.05);top:-40px;right:-30px;"></div>
+      <div class="status-bar" style="top:0"><span class="time" style="color:#fff">9:41</span><div class="status-icons" style="color:#fff"><span>●●●</span><span>WiFi</span><span>🔋</span></div></div>
+      <div class="back-btn" style="margin-bottom:14px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>Buku Panduan</div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;position:relative;z-index:1;">
+        <div style="background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.18);border-radius:8px;padding:3px 10px;font-size:10px;font-weight:700;color:rgba(255,255,255,0.7);letter-spacing:1.5px;">BAB 8</div>
+      </div>
+      <div style="font-family:'Playfair Display',serif;font-size:21px;font-weight:700;color:#fff;line-height:1.2;position:relative;z-index:1;">Pemecahan Masalah<br>& Kode Error</div>
+      <div class="chapter-progress-bar"><div class="chapter-progress-fill" style="width:100%;"></div></div>
+      <div class="chapter-nav-row">
+        <div class="chapter-nav-label">8 dari 8 bab</div>
+        <div class="chapter-nav-btns">
+          <div class="cnav-btn"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg></div>
+          <div class="cnav-btn disabled"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg></div>
+        </div>
+      </div>
+      <div style="position:absolute;bottom:-1px;left:0;right:0;height:22px;background:var(--cream);border-radius:18px 18px 0 0;"></div>
+    </div>
+
+    <div style="flex:1;overflow-y:auto;padding:12px 16px 8px;scrollbar-width:none;">
+      <div class="sec-label">🔧 Masalah & Solusi Umum</div>
+
+      <div class="tc-card">
+        <div class="tc-head"><div class="tc-emoji">⚠️</div><div class="tc-prob">Tutup Sulit Ditutup</div></div>
+        <div class="tc-divider"></div>
+        <div class="tc-row"><div class="tc-tag cause">PENYEBAB</div><div class="tc-body">Sealing ring tidak terpasang dengan benar, atau float valve masih terangkat akibat tekanan sisa</div></div>
+        <div class="tc-row"><div class="tc-tag sol">SOLUSI</div><div class="tc-body sol-text">Pasang ulang sealing ring secara merata → tekan float valve perlahan ke bawah → buka lalu tutup kembali</div></div>
+      </div>
+
+      <div class="tc-card">
+        <div class="tc-head"><div class="tc-emoji">🔒</div><div class="tc-prob">Tutup Sulit Dibuka</div></div>
+        <div class="tc-divider"></div>
+        <div class="tc-row"><div class="tc-tag cause">PENYEBAB</div><div class="tc-body">Masih ada tekanan di dalam — float valve belum turun, atau macet akibat sisa makanan</div></div>
+        <div class="tc-row"><div class="tc-tag sol">SOLUSI</div><div class="tc-body sol-text">Tekan Steam Release hingga float valve turun. Jika macet, dorong float valve dengan pena atau sumpit, lalu buka tutup</div></div>
+      </div>
+
+      <div class="tc-card">
+        <div class="tc-head"><div class="tc-emoji">💨</div><div class="tc-prob">Uap Bocor dari Sisi Tutup</div></div>
+        <div class="tc-divider"></div>
+        <div class="tc-row"><div class="tc-tag cause">PENYEBAB</div><div class="tc-body">Sealing ring rusak, kotor, atau tidak terpasang sempurna. Bisa juga karena tutup tidak tertutup rapat</div></div>
+        <div class="tc-row"><div class="tc-tag sol">SOLUSI</div><div class="tc-body sol-text">Bersihkan sealing ring dari kotoran. Ganti sealing ring jika ada retakan. Pastikan tutup terkunci sempurna (putar 30°)</div></div>
+      </div>
+
+      <div class="tc-card">
+        <div class="tc-head"><div class="tc-emoji">💧</div><div class="tc-prob">Uap Bocor dari Float Valve &gt; 2 Menit</div></div>
+        <div class="tc-divider"></div>
+        <div class="tc-row"><div class="tc-tag cause">PENYEBAB</div><div class="tc-body">Float valve tersumbat, silikon float valve aus, atau handle steam release tidak di posisi sealing</div></div>
+        <div class="tc-row"><div class="tc-tag sol">SOLUSI</div><div class="tc-body sol-text">Bersihkan / ganti silikon float valve. Pastikan handle steam release berada di posisi sealing sebelum memasak</div></div>
+      </div>
+
+      <div class="tc-card">
+        <div class="tc-head"><div class="tc-emoji">🔺</div><div class="tc-prob">Float Valve Tidak Bisa Naik</div></div>
+        <div class="tc-divider"></div>
+        <div class="tc-row"><div class="tc-tag cause">PENYEBAB</div><div class="tc-body">Terlalu sedikit air/makanan di panci, atau ada kerusakan pada pressure switch</div></div>
+        <div class="tc-row"><div class="tc-tag sol">SOLUSI</div><div class="tc-body sol-text">Tambahkan air sesuai resep yang dianjurkan. Jika berlanjut, kirim ke service center</div></div>
+      </div>
+
+      <div class="tc-card">
+        <div class="tc-head"><div class="tc-emoji">📟</div><div class="tc-prob">Layar Kosong Setelah Dinyalakan</div></div>
+        <div class="tc-divider"></div>
+        <div class="tc-row"><div class="tc-tag cause">PENYEBAB</div><div class="tc-body">Sambungan listrik buruk, sekring alat putus, atau tutup tidak tertutup sempurna</div></div>
+        <div class="tc-row"><div class="tc-tag sol">SOLUSI</div><div class="tc-body sol-text">Periksa kabel & stopkontak. Pastikan tutup terkunci. Jika berlanjut, hubungi service center resmi Midea</div></div>
+      </div>
+
+      <div class="tc-card">
+        <div class="tc-head"><div class="tc-emoji">🍚</div><div class="tc-prob">Nasi Setengah Matang / Terlalu Keras</div></div>
+        <div class="tc-divider"></div>
+        <div class="tc-row"><div class="tc-tag cause">PENYEBAB</div><div class="tc-body">Terlalu sedikit air, tutup dibuka terlalu cepat, atau takaran air tidak sesuai</div></div>
+        <div class="tc-row"><div class="tc-tag sol">SOLUSI</div><div class="tc-body sol-text">Sesuaikan rasio nasi-air sesuai petunjuk. Biarkan 5 menit setelah program selesai sebelum membuka tutup</div></div>
+      </div>
+
+      <div class="tc-card">
+        <div class="tc-head"><div class="tc-emoji">💦</div><div class="tc-prob">Nasi Terlalu Lembek / Berlebihan Air</div></div>
+        <div class="tc-divider"></div>
+        <div class="tc-row"><div class="tc-tag cause">PENYEBAB</div><div class="tc-body">Terlalu banyak air ditambahkan ke panci</div></div>
+        <div class="tc-row"><div class="tc-tag sol">SOLUSI</div><div class="tc-body sol-text">Kurangi jumlah air. Gunakan gelas takar yang disertakan untuk takaran yang akurat</div></div>
+      </div>
+
+      <div class="sec-label">🔴 Kode Error & Artinya</div>
+
+      <div class="err-full" style="background:#FFF1F2;border:1.5px solid #FECDD3;">
+        <div class="err-code-big" style="color:#DC2626;">E1</div>
+        <div class="err-info">
+          <div class="err-name" style="color:#9B1C2A;">Sensor Bawah Open Circuit</div>
+          <div class="err-sol" style="color:#7F1D1D;">Sensor suhu bagian bawah terputus. Hentikan penggunaan dan kirim ke service center untuk diperiksa.</div>
+        </div>
+      </div>
+
+      <div class="err-full" style="background:#FFF1F2;border:1.5px solid #FECDD3;">
+        <div class="err-code-big" style="color:#DC2626;">E2</div>
+        <div class="err-info">
+          <div class="err-name" style="color:#9B1C2A;">Sensor Bawah Short Circuit</div>
+          <div class="err-sol" style="color:#7F1D1D;">Sensor suhu bagian bawah mengalami korsleting. Hentikan penggunaan segera dan hubungi service center.</div>
+        </div>
+      </div>
+
+      <div class="err-full" style="background:#FFF1F2;border:1.5px solid #FECDD3;">
+        <div class="err-code-big" style="color:#DC2626;">E8</div>
+        <div class="err-info">
+          <div class="err-name" style="color:#9B1C2A;">Pressure Switch Open Circuit</div>
+          <div class="err-sol" style="color:#7F1D1D;">Saklar tekanan terputus. Periksa apakah ada air atau makanan yang perlu dibersihkan. Jika berlanjut, kirim ke service center.</div>
+        </div>
+      </div>
+
+      <div class="err-full" style="background:#FFFBEB;border:1.5px solid #FDE68A;">
+        <div class="err-code-big" style="color:#D97706;">C1</div>
+        <div class="err-info">
+          <div class="err-name" style="color:#7A5B00;">Proteksi Suhu Berlebih</div>
+          <div class="err-sol" style="color:#78350F;">Alat terlalu panas (overtemperature). Biarkan dingin sepenuhnya lalu coba nyalakan kembali. Pastikan ventilasi tidak tersumbat.</div>
+        </div>
+      </div>
+
+      <!-- Service contact -->
+      <div style="background:linear-gradient(135deg,#1E3A5F,#12253E);border-radius:14px;padding:16px;margin-bottom:20px;display:flex;gap:13px;align-items:center;">
+        <div style="width:40px;height:40px;background:rgba(99,157,255,0.15);border-radius:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="rgba(99,157,255,0.9)" stroke-width="2" width="20" height="20"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.59 3.37 2 2 0 0 1 3.55 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.5a16 16 0 0 0 6 6l.91-.91a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 15.92z"/></svg>
+        </div>
+        <div>
+          <div style="font-size:12px;font-weight:700;color:#fff;margin-bottom:3px;">Butuh Bantuan Lebih Lanjut?</div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.5);line-height:1.5;">Hubungi Service Center resmi Midea atau gunakan fitur <b style="color:rgba(255,255,255,0.75);">Tanya Kami</b> di aplikasi ini.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- final action bar — selesai -->
+    <div class="detail-action-bar">
+      <div class="dab-bookmark"><svg viewBox="0 0 24 24" fill="none" stroke="var(--mid-gray)" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></div>
+      <button class="dab-next" style="background:linear-gradient(135deg,var(--red),var(--red-dark));">
+        Selesai Membaca
+        <span>Kembali ke Daftar Isi ↩</span>
+      </button>
+    </div>
+  </div>
+  <span class="screen-label">Layar 12 · Detail Bab 8 — Pemecahan Masalah</span>
+</div>
+
+</body>
+</html>
