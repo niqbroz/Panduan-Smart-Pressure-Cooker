@@ -47,7 +47,11 @@ const ROOT = process.cwd();
 function normalizeBaseUrl(value) {
   const raw = String(value || '').trim();
   if (!raw) return 'https://api.openai.com/v1';
-  const noSlash = raw.replace(/\/+$/, '');
+  let noSlash = raw.replace(/\/+$/, '');
+  // user kadang menaruh URL dashboard LiteLLM (/ui), bukan base API.
+  if (/\/ui$/i.test(noSlash)) {
+    noSlash = noSlash.replace(/\/ui$/i, '');
+  }
   if (/\/v\d+$/i.test(noSlash)) return noSlash;
   return `${noSlash}/v1`;
 }
