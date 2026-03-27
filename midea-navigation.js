@@ -769,6 +769,17 @@
     });
   }
 
+  // fallback global nav click handler (jaga-jaga jika binding per layar miss)
+  function wireGlobalBottomNavFallback() {
+    document.addEventListener('click', (event) => {
+      const item = event.target.closest('.bottom-nav .nav-item[data-nav]');
+      if (!item) return;
+      const navKey = item.getAttribute('data-nav') || '';
+      if (!navKey) return;
+      routeBottomNav(navKey);
+    });
+  }
+
   async function fetchUiTranslationsChunk(lang, texts) {
     const response = await fetch(TRANSLATE_API_URL, {
       method: 'POST',
@@ -1285,6 +1296,7 @@
 
   function wirePanduanList() {
     const panduan = wraps[SCREEN.PANDUAN];
+    if (!panduan) return;
     const backBtn = panduan.querySelector('.back-btn');
     const chapterCards = panduan.querySelectorAll('.chapter-card');
     const openBookBtn = panduan.querySelector('.open-guide-book-btn');
@@ -1326,10 +1338,59 @@
 
     chapterCards.forEach((card, i) => {
       card.style.cursor = 'pointer';
+      card.dataset.chapter = String(i + 1);
       card.addEventListener('click', () => window.openChapter(i + 1));
     });
 
     bindBottomNav(panduan);
+  }
+
+  // fallback khusus layar Panduan agar semua tombol tetap responsif
+  function wirePanduanFallbackDelegation() {
+    document.addEventListener('click', (event) => {
+      const panduanRoot = document.getElementById('screen-panduan');
+      if (!panduanRoot) return;
+      const target = event.target;
+      if (!(target instanceof Element) || !panduanRoot.contains(target)) return;
+
+      const chapterCard = target.closest('.chapter-card');
+      if (chapterCard) {
+        const chapterNum = Number(chapterCard.getAttribute('data-chapter') || 0);
+        const cards = Array.from(panduanRoot.querySelectorAll('.chapter-card'));
+        const idx = cards.indexOf(chapterCard) + 1;
+        const targetNum = chapterNum > 0 ? chapterNum : idx;
+        if (targetNum > 0) window.openChapter(targetNum);
+        return;
+      }
+
+      const videoBtn = target.closest('.open-video-gallery-btn, .open-guide-video-btn');
+      if (videoBtn) {
+        if (hasScreen(SCREEN.VIDEO_GALLERY)) {
+          goToScreen(SCREEN.VIDEO_GALLERY);
+          renderVideoGallery();
+          return;
+        }
+        const firstVideo = VIDEO_LIBRARY[0];
+        if (firstVideo?.src) openVideoPlayer(firstVideo.src, langValue(firstVideo.title));
+        return;
+      }
+
+      const bookBtn = target.closest('.open-guide-book-btn');
+      if (bookBtn) {
+        const sectionTitles = Array.from(panduanRoot.querySelectorAll('.section-title'));
+        const tocHeading =
+          sectionTitles.find((el) => /daftar isi|table of contents|目录/i.test(el.textContent || '')) ||
+          sectionTitles[0] ||
+          null;
+        if (tocHeading) tocHeading.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        return;
+      }
+
+      const backBtn = target.closest('.back-btn');
+      if (backBtn && !backBtn.closest('#detail-overlay')) {
+        goToScreen(SCREEN.HOME);
+      }
+    });
   }
 
   function wireControlScreen() {
@@ -1712,8 +1773,10 @@
 
   initChatHistory();
   wireSplash();
+  wireGlobalBottomNavFallback();
   wireHome();
   wirePanduanList();
+  wirePanduanFallbackDelegation();
   wireControlScreen();
   wireAlertsScreen();
   wireRecipeScreen();

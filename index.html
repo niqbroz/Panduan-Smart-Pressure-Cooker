@@ -1257,8 +1257,9 @@
     transition: transform 0.32s cubic-bezier(0.4,0,0.2,1);
     z-index: 20;
     overflow: hidden;
+    pointer-events: none;
   }
-  .detail-overlay.open { transform: translateX(0); }
+  .detail-overlay.open { transform: translateX(0); pointer-events: auto; }
 
   .detail-header {
     padding: 52px 22px 28px;
@@ -3235,6 +3236,6 @@ function closeChapter() {
   // window.MIDEA_CHAT_API_URL = "https://domain-backend-anda.com/api/chat";
   // window.MIDEA_TRANSLATE_API_URL = "https://domain-backend-anda.com/api/translate-ui";
 </script>
-<script src="midea-navigation.js?v=20260328-v17"></script>
+<script src="midea-navigation.js?v=20260328-v18"></script>
 
 </body>
