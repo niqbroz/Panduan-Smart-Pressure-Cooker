@@ -221,7 +221,8 @@
       'Video Persiapan Bahan': 'Ingredient Preparation Video',
       'Tutorial menyiapkan bahan agar hasil masak lebih konsisten.':
         'How to prepare ingredients for more consistent cooking results.',
-      'Layar 13 · Galeri Video': 'Screen 13 · Video Gallery',
+      'Layar 13 · Rekomendasi Resep': 'Screen 13 · Recipe Recommendations',
+      'Layar 14 · Galeri Video': 'Screen 14 · Video Gallery',
       'Info Produk Terkini': 'Latest Product Info',
       'AC Inverter Series Terbaru': 'Latest Inverter AC Series',
       'Hemat energi hingga 70% lebih efisien': 'Save energy up to 70%',
@@ -285,7 +286,8 @@
       'Penjelasan lengkap penggunaan pressure cooker MY-CS5039P.': 'MY-CS5039P 压力锅完整使用讲解。',
       'Video Persiapan Bahan': '食材准备视频',
       'Tutorial menyiapkan bahan agar hasil masak lebih konsisten.': '食材预处理教程，让烹饪结果更稳定。',
-      'Layar 13 · Galeri Video': '第 13 屏 · 视频库',
+      'Layar 13 · Rekomendasi Resep': '第 13 屏 · 食谱推荐',
+      'Layar 14 · Galeri Video': '第 14 屏 · 视频库',
       'Info Produk Terkini': '最新产品信息',
       'AC Inverter Series Terbaru': '最新变频空调系列',
       'Hemat energi hingga 70% lebih efisien': '最高可节能 70%',
@@ -1315,9 +1317,13 @@
     const recipe = wraps[SCREEN.RECIPE];
     if (!recipe) return;
     const backBtn = recipe.querySelector('.back-btn');
+    const openRecipeChatBtn = recipe.querySelector('#open-recipe-chat-btn');
     if (backBtn) {
       backBtn.style.cursor = 'pointer';
       backBtn.addEventListener('click', () => goToScreen(SCREEN.HOME));
+    }
+    if (openRecipeChatBtn) {
+      openRecipeChatBtn.addEventListener('click', openRecipeChat);
     }
     bindBottomNav(recipe);
   }
