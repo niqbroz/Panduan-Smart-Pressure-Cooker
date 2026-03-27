@@ -869,7 +869,7 @@
           </div>
           <span style="font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:#fff;">PresstoApp</span>
         </div>
-        <div style="width:34px;height:34px;background:rgba(255,255,255,0.15);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.2);border-radius:10px;display:flex;align-items:center;justify-content:center;">
+        <div class="home-notif-btn" style="width:34px;height:34px;background:rgba(255,255,255,0.15);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.2);border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;">
           <svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="2" width="16" height="16"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
         </div>
       </div>
@@ -1032,7 +1032,7 @@
               <span style="font-size:10px;color:#4ADE80;font-weight:600;">Terhubung · Aktif</span>
             </div>
           </div>
-          <button class="big-toggle on">
+          <button id="control-power-btn" class="big-toggle on">
             <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" width="24" height="24"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg>
           </button>
         </div>
@@ -1071,11 +1071,11 @@
       <div style="background:#fff;border-radius:18px;padding:14px;box-shadow:0 2px 14px rgba(0,0,0,0.06);">
         <div style="font-size:10px;font-weight:700;color:var(--mid-gray);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px;">Mode Memasak</div>
         <div style="display:flex;flex-wrap:wrap;gap:7px;">
-          <div class="mode-chip active"><div class="mode-dot"></div>Meat/Chicken</div>
-          <div class="mode-chip"><div class="mode-dot"></div>Porridge</div>
-          <div class="mode-chip"><div class="mode-dot"></div>Steam</div>
-          <div class="mode-chip"><div class="mode-dot"></div>Soup</div>
-          <div class="mode-chip"><div class="mode-dot"></div>Bean</div>
+          <div class="mode-chip active" data-mode="Meat/Chicken"><div class="mode-dot"></div>Meat/Chicken</div>
+          <div class="mode-chip" data-mode="Porridge"><div class="mode-dot"></div>Porridge</div>
+          <div class="mode-chip" data-mode="Steam"><div class="mode-dot"></div>Steam</div>
+          <div class="mode-chip" data-mode="Soup"><div class="mode-dot"></div>Soup</div>
+          <div class="mode-chip" data-mode="Bean"><div class="mode-dot"></div>Bean</div>
         </div>
       </div>
 
@@ -1083,9 +1083,9 @@
       <div style="background:#fff;border-radius:18px;padding:14px;box-shadow:0 2px 14px rgba(0,0,0,0.06);">
         <div style="font-size:10px;font-weight:700;color:var(--mid-gray);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px;">Atur Timer</div>
         <div style="display:flex;align-items:center;justify-content:space-between;">
-          <button style="width:38px;height:38px;border-radius:50%;border:1.5px solid var(--light-gray);background:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--charcoal);">−</button>
-          <div style="text-align:center;"><div style="font-family:'Playfair Display',serif;font-size:30px;font-weight:700;color:var(--charcoal);line-height:1;">28</div><div style="font-size:10px;color:var(--mid-gray);">menit</div></div>
-          <button style="width:38px;height:38px;border-radius:50%;border:1.5px solid var(--light-gray);background:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--charcoal);">+</button>
+          <button type="button" class="control-timer-minus" style="width:38px;height:38px;border-radius:50%;border:1.5px solid var(--light-gray);background:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--charcoal);">−</button>
+          <div style="text-align:center;"><div id="control-timer-value" style="font-family:'Playfair Display',serif;font-size:30px;font-weight:700;color:var(--charcoal);line-height:1;">28</div><div style="font-size:10px;color:var(--mid-gray);">menit</div></div>
+          <button type="button" class="control-timer-plus" style="width:38px;height:38px;border-radius:50%;border:1.5px solid var(--light-gray);background:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--charcoal);">+</button>
         </div>
       </div>
 
@@ -1102,8 +1102,8 @@
 
     <!-- Action bar -->
     <div style="padding:10px 16px 14px;background:#fff;border-top:1px solid var(--light-gray);display:flex;gap:8px;flex-shrink:0;">
-      <button style="flex:1;padding:12px;border-radius:12px;border:1.5px solid var(--light-gray);background:#fff;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;color:var(--charcoal);cursor:pointer;">⏸ Jeda</button>
-      <button style="flex:2;padding:12px;border-radius:12px;border:none;background:linear-gradient(135deg,#D72638,#A81C2A);color:#fff;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;box-shadow:0 4px 14px rgba(215,38,56,0.3);">⏹ Hentikan Memasak</button>
+      <button type="button" class="control-pause-btn" style="flex:1;padding:12px;border-radius:12px;border:1.5px solid var(--light-gray);background:#fff;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;color:var(--charcoal);cursor:pointer;">⏸ Jeda</button>
+      <button type="button" class="control-stop-btn" style="flex:2;padding:12px;border-radius:12px;border:none;background:linear-gradient(135deg,#D72638,#A81C2A);color:#fff;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;box-shadow:0 4px 14px rgba(215,38,56,0.3);">⏹ Hentikan Memasak</button>
     </div>
   </div>
   <span class="screen-label">Layar 2B · Kontrol Jarak Jauh</span>
@@ -1113,7 +1113,7 @@
 <!--  SCREEN 2C – NOTIFIKASI & SAFETY ALERT    -->
 <!-- ══════════════════════════════════════════ -->
 <div class="phone-wrap">
-  <div class="phone" style="display:flex;flex-direction:column;overflow:hidden;background:#F0F4F8;">
+  <div id="screen-alerts" class="phone" style="display:flex;flex-direction:column;overflow:hidden;background:#F0F4F8;">
 
     <!-- Header with photo -->
     <div style="position:relative;height:165px;flex-shrink:0;overflow:hidden;">
@@ -1366,7 +1366,7 @@
 
         <div class="section-title" style="margin-top:2px">Jenis Panduan</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
-          <button type="button" style="border:1.5px solid #A6C2F5;background:#EFF6FF;color:#1E3A5F;border-radius:12px;padding:11px 10px;text-align:left;cursor:pointer;">
+          <button type="button" class="open-guide-book-btn" style="border:1.5px solid #A6C2F5;background:#EFF6FF;color:#1E3A5F;border-radius:12px;padding:11px 10px;text-align:left;cursor:pointer;">
             <div style="font-size:11.5px;font-weight:700;">📖 Buku Panduan</div>
             <div style="font-size:10px;color:#4B6AA0;margin-top:3px;">Daftar isi 8 bab</div>
           </button>
@@ -3235,6 +3235,6 @@ function closeChapter() {
   // window.MIDEA_CHAT_API_URL = "https://domain-backend-anda.com/api/chat";
   // window.MIDEA_TRANSLATE_API_URL = "https://domain-backend-anda.com/api/translate-ui";
 </script>
-<script src="midea-navigation.js?v=20260327-v16"></script>
+<script src="midea-navigation.js?v=20260328-v17"></script>
 
 </body>

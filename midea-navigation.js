@@ -14,6 +14,7 @@
     SPLASH: screenIndexBySelector('#screen-splash', 0),
     HOME: screenIndexBySelector('#screen-home', 1),
     CONTROL: screenIndexBySelector('#screen-control', 1),
+    ALERTS: screenIndexBySelector('#screen-alerts', -1),
     PANDUAN: screenIndexBySelector('#screen-panduan', 2),
     RECIPE: screenIndexBySelector('#screen-resep, [data-screen="recipe"]', 1),
     TANYA: screenIndexBySelector('#screen-tanya', 3),
@@ -697,6 +698,18 @@
     }
   }
 
+  function openAlertsScreen() {
+    if (hasScreen(SCREEN.ALERTS)) {
+      goToScreen(SCREEN.ALERTS);
+      return;
+    }
+    if (hasScreen(SCREEN.CONTROL)) {
+      goToScreen(SCREEN.CONTROL);
+      return;
+    }
+    goToScreen(SCREEN.HOME);
+  }
+
   function openRecipeScreen() {
     if (hasScreen(SCREEN.RECIPE)) {
       goToScreen(SCREEN.RECIPE);
@@ -1255,6 +1268,7 @@
     const panduanCard = home.querySelector('.card-panduan');
     const tanyaCard = home.querySelector('.card-tanya');
     const resepCard = home.querySelector('.card-resep');
+    const notifBtn = home.querySelector('.home-notif-btn');
 
     if (controlCard) controlCard.addEventListener('click', openControlScreen);
     if (panduanCard) {
@@ -1262,6 +1276,9 @@
     }
     if (tanyaCard) tanyaCard.addEventListener('click', openSupportChat);
     if (resepCard) resepCard.addEventListener('click', openRecipeScreen);
+    if (notifBtn) {
+      notifBtn.addEventListener('click', openAlertsScreen);
+    }
 
     bindBottomNav(home);
   }
@@ -1270,10 +1287,23 @@
     const panduan = wraps[SCREEN.PANDUAN];
     const backBtn = panduan.querySelector('.back-btn');
     const chapterCards = panduan.querySelectorAll('.chapter-card');
+    const openBookBtn = panduan.querySelector('.open-guide-book-btn');
     const openGalleryBtn =
       panduan.querySelector('.open-video-gallery-btn') || panduan.querySelector('.open-guide-video-btn');
 
     if (backBtn) backBtn.addEventListener('click', () => goToScreen(SCREEN.HOME));
+    if (openBookBtn) {
+      openBookBtn.addEventListener('click', () => {
+        const sectionTitles = Array.from(panduan.querySelectorAll('.section-title'));
+        const tocHeading =
+          sectionTitles.find((el) => /daftar isi|table of contents|目录/i.test(el.textContent || '')) ||
+          sectionTitles[0] ||
+          null;
+        if (tocHeading) {
+          tocHeading.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    }
     if (openGalleryBtn) {
       openGalleryBtn.addEventListener('click', () => {
         if (hasScreen(SCREEN.VIDEO_GALLERY)) {
@@ -1306,11 +1336,113 @@
     const control = wraps[SCREEN.CONTROL];
     if (!control) return;
     const backBtn = control.querySelector('.back-btn');
+    const powerBtn = control.querySelector('#control-power-btn, .big-toggle');
+    const modeChips = Array.from(control.querySelectorAll('.mode-chip'));
+    const timerValueEl = control.querySelector('#control-timer-value');
+    const timerMinusBtn = control.querySelector('.control-timer-minus');
+    const timerPlusBtn = control.querySelector('.control-timer-plus');
+    const pauseBtn = control.querySelector('.control-pause-btn');
+    const stopBtn = control.querySelector('.control-stop-btn');
+
+    const initialTimer = parseInt((timerValueEl?.textContent || '').replace(/[^\d]/g, ''), 10);
+    const controlState = {
+      power: Boolean(powerBtn?.classList.contains('on')),
+      paused: false,
+      timer: Number.isFinite(initialTimer) ? initialTimer : 28,
+      mode:
+        modeChips.find((chip) => chip.classList.contains('active'))?.dataset.mode ||
+        modeChips[0]?.dataset.mode ||
+        '',
+    };
+
+    const renderControlUI = () => {
+      if (powerBtn) {
+        powerBtn.classList.toggle('on', controlState.power);
+        powerBtn.style.opacity = controlState.power ? '1' : '0.62';
+      }
+      if (timerValueEl) timerValueEl.textContent = String(Math.max(0, controlState.timer));
+      if (pauseBtn) {
+        pauseBtn.textContent = controlState.paused ? '▶ Lanjut' : '⏸ Jeda';
+      }
+      modeChips.forEach((chip) => {
+        const mode = chip.dataset.mode || chip.textContent.trim();
+        chip.classList.toggle('active', mode === controlState.mode);
+      });
+    };
+
     if (backBtn) {
       backBtn.style.cursor = 'pointer';
       backBtn.addEventListener('click', () => goToScreen(SCREEN.HOME));
     }
+    if (powerBtn) {
+      powerBtn.addEventListener('click', () => {
+        controlState.power = !controlState.power;
+        if (!controlState.power) controlState.paused = false;
+        renderControlUI();
+        showToast(controlState.power ? 'Kontrol diaktifkan.' : 'Kontrol dimatikan.');
+      });
+    }
+    if (timerMinusBtn) {
+      timerMinusBtn.addEventListener('click', () => {
+        controlState.timer = Math.max(0, controlState.timer - 1);
+        renderControlUI();
+      });
+    }
+    if (timerPlusBtn) {
+      timerPlusBtn.addEventListener('click', () => {
+        controlState.timer = Math.min(240, controlState.timer + 1);
+        renderControlUI();
+      });
+    }
+    if (pauseBtn) {
+      pauseBtn.addEventListener('click', () => {
+        if (!controlState.power) {
+          showToast('Nyalakan kontrol terlebih dahulu.');
+          return;
+        }
+        controlState.paused = !controlState.paused;
+        renderControlUI();
+      });
+    }
+    if (stopBtn) {
+      stopBtn.addEventListener('click', () => {
+        controlState.power = false;
+        controlState.paused = false;
+        controlState.timer = 0;
+        renderControlUI();
+        showToast('Proses memasak dihentikan.');
+      });
+    }
+    modeChips.forEach((chip) => {
+      chip.style.cursor = 'pointer';
+      chip.addEventListener('click', () => {
+        const mode = chip.dataset.mode || chip.textContent.trim();
+        controlState.mode = mode;
+        renderControlUI();
+        if (mode) showToast(`Mode ${mode} aktif.`);
+      });
+    });
+
+    renderControlUI();
     bindBottomNav(control);
+  }
+
+  function wireAlertsScreen() {
+    if (!hasScreen(SCREEN.ALERTS)) return;
+    const alerts = wraps[SCREEN.ALERTS];
+    if (!alerts) return;
+    const backBtn = alerts.querySelector('.back-btn');
+    if (backBtn) {
+      backBtn.style.cursor = 'pointer';
+      backBtn.addEventListener('click', () => {
+        if (hasScreen(SCREEN.CONTROL)) {
+          goToScreen(SCREEN.CONTROL);
+          return;
+        }
+        goToScreen(SCREEN.HOME);
+      });
+    }
+    bindBottomNav(alerts);
   }
 
   function wireRecipeScreen() {
@@ -1583,6 +1715,7 @@
   wireHome();
   wirePanduanList();
   wireControlScreen();
+  wireAlertsScreen();
   wireRecipeScreen();
   wireVideoGallery();
   wireVideoPlayer();
