@@ -1,5 +1,5 @@
 (function () {
-  const NAV_VERSION = 'lang-sync-2026-03-09-v12';
+  const NAV_VERSION = 'nav-fix-2026-03-27-v14';
   window.MIDEA_NAV_VERSION = NAV_VERSION;
 
   const wraps = Array.from(document.querySelectorAll('.phone-wrap'));
@@ -13,10 +13,12 @@
   const SCREEN = {
     SPLASH: screenIndexBySelector('#screen-splash', 0),
     HOME: screenIndexBySelector('#screen-home', 1),
+    CONTROL: screenIndexBySelector('#screen-control', 1),
     PANDUAN: screenIndexBySelector('#screen-panduan', 2),
+    RECIPE: screenIndexBySelector('#screen-resep, [data-screen="recipe"]', 1),
     TANYA: screenIndexBySelector('#screen-tanya', 3),
   };
-  SCREEN.VIDEO_GALLERY = screenIndexBySelector('#screen-video-gallery', SCREEN.PANDUAN);
+  SCREEN.VIDEO_GALLERY = screenIndexBySelector('#screen-video-gallery, [data-screen="video-gallery"]', -1);
 
   const CHAPTER_SCREENS = wraps
     .map((wrap, idx) => (wrap.querySelector('.chapter-progress-bar') ? idx : -1))
@@ -644,6 +646,10 @@
     state.chatHistory.recipe = [{ role: 'assistant', content: chatText('recipe', 'welcome') }];
   }
 
+  function hasScreen(idx) {
+    return Number.isInteger(idx) && idx >= 0 && idx < wraps.length;
+  }
+
   function showToast(message) {
     let toast = document.getElementById('prototype-toast');
     if (!toast) {
@@ -674,13 +680,78 @@
   }
 
   function goToScreen(idx) {
-    if (typeof idx !== 'number' || idx < 0 || idx >= wraps.length) return;
+    if (!hasScreen(idx)) return;
 
     wraps.forEach((wrap, i) => {
       wrap.style.display = i === idx ? 'flex' : 'none';
     });
     window.scrollTo({ top: 0, behavior: 'auto' });
     scheduleLanguageRefresh();
+  }
+
+  function openControlScreen() {
+    if (hasScreen(SCREEN.CONTROL)) {
+      goToScreen(SCREEN.CONTROL);
+    }
+  }
+
+  function openRecipeScreen() {
+    if (hasScreen(SCREEN.RECIPE)) {
+      goToScreen(SCREEN.RECIPE);
+      return;
+    }
+    openRecipeChat();
+  }
+
+  function routeBottomNav(navKey) {
+    const key = String(navKey || '').trim().toLowerCase();
+    if (!key) return;
+
+    if (key === 'home' || key === 'beranda') {
+      goToScreen(SCREEN.HOME);
+      return;
+    }
+    if (key === 'control' || key === 'kontrol') {
+      openControlScreen();
+      return;
+    }
+    if (key === 'guide' || key === 'panduan') {
+      goToScreen(SCREEN.PANDUAN);
+      return;
+    }
+    if (key === 'recipe' || key === 'resep') {
+      openRecipeScreen();
+      return;
+    }
+    if (key === 'help' || key === 'bantuan') {
+      openSupportChat();
+      return;
+    }
+    if (key === 'chat') {
+      openSupportChat();
+      return;
+    }
+    if (key === 'profile' || key === 'profil') {
+      openProfilePanel();
+    }
+  }
+
+  function bindBottomNav(container) {
+    if (!container) return;
+    const navItems = container.querySelectorAll('.bottom-nav .nav-item');
+    if (!navItems.length) return;
+
+    const fallbackByIndex = ['home', 'control', 'guide', 'recipe', 'help'];
+    navItems.forEach((item, index) => {
+      if (item.dataset.navBound === '1') return;
+      item.style.cursor = 'pointer';
+      item.dataset.navBound = '1';
+      item.addEventListener('click', () => {
+        const fromData = item.getAttribute('data-nav') || '';
+        const fromIndex = fallbackByIndex[index] || '';
+        routeBottomNav(fromData || fromIndex);
+      });
+    });
   }
 
   async function fetchUiTranslationsChunk(lang, texts) {
@@ -945,6 +1016,7 @@
   }
 
   function renderVideoGallery() {
+    if (!hasScreen(SCREEN.VIDEO_GALLERY)) return;
     const screen = wraps[SCREEN.VIDEO_GALLERY];
     if (!screen) return;
 
@@ -996,6 +1068,7 @@
   }
 
   function syncVideoGalleryLanguage() {
+    if (!hasScreen(SCREEN.VIDEO_GALLERY)) return;
     const screen = wraps[SCREEN.VIDEO_GALLERY];
     if (!screen) return;
     const input = screen.querySelector('#video-gallery-search');
@@ -1019,16 +1092,21 @@
   }
 
   function openVideoPlayer(src, title) {
-    const overlay = document.getElementById('video-player-overlay');
-    const player = document.getElementById('video-player');
-    const frame = document.getElementById('video-player-frame');
-    const titleEl = document.getElementById('video-player-title');
-    if (!overlay || !player || !frame) return;
-
     const safeSrc = String(src || '').trim();
     if (!safeSrc) return;
     const resolvedSrc = resolveAssetUrl(safeSrc);
     const driveId = extractDriveFileId(resolvedSrc);
+    const overlay = document.getElementById('video-player-overlay');
+    const player = document.getElementById('video-player');
+    const frame = document.getElementById('video-player-frame');
+    const titleEl = document.getElementById('video-player-title');
+
+    // Jika overlay player tidak ada di HTML, tetap buka video di tab baru.
+    if (!overlay || !player || !frame) {
+      const fallbackUrl = driveId ? toDrivePreviewUrl(driveId) : resolvedSrc;
+      window.open(fallbackUrl, '_blank', 'noopener,noreferrer');
+      return;
+    }
 
     if (titleEl) titleEl.textContent = title || 'Video Panduan';
     if (driveId) {
@@ -1085,6 +1163,7 @@
   }
 
   function wireVideoGallery() {
+    if (!hasScreen(SCREEN.VIDEO_GALLERY)) return;
     const galleryWrap = wraps[SCREEN.VIDEO_GALLERY];
     if (!galleryWrap) return;
 
@@ -1095,17 +1174,7 @@
       searchInput.addEventListener('input', () => renderVideoGallery());
     }
 
-    const navItems = galleryWrap.querySelectorAll('.bottom-nav .nav-item');
-    const actions = [
-      () => goToScreen(SCREEN.HOME),
-      () => goToScreen(SCREEN.PANDUAN),
-      () => openSupportChat(),
-      () => openProfilePanel(),
-    ];
-    navItems.forEach((item, index) => {
-      item.style.cursor = 'pointer';
-      if (actions[index]) item.addEventListener('click', actions[index]);
-    });
+    bindBottomNav(galleryWrap);
 
     syncVideoGalleryLanguage();
   }
@@ -1126,8 +1195,12 @@
     const splash = wraps[SCREEN.SPLASH];
     const langBtns = splash.querySelectorAll('.lang-btn');
     const continueBtn = splash.querySelector('.lang-continue');
+    const fallbackLangByIndex = ['id', 'en', 'zh'];
 
-    langBtns.forEach((btn) => {
+    langBtns.forEach((btn, index) => {
+      if (!btn.dataset.lang) {
+        btn.dataset.lang = fallbackLangByIndex[index] || 'id';
+      }
       btn.style.cursor = 'pointer';
       btn.addEventListener('click', () => {
         const code = btn.dataset.lang || 'id';
@@ -1176,44 +1249,46 @@
 
   function wireHome() {
     const home = wraps[SCREEN.HOME];
+    const controlCard = home.querySelector('.card-control');
     const panduanCard = home.querySelector('.card-panduan');
     const tanyaCard = home.querySelector('.card-tanya');
     const resepCard = home.querySelector('.card-resep');
 
+    if (controlCard) controlCard.addEventListener('click', openControlScreen);
     if (panduanCard) {
       panduanCard.addEventListener('click', () => goToScreen(SCREEN.PANDUAN));
-      // pastikan area icon/arrow di dalam kartu tetap trigger aksi yang sama
-      panduanCard.querySelectorAll('*').forEach((el) => {
-        el.addEventListener('click', () => goToScreen(SCREEN.PANDUAN));
-      });
     }
     if (tanyaCard) tanyaCard.addEventListener('click', openSupportChat);
-    if (resepCard) resepCard.addEventListener('click', openRecipeChat);
+    if (resepCard) resepCard.addEventListener('click', openRecipeScreen);
 
-    const navItems = home.querySelectorAll('.bottom-nav .nav-item');
-    const actions = [
-      () => goToScreen(SCREEN.HOME),
-      () => goToScreen(SCREEN.PANDUAN),
-      () => openSupportChat(),
-      () => openProfilePanel(),
-    ];
-    navItems.forEach((item, index) => {
-      item.style.cursor = 'pointer';
-      if (actions[index]) item.addEventListener('click', actions[index]);
-    });
+    bindBottomNav(home);
   }
 
   function wirePanduanList() {
     const panduan = wraps[SCREEN.PANDUAN];
     const backBtn = panduan.querySelector('.back-btn');
     const chapterCards = panduan.querySelectorAll('.chapter-card');
-    const openGalleryBtn = panduan.querySelector('.open-video-gallery-btn');
+    const openGalleryBtn =
+      panduan.querySelector('.open-video-gallery-btn') || panduan.querySelector('.open-guide-video-btn');
 
     if (backBtn) backBtn.addEventListener('click', () => goToScreen(SCREEN.HOME));
     if (openGalleryBtn) {
       openGalleryBtn.addEventListener('click', () => {
-        goToScreen(SCREEN.VIDEO_GALLERY);
-        renderVideoGallery();
+        if (hasScreen(SCREEN.VIDEO_GALLERY)) {
+          goToScreen(SCREEN.VIDEO_GALLERY);
+          renderVideoGallery();
+          return;
+        }
+        if (hasScreen(SCREEN.RECIPE)) {
+          goToScreen(SCREEN.RECIPE);
+          return;
+        }
+        const firstVideo = VIDEO_LIBRARY[0];
+        if (firstVideo?.src) {
+          openVideoPlayer(firstVideo.src, langValue(firstVideo.title));
+          return;
+        }
+        showToast('Video belum tersedia.');
       });
     }
 
@@ -1222,17 +1297,29 @@
       card.addEventListener('click', () => window.openChapter(i + 1));
     });
 
-    const navItems = panduan.querySelectorAll('.bottom-nav .nav-item');
-    const actions = [
-      () => goToScreen(SCREEN.HOME),
-      () => goToScreen(SCREEN.PANDUAN),
-      () => openSupportChat(),
-      () => openProfilePanel(),
-    ];
-    navItems.forEach((item, index) => {
-      item.style.cursor = 'pointer';
-      if (actions[index]) item.addEventListener('click', actions[index]);
-    });
+    bindBottomNav(panduan);
+  }
+
+  function wireControlScreen() {
+    const control = wraps[SCREEN.CONTROL];
+    if (!control) return;
+    const backBtn = control.querySelector('.back-btn');
+    if (backBtn) {
+      backBtn.style.cursor = 'pointer';
+      backBtn.addEventListener('click', () => goToScreen(SCREEN.HOME));
+    }
+    bindBottomNav(control);
+  }
+
+  function wireRecipeScreen() {
+    const recipe = wraps[SCREEN.RECIPE];
+    if (!recipe) return;
+    const backBtn = recipe.querySelector('.back-btn');
+    if (backBtn) {
+      backBtn.style.cursor = 'pointer';
+      backBtn.addEventListener('click', () => goToScreen(SCREEN.HOME));
+    }
+    bindBottomNav(recipe);
   }
 
   function getCurrentHistory() {
@@ -1489,6 +1576,8 @@
   wireSplash();
   wireHome();
   wirePanduanList();
+  wireControlScreen();
+  wireRecipeScreen();
   wireVideoGallery();
   wireVideoPlayer();
   wireTanyaKami();
