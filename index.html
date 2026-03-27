@@ -35,10 +35,13 @@
 
   /* ─── PHONE FRAME ─── */
   .phone-wrap {
-    display: flex;
+    display: none;
     flex-direction: column;
     align-items: center;
     gap: 12px;
+  }
+  .phone-wrap:first-of-type {
+    display: flex;
   }
   .screen-label {
     color: rgba(255,255,255,0.35);
@@ -3259,6 +3262,6 @@ function closeChapter() {
   // window.MIDEA_CHAT_API_URL = "https://domain-backend-anda.com/api/chat";
   // window.MIDEA_TRANSLATE_API_URL = "https://domain-backend-anda.com/api/translate-ui";
 </script>
-<script src="midea-navigation.js?v=20260327-v15"></script>
+<script src="midea-navigation.js?v=20260327-v16"></script>
 
 </body>
