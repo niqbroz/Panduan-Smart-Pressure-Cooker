@@ -1,5 +1,5 @@
 (function () {
-  const NAV_VERSION = 'nav-fix-2026-03-31-v18';
+  const NAV_VERSION = 'nav-fix-2026-03-31-v19';
   window.MIDEA_NAV_VERSION = NAV_VERSION;
 
   const wraps = Array.from(document.querySelectorAll('.phone-wrap'));
@@ -1285,16 +1285,28 @@
     state.chatMode = safeMode;
 
     const screen = wraps[SCREEN.TANYA];
-    const titleEl = screen.querySelector('.sub-header-title');
-    const subEl = screen.querySelector('.sub-header-sub');
+    if (!screen) return;
+
+    const titleEl =
+      screen.querySelector('.sub-header-title') ||
+      screen.querySelector('#screen-tanya .tanya-header .sub-header-title') ||
+      null;
+    const subEl =
+      screen.querySelector('.sub-header-sub') ||
+      screen.querySelector('#screen-tanya .tanya-header .sub-header-sub') ||
+      null;
     const input = screen.querySelector('.chat-input');
 
-    titleEl.textContent = chatText(safeMode, 'title');
-    subEl.textContent = chatText(safeMode, 'subtitle');
-    if (titleEl.firstChild && titleEl.firstChild.nodeType === Node.TEXT_NODE) {
+    if (titleEl) {
+      titleEl.textContent = chatText(safeMode, 'title');
+    }
+    if (subEl) {
+      subEl.textContent = chatText(safeMode, 'subtitle');
+    }
+    if (titleEl && titleEl.firstChild && titleEl.firstChild.nodeType === Node.TEXT_NODE) {
       titleEl.firstChild.__baseText = titleEl.firstChild.nodeValue;
     }
-    if (subEl.firstChild && subEl.firstChild.nodeType === Node.TEXT_NODE) {
+    if (subEl && subEl.firstChild && subEl.firstChild.nodeType === Node.TEXT_NODE) {
       subEl.firstChild.__baseText = subEl.firstChild.nodeValue;
     }
     if (input) input.placeholder = chatText(safeMode, 'placeholder');
