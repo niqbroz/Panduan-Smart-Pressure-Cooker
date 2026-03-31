@@ -1,5 +1,5 @@
 (function () {
-  const NAV_VERSION = 'nav-fix-2026-03-31-v20';
+  const NAV_VERSION = 'nav-fix-2026-03-31-v22';
   window.MIDEA_NAV_VERSION = NAV_VERSION;
 
   const wraps = Array.from(document.querySelectorAll('.phone-wrap'));
@@ -42,15 +42,32 @@
   const UI_TEXT = {
     id: {
       toastChatErrorPrefix: 'ChatGPT gagal',
+      toastTranslateErrorPrefix: 'Terjemahan gagal',
       toastBookmark: 'Bab ditandai (bookmark).',
       toastBackChapter: 'Kembali ke bab sebelumnya.',
       toastBackToToc: 'Kembali ke daftar isi.',
+      toastVideoNotAvailable: 'Video belum tersedia.',
+      toastControlOn: 'Kontrol diaktifkan.',
+      toastControlOff: 'Kontrol dimatikan.',
+      toastControlPowerRequired: 'Nyalakan kontrol terlebih dahulu.',
+      toastControlStopped: 'Proses memasak dihentikan.',
+      toastControlModeActive: 'Mode {mode} aktif.',
+      toastVideoGalleryRefreshed: 'Galeri video diperbarui.',
+      toastVideoLoadError: 'Video gagal dimuat. Cek izin akses file Google Drive.',
+      controlPause: '⏸ Jeda',
+      controlResume: '▶ Lanjut',
+      chapterNext: 'Bab Selanjutnya',
+      chapterPrevious: 'Bab Sebelumnya',
+      chapterToc: 'Daftar Isi',
+      videoTitleDefault: 'Video Panduan',
+      videoCountUnit: 'video',
       profileTitle: 'Profil Saya',
       profileSummary: 'Ringkasan akun aplikasi Midea',
       profileMember: 'Member Midea',
       profileChatHistory: 'Riwayat Chat Bantuan',
       profileRegisteredProducts: 'Produk Terdaftar',
       profileLanguageSettings: 'Pengaturan Bahasa',
+      videoPlayNow: '▶ Putar Sekarang',
       gallerySearchPlaceholder: 'Cari video (contoh: panduan, bahan, pressure cooker)...',
       galleryEmpty: 'Video tidak ditemukan. Coba kata kunci lain.',
       fallbackRecipeAirfryer:
@@ -66,15 +83,32 @@
     },
     en: {
       toastChatErrorPrefix: 'ChatGPT failed',
+      toastTranslateErrorPrefix: 'Translation failed',
       toastBookmark: 'Chapter bookmarked.',
       toastBackChapter: 'Returned to previous chapter.',
       toastBackToToc: 'Back to table of contents.',
+      toastVideoNotAvailable: 'Video is not available yet.',
+      toastControlOn: 'Control enabled.',
+      toastControlOff: 'Control turned off.',
+      toastControlPowerRequired: 'Turn on control first.',
+      toastControlStopped: 'Cooking process stopped.',
+      toastControlModeActive: 'Mode {mode} is active.',
+      toastVideoGalleryRefreshed: 'Video gallery refreshed.',
+      toastVideoLoadError: 'Video failed to load. Check Google Drive file access.',
+      controlPause: '⏸ Pause',
+      controlResume: '▶ Resume',
+      chapterNext: 'Next Chapter',
+      chapterPrevious: 'Previous Chapter',
+      chapterToc: 'Table of Contents',
+      videoTitleDefault: 'Guide Video',
+      videoCountUnit: 'videos',
       profileTitle: 'My Profile',
       profileSummary: 'Midea app account summary',
       profileMember: 'Midea Member',
       profileChatHistory: 'Support Chat History',
       profileRegisteredProducts: 'Registered Products',
       profileLanguageSettings: 'Language Settings',
+      videoPlayNow: '▶ Play Now',
       gallerySearchPlaceholder: 'Search videos (example: guide, ingredients, pressure cooker)...',
       galleryEmpty: 'No videos found. Try another keyword.',
       fallbackRecipeAirfryer:
@@ -90,15 +124,32 @@
     },
     zh: {
       toastChatErrorPrefix: 'ChatGPT 连接失败',
+      toastTranslateErrorPrefix: '翻译失败',
       toastBookmark: '章节已收藏。',
       toastBackChapter: '已返回上一章节。',
       toastBackToToc: '已返回目录。',
+      toastVideoNotAvailable: '视频暂不可用。',
+      toastControlOn: '控制已开启。',
+      toastControlOff: '控制已关闭。',
+      toastControlPowerRequired: '请先开启控制。',
+      toastControlStopped: '烹饪流程已停止。',
+      toastControlModeActive: '模式 {mode} 已启用。',
+      toastVideoGalleryRefreshed: '视频库已刷新。',
+      toastVideoLoadError: '视频加载失败，请检查 Google Drive 文件访问权限。',
+      controlPause: '⏸ 暂停',
+      controlResume: '▶ 继续',
+      chapterNext: '下一章',
+      chapterPrevious: '上一章',
+      chapterToc: '目录',
+      videoTitleDefault: '指南视频',
+      videoCountUnit: '个视频',
       profileTitle: '我的资料',
       profileSummary: 'Midea 应用账号概览',
       profileMember: '美的会员',
       profileChatHistory: '客服聊天记录',
       profileRegisteredProducts: '已注册产品',
       profileLanguageSettings: '语言设置',
+      videoPlayNow: '▶ 立即播放',
       gallerySearchPlaceholder: '搜索视频（例如：教程、食材、压力锅）...',
       galleryEmpty: '未找到视频，请尝试其他关键词。',
       fallbackRecipeAirfryer:
@@ -263,6 +314,118 @@
         'Screen 11 · Chapter 7 Detail — Care & Cleaning',
       'Layar 12 · Detail Bab 8 — Pemecahan Masalah':
         'Screen 12 · Chapter 8 Detail — Troubleshooting',
+      'Masak apa kita': 'What shall we cook',
+      'hari ini? 🍳': 'today? 🍳',
+      '✨ Resep Hari Ini': '✨ Recipe of the Day',
+      'Pressure Cooker · 35 menit': 'Pressure Cooker · 35 min',
+      Coba: 'Try',
+      LIVE: 'LIVE',
+      'Kontrol Jarak Jauh': 'Remote Control',
+      'Mode & timer': 'Mode & timer',
+      Panduan: 'Guide',
+      'Buku & video panduan': 'Manual & video guides',
+      BARU: 'NEW',
+      '5 video tutorial': '5 tutorial videos',
+      'Tanya Teknisi': 'Ask Technician',
+      'AI Chatbot 24 jam': '24-hour AI chatbot',
+      'Terhubung · Siap Digunakan': 'Connected · Ready to Use',
+      Kontrol: 'Control',
+      Resep: 'Recipes',
+      'Layar 2B · Kontrol Jarak Jauh': 'Screen 2B · Remote Control',
+      'Terhubung · Aktif': 'Connected · Active',
+      Suhu: 'Temperature',
+      Tekanan: 'Pressure',
+      'Waktu Sisa': 'Time Left',
+      mnt: 'min',
+      '⏱ Aktif': '⏱ Active',
+      'Mode Memasak': 'Cooking Mode',
+      'Atur Timer': 'Set Timer',
+      menit: 'minutes',
+      'Katup uap normal · Tekanan stabil': 'Steam valve normal · Pressure stable',
+      'Jangan buka tutup saat bertekanan': 'Do not open lid while pressurized',
+      '⏹ Hentikan Memasak': '⏹ Stop Cooking',
+      'Layar 2C · Notifikasi & Safety Alert': 'Screen 2C · Notifications & Safety Alert',
+      'Notifikasi & Alert': 'Notifications & Alerts',
+      'Riwayat pesan perangkat': 'Device message history',
+      'Hari ini · 10:32': 'Today · 10:32',
+      Penting: 'Important',
+      'Memasak Dimulai': 'Cooking Started',
+      'Hari ini · 10:05': 'Today · 10:05',
+      'Mode Meat/Chicken aktif. Estimasi selesai pukul 10:45.':
+        'Meat/Chicken mode is active. Estimated completion at 10:45.',
+      '✅ Masakan Selesai': '✅ Cooking Finished',
+      'Kemarin · 19:22': 'Yesterday · 19:22',
+      'Rendang Daging selesai dimasak. Keep Warm aktif selama 2 jam.':
+        'Beef rendang is finished. Keep Warm stayed active for 2 hours.',
+      'Pengingat Perawatan': 'Maintenance Reminder',
+      '2 hari lalu · 08:00': '2 days ago · 08:00',
+      'Bersihkan sealing ring setelah 10x pemakaian.': 'Clean the sealing ring after 10 uses.',
+      'Layar 3 · Panduan MY-CS5039P': 'Screen 3 · Guide MY-CS5039P',
+      'Pressure Cooker · Model MY-CS5039P': 'Pressure Cooker · Model MY-CS5039P',
+      Volume: 'Volume',
+      Hangat: 'Warm',
+      'Jangan buka tutup sebelum tekanan benar-benar habis. Uap panas dapat menyebabkan luka bakar serius.':
+        'Do not open the lid before pressure is fully released. Hot steam can cause serious burns.',
+      'Jenis Panduan': 'Guide Type',
+      '📖 Buku Panduan': '📖 User Manual',
+      'Daftar isi 8 bab': '8-chapter table of contents',
+      '▶ Video Panduan': '▶ Guide Videos',
+      'Buka layar video': 'Open video screen',
+      'Tim kami siap membantu Anda 24/7': 'Our team is ready to help 24/7',
+      'Halo! 👋 Selamat datang di layanan Tanya Kami Midea. Saya siap membantu Anda. Ada yang bisa kami bantu hari ini?':
+        'Hello! 👋 Welcome to Midea Ask Us service. I am ready to help. How can we assist you today?',
+      'Garansi Produk': 'Product Warranty',
+      'Cara Penggunaan': 'How to Use',
+      'Tidak puas dengan jawaban ini?': 'Not satisfied with this answer?',
+      'Tanya CS': 'Ask Customer Service',
+      'BAB 1': 'CHAPTER 1',
+      'BAB 2': 'CHAPTER 2',
+      'BAB 3': 'CHAPTER 3',
+      'BAB 4': 'CHAPTER 4',
+      'BAB 5': 'CHAPTER 5',
+      'BAB 6': 'CHAPTER 6',
+      'BAB 7': 'CHAPTER 7',
+      'BAB 8': 'CHAPTER 8',
+      '1 dari 8 bab': '1 of 8 chapters',
+      '2 dari 8 bab': '2 of 8 chapters',
+      '3 dari 8 bab': '3 of 8 chapters',
+      '4 dari 8 bab': '4 of 8 chapters',
+      '5 dari 8 bab': '5 of 8 chapters',
+      '6 dari 8 bab': '6 of 8 chapters',
+      '7 dari 8 bab': '7 of 8 chapters',
+      '8 dari 8 bab': '8 of 8 chapters',
+      Keselamatan: 'Safety',
+      '⚠ Peringatan Umum': '⚠ General Warning',
+      '🔥 Peringatan Uap Panas': '🔥 Hot Steam Warning',
+      '⚡ Peringatan Listrik': '⚡ Electrical Warning',
+      'Bab Sebelumnya': 'Previous Chapter',
+      'Spesifikasi &': 'Specifications &',
+      'Struktur Produk': 'Product Structure',
+      '📋 Spesifikasi Teknis': '📋 Technical Specifications',
+      Model: 'Model',
+      Tegangan: 'Voltage',
+      Daya: 'Power',
+      'Volume Panci': 'Pot Capacity',
+      'Diameter Panci': 'Pot Diameter',
+      'Tekanan Kerja': 'Working Pressure',
+      'Suhu Keep Warm': 'Keep Warm Temperature',
+      '🔩 Komponen Utama': '🔩 Main Components',
+      'Katup Uap (Steam Vent)': 'Steam Valve (Steam Vent)',
+      'Melepaskan uap tekanan saat memasak selesai atau ditekan manual':
+        'Releases pressure steam after cooking or when manually pressed',
+      'Indikator tekanan — terangkat saat bertekanan, turun saat aman dibuka':
+        'Pressure indicator - rises under pressure, drops when safe to open',
+      'Cincin karet untuk memastikan tutup kedap tekanan saat memasak':
+        'Rubber ring to keep the lid pressure-sealed while cooking',
+      'Pelindung pipa uap agar tidak tersumbat sisa makanan':
+        'Protects the steam pipe from food residue blockage',
+      'Layar LED + 6 tombol operasi + 5 tombol fungsi cepat':
+        'LED screen + 6 operation buttons + 5 quick-function buttons',
+      '🎁 Aksesori Bawaan': '🎁 Included Accessories',
+      'Sendok Nasi': 'Rice Paddle',
+      'Sendok Sup': 'Soup Spoon',
+      'Gelas Takar': 'Measuring Cup',
+      'Pengumpul Kondensasi': 'Condensation Collector',
     },
     zh: {
       'Pilihan Bahasa': '语言选择',
@@ -324,6 +487,111 @@
       'Layar 10 · Detail Bab 6 — Membuka Tutup': '第 10 屏 · 第 6 章详情 — 开盖方法',
       'Layar 11 · Detail Bab 7 — Perawatan & Pembersihan': '第 11 屏 · 第 7 章详情 — 保养与清洁',
       'Layar 12 · Detail Bab 8 — Pemecahan Masalah': '第 12 屏 · 第 8 章详情 — 故障排查',
+      'Masak apa kita': '今天我们做什么',
+      'hari ini? 🍳': '呢？🍳',
+      '✨ Resep Hari Ini': '✨ 今日食谱',
+      'Pressure Cooker · 35 menit': '压力锅 · 35 分钟',
+      Coba: '试试',
+      LIVE: '直播',
+      'Kontrol Jarak Jauh': '远程控制',
+      'Mode & timer': '模式与定时',
+      Panduan: '指南',
+      'Buku & video panduan': '手册与视频教程',
+      BARU: '新',
+      '5 video tutorial': '5 个教学视频',
+      'Tanya Teknisi': '咨询技术员',
+      'AI Chatbot 24 jam': '24 小时 AI 聊天助手',
+      'Terhubung · Siap Digunakan': '已连接 · 可立即使用',
+      Kontrol: '控制',
+      Resep: '食谱',
+      'Layar 2B · Kontrol Jarak Jauh': '第 2B 屏 · 远程控制',
+      'Terhubung · Aktif': '已连接 · 运行中',
+      Suhu: '温度',
+      Tekanan: '压力',
+      'Waktu Sisa': '剩余时间',
+      mnt: '分钟',
+      '⏱ Aktif': '⏱ 运行中',
+      'Mode Memasak': '烹饪模式',
+      'Atur Timer': '设置定时',
+      menit: '分钟',
+      'Katup uap normal · Tekanan stabil': '蒸汽阀正常 · 压力稳定',
+      'Jangan buka tutup saat bertekanan': '有压力时请勿开盖',
+      '⏹ Hentikan Memasak': '⏹ 停止烹饪',
+      'Layar 2C · Notifikasi & Safety Alert': '第 2C 屏 · 通知与安全提醒',
+      'Notifikasi & Alert': '通知与提醒',
+      'Riwayat pesan perangkat': '设备消息记录',
+      'Hari ini · 10:32': '今天 · 10:32',
+      Penting: '重要',
+      'Memasak Dimulai': '开始烹饪',
+      'Hari ini · 10:05': '今天 · 10:05',
+      'Mode Meat/Chicken aktif. Estimasi selesai pukul 10:45.': 'Meat/Chicken 模式已启动，预计 10:45 完成。',
+      '✅ Masakan Selesai': '✅ 烹饪完成',
+      'Kemarin · 19:22': '昨天 · 19:22',
+      'Rendang Daging selesai dimasak. Keep Warm aktif selama 2 jam.': '牛肉仁当已完成，保温模式持续 2 小时。',
+      'Pengingat Perawatan': '维护提醒',
+      '2 hari lalu · 08:00': '2 天前 · 08:00',
+      'Bersihkan sealing ring setelah 10x pemakaian.': '使用 10 次后请清洁密封圈。',
+      'Layar 3 · Panduan MY-CS5039P': '第 3 屏 · MY-CS5039P 指南',
+      'Pressure Cooker · Model MY-CS5039P': '压力锅 · 型号 MY-CS5039P',
+      Volume: '容量',
+      Hangat: '保温',
+      'Jangan buka tutup sebelum tekanan benar-benar habis. Uap panas dapat menyebabkan luka bakar serius.':
+        '在压力完全释放前请勿开盖，高温蒸汽可能造成严重烫伤。',
+      'Jenis Panduan': '指南类型',
+      '📖 Buku Panduan': '📖 使用手册',
+      'Daftar isi 8 bab': '8 章目录',
+      '▶ Video Panduan': '▶ 视频教程',
+      'Buka layar video': '打开视频页面',
+      'Tim kami siap membantu Anda 24/7': '我们的团队 24/7 为您服务',
+      'Halo! 👋 Selamat datang di layanan Tanya Kami Midea. Saya siap membantu Anda. Ada yang bisa kami bantu hari ini?':
+        '您好！👋 欢迎使用 Midea 联系我们服务。我已准备好为您提供帮助。',
+      'Garansi Produk': '产品保修',
+      'Cara Penggunaan': '使用方法',
+      'Tidak puas dengan jawaban ini?': '对这个回答不满意吗？',
+      'Tanya CS': '联系人工客服',
+      'BAB 1': '第 1 章',
+      'BAB 2': '第 2 章',
+      'BAB 3': '第 3 章',
+      'BAB 4': '第 4 章',
+      'BAB 5': '第 5 章',
+      'BAB 6': '第 6 章',
+      'BAB 7': '第 7 章',
+      'BAB 8': '第 8 章',
+      '1 dari 8 bab': '8 章中的第 1 章',
+      '2 dari 8 bab': '8 章中的第 2 章',
+      '3 dari 8 bab': '8 章中的第 3 章',
+      '4 dari 8 bab': '8 章中的第 4 章',
+      '5 dari 8 bab': '8 章中的第 5 章',
+      '6 dari 8 bab': '8 章中的第 6 章',
+      '7 dari 8 bab': '8 章中的第 7 章',
+      '8 dari 8 bab': '8 章中的第 8 章',
+      Keselamatan: '安全',
+      '⚠ Peringatan Umum': '⚠ 一般警告',
+      '🔥 Peringatan Uap Panas': '🔥 高温蒸汽警告',
+      '⚡ Peringatan Listrik': '⚡ 电气安全警告',
+      'Bab Sebelumnya': '上一章',
+      'Spesifikasi &': '规格与',
+      'Struktur Produk': '产品结构',
+      '📋 Spesifikasi Teknis': '📋 技术规格',
+      Model: '型号',
+      Tegangan: '电压',
+      Daya: '功率',
+      'Volume Panci': '内锅容量',
+      'Diameter Panci': '内锅直径',
+      'Tekanan Kerja': '工作压力',
+      'Suhu Keep Warm': '保温温度',
+      '🔩 Komponen Utama': '🔩 主要部件',
+      'Katup Uap (Steam Vent)': '蒸汽阀（Steam Vent）',
+      'Melepaskan uap tekanan saat memasak selesai atau ditekan manual': '烹饪结束或手动按下时释放压力蒸汽',
+      'Indikator tekanan — terangkat saat bertekanan, turun saat aman dibuka': '压力指示器：有压力时升起，安全开盖时下降',
+      'Cincin karet untuk memastikan tutup kedap tekanan saat memasak': '用于确保烹饪时锅盖密封增压的橡胶圈',
+      'Pelindung pipa uap agar tidak tersumbat sisa makanan': '防止食物残渣堵塞蒸汽管的防护件',
+      'Layar LED + 6 tombol operasi + 5 tombol fungsi cepat': 'LED 屏幕 + 6 个操作键 + 5 个快捷功能键',
+      '🎁 Aksesori Bawaan': '🎁 随附配件',
+      'Sendok Nasi': '饭勺',
+      'Sendok Sup': '汤勺',
+      'Gelas Takar': '量杯',
+      'Pengumpul Kondensasi': '冷凝水收集器',
     },
   };
 
@@ -343,6 +611,212 @@
   const translatableNodes = [];
   const trackedTextNodes = new WeakSet();
   const videoThumbCache = Object.create(null);
+  const FALLBACK_PHRASE_MAP = {
+    en: {
+      'Masak apa kita': 'What shall we cook',
+      'hari ini? 🍳': 'today? 🍳',
+      'Kontrol Jarak Jauh': 'Remote Control',
+      'Buku & video panduan': 'Manual & video guides',
+      'Tanya Teknisi': 'Ask Technician',
+      'AI Chatbot 24 jam': '24-hour AI chatbot',
+      'Terhubung · Siap Digunakan': 'Connected · Ready to Use',
+      'Terhubung · Aktif': 'Connected · Active',
+      'Notifikasi & Alert': 'Notifications & Alerts',
+      'Riwayat pesan perangkat': 'Device message history',
+      'Jenis Panduan': 'Guide Type',
+      'Daftar isi 8 bab': '8-chapter table of contents',
+      'Buka layar video': 'Open video screen',
+      '5 video tutorial': '5 tutorial videos',
+      'Peringatan Umum': 'General Warning',
+      'Peringatan Uap Panas': 'Hot Steam Warning',
+      'Peringatan Listrik': 'Electrical Warning',
+      'Spesifikasi Teknis': 'Technical Specifications',
+      'Komponen Utama': 'Main Components',
+      'Aksesori Bawaan': 'Included Accessories',
+      'Bab Sebelumnya': 'Previous Chapter',
+      'Bab Selanjutnya': 'Next Chapter',
+      'Daftar Isi': 'Table of Contents',
+      'Suhu Keep Warm': 'Keep Warm Temperature',
+      'Kontrol': 'Control',
+      'Panduan': 'Guide',
+      'Resep': 'Recipes',
+      'Bantuan': 'Help',
+    },
+    zh: {
+      'Masak apa kita': '今天我们做什么',
+      'hari ini? 🍳': '呢？🍳',
+      'Kontrol Jarak Jauh': '远程控制',
+      'Buku & video panduan': '手册与视频教程',
+      'Tanya Teknisi': '咨询技术员',
+      'AI Chatbot 24 jam': '24 小时 AI 聊天助手',
+      'Terhubung · Siap Digunakan': '已连接 · 可立即使用',
+      'Terhubung · Aktif': '已连接 · 运行中',
+      'Notifikasi & Alert': '通知与提醒',
+      'Riwayat pesan perangkat': '设备消息记录',
+      'Jenis Panduan': '指南类型',
+      'Daftar isi 8 bab': '8 章目录',
+      'Buka layar video': '打开视频页面',
+      '5 video tutorial': '5 个教学视频',
+      'Peringatan Umum': '一般警告',
+      'Peringatan Uap Panas': '高温蒸汽警告',
+      'Peringatan Listrik': '电气安全警告',
+      'Spesifikasi Teknis': '技术规格',
+      'Komponen Utama': '主要部件',
+      'Aksesori Bawaan': '随附配件',
+      'Bab Sebelumnya': '上一章',
+      'Bab Selanjutnya': '下一章',
+      'Daftar Isi': '目录',
+      'Suhu Keep Warm': '保温温度',
+      'Kontrol': '控制',
+      'Panduan': '指南',
+      'Resep': '食谱',
+      'Bantuan': '帮助',
+    },
+  };
+  const FALLBACK_WORD_MAP = {
+    en: {
+      bab: 'chapter',
+      dari: 'of',
+      keselamatan: 'safety',
+      penting: 'important',
+      spesifikasi: 'specifications',
+      struktur: 'structure',
+      produk: 'product',
+      panel: 'panel',
+      kontrol: 'control',
+      status: 'status',
+      pemasak: 'cooking',
+      persiapan: 'preparation',
+      sebelum: 'before',
+      penggunaan: 'use',
+      pertama: 'first',
+      cara: 'how',
+      memasak: 'cook',
+      dengan: 'with',
+      membuka: 'open',
+      tutup: 'lid',
+      aman: 'safely',
+      perawatan: 'care',
+      pembersihan: 'cleaning',
+      pemecahan: 'troubleshooting',
+      masalah: 'problem',
+      kode: 'code',
+      menu: 'menu',
+      utama: 'main',
+      panduan: 'guide',
+      tanya: 'ask',
+      kami: 'us',
+      rekomendasi: 'recommendation',
+      resep: 'recipe',
+      bantuan: 'help',
+      kembali: 'back',
+      daftar: 'table',
+      isi: 'contents',
+      selesai: 'finished',
+      membaca: 'reading',
+      dan: 'and',
+      yang: 'that',
+      untuk: 'for',
+      jangan: 'do not',
+      tekan: 'press',
+      tekanan: 'pressure',
+      suhu: 'temperature',
+      daya: 'power',
+      tegangan: 'voltage',
+      volume: 'volume',
+      aktif: 'active',
+      terhubung: 'connected',
+      siap: 'ready',
+      digunakan: 'used',
+      hari: 'day',
+      ini: 'this',
+      kemarin: 'yesterday',
+      menit: 'minutes',
+      jam: 'hours',
+      listrik: 'electric',
+      uap: 'steam',
+      panas: 'hot',
+      tombol: 'button',
+      mode: 'mode',
+      waktu: 'time',
+      sisa: 'remaining',
+      masak: 'cook',
+      garansi: 'warranty',
+      servis: 'service',
+      center: 'center',
+    },
+    zh: {
+      bab: '章',
+      dari: '中的',
+      keselamatan: '安全',
+      penting: '重要',
+      spesifikasi: '规格',
+      struktur: '结构',
+      produk: '产品',
+      panel: '面板',
+      kontrol: '控制',
+      status: '状态',
+      pemasak: '烹饪',
+      persiapan: '准备',
+      sebelum: '之前',
+      penggunaan: '使用',
+      pertama: '首次',
+      cara: '方法',
+      memasak: '烹饪',
+      dengan: '使用',
+      membuka: '打开',
+      tutup: '锅盖',
+      aman: '安全',
+      perawatan: '保养',
+      pembersihan: '清洁',
+      pemecahan: '排查',
+      masalah: '问题',
+      kode: '代码',
+      menu: '菜单',
+      utama: '主',
+      panduan: '指南',
+      tanya: '咨询',
+      kami: '我们',
+      rekomendasi: '推荐',
+      resep: '食谱',
+      bantuan: '帮助',
+      kembali: '返回',
+      daftar: '目录',
+      isi: '内容',
+      selesai: '完成',
+      membaca: '阅读',
+      dan: '和',
+      yang: '的',
+      untuk: '用于',
+      jangan: '不要',
+      tekan: '按下',
+      tekanan: '压力',
+      suhu: '温度',
+      daya: '功率',
+      tegangan: '电压',
+      volume: '容量',
+      aktif: '运行中',
+      terhubung: '已连接',
+      siap: '准备',
+      digunakan: '使用',
+      hari: '天',
+      ini: '今天',
+      kemarin: '昨天',
+      menit: '分钟',
+      jam: '小时',
+      listrik: '电气',
+      uap: '蒸汽',
+      panas: '高温',
+      tombol: '按钮',
+      mode: '模式',
+      waktu: '时间',
+      sisa: '剩余',
+      masak: '烹饪',
+      garansi: '保修',
+      servis: '服务',
+      center: '中心',
+    },
+  };
 
   function loadSavedLanguage() {
     const saved = localStorage.getItem('midea_lang') || 'id';
@@ -558,6 +1032,31 @@
     }
   }
 
+  function replaceByPhraseMap(text, map) {
+    if (!text || !map) return text;
+    const keys = Object.keys(map).sort((a, b) => b.length - a.length);
+    let output = text;
+    keys.forEach((source) => {
+      if (!source || !output.includes(source)) return;
+      output = output.split(source).join(map[source]);
+    });
+    return output;
+  }
+
+  function replaceByWordMap(text, map) {
+    if (!text || !map) return text;
+    return text.replace(/[A-Za-zÀ-ÿ]+/g, (token) => {
+      const lower = token.toLowerCase();
+      const translated = map[lower];
+      if (!translated) return token;
+      if (token === token.toUpperCase()) return translated.toUpperCase();
+      if (token[0] === token[0].toUpperCase()) {
+        return translated.charAt(0).toUpperCase() + translated.slice(1);
+      }
+      return translated;
+    });
+  }
+
   function translateStaticText(baseText, lang) {
     if (lang === 'id') return baseText;
 
@@ -566,9 +1065,23 @@
     if (!trimmed) return baseText;
 
     const translated = dict[trimmed];
-    if (!translated || translated === trimmed) return baseText;
+    if (translated && translated !== trimmed) {
+      return baseText.replace(trimmed, translated);
+    }
 
-    return baseText.replace(trimmed, translated);
+    const phraseMap = FALLBACK_PHRASE_MAP[lang] || {};
+    const fallbackTranslated = replaceByPhraseMap(trimmed, phraseMap);
+    if (fallbackTranslated && fallbackTranslated !== trimmed) {
+      return baseText.replace(trimmed, fallbackTranslated);
+    }
+
+    const wordMap = FALLBACK_WORD_MAP[lang] || {};
+    const wordTranslated = replaceByWordMap(trimmed, wordMap);
+    if (wordTranslated && wordTranslated !== trimmed) {
+      return baseText.replace(trimmed, wordTranslated);
+    }
+
+    return baseText;
   }
 
   function applyTextToNode(node, translatedCore) {
@@ -901,7 +1414,7 @@
       translateMissingTexts(state.language, missingMap, requestId).catch((error) => {
         if (requestId !== state.languageRequestId || state.language === 'id') return;
         const msg = (error?.message || 'Unknown error').replace(/\s+/g, ' ').slice(0, 90);
-        showToast(`Terjemahan gagal: ${msg}`);
+        showToast(`${tr('toastTranslateErrorPrefix')}: ${msg}`);
       });
     }, 140);
   }
@@ -916,7 +1429,7 @@
     document.documentElement.lang = safeLang === 'zh' ? 'zh-CN' : safeLang;
     if (safeLang !== 'id') purgeWeakUnchangedCache(safeLang);
 
-    const initialScope = safeLang === 'id' ? 'all' : 'active';
+    const initialScope = 'all';
     const missingMap = collectMissingTranslations(safeLang, { scope: initialScope });
     updateLanguageButtons();
 
@@ -926,12 +1439,13 @@
 
     setChatMode(state.chatMode);
     syncVideoGalleryLanguage();
+    refreshChapterActionLabels();
 
     if (safeLang !== 'id') {
       translateMissingTexts(safeLang, missingMap, requestId).catch((error) => {
         if (requestId !== state.languageRequestId || state.language !== safeLang) return;
         const msg = (error?.message || 'Unknown error').replace(/\s+/g, ' ').slice(0, 90);
-        showToast(`Terjemahan gagal: ${msg}`);
+        showToast(`${tr('toastTranslateErrorPrefix')}: ${msg}`);
       });
       pretranslateAllScreensInBackground(requestId);
     }
@@ -1100,7 +1614,7 @@
           <div class="video-title">${title}</div>
           <div class="video-desc">${desc}</div>
         </div>
-        <div class="video-open">▶ Putar Sekarang</div>
+        <div class="video-open">${tr('videoPlayNow')}</div>
       `;
       listEl.appendChild(card);
     });
@@ -1109,7 +1623,7 @@
     emptyEl.style.display = filtered.length ? 'none' : 'block';
     if (countEl) {
       const n = filtered.length;
-      countEl.textContent = `${n} video`;
+      countEl.textContent = `${n} ${tr('videoCountUnit')}`;
     }
     hydrateVideoGalleryThumbnails(listEl);
   }
@@ -1160,7 +1674,7 @@
       return;
     }
 
-    if (titleEl) titleEl.textContent = title || 'Video Panduan';
+    if (titleEl) titleEl.textContent = title || tr('videoTitleDefault');
     if (driveId || youtubeId) {
       player.pause();
       player.removeAttribute('src');
@@ -1204,7 +1718,7 @@
     const overlay = document.getElementById('video-player-overlay');
     if (player) {
       player.addEventListener('error', () => {
-        showToast('Video gagal dimuat. Cek izin akses file Google Drive.');
+        showToast(tr('toastVideoLoadError'));
       });
     }
     if (overlay) {
@@ -1235,7 +1749,7 @@
     if (refreshBtn) {
       refreshBtn.addEventListener('click', () => {
         renderVideoGallery();
-        showToast('Galeri video diperbarui.');
+        showToast(tr('toastVideoGalleryRefreshed'));
       });
     }
 
@@ -1407,7 +1921,7 @@
           openVideoPlayer(firstVideo.src, langValue(firstVideo.title));
           return;
         }
-        showToast('Video belum tersedia.');
+        showToast(tr('toastVideoNotAvailable'));
       });
     }
 
@@ -1449,7 +1963,7 @@
       }
       if (timerValueEl) timerValueEl.textContent = String(Math.max(0, controlState.timer));
       if (pauseBtn) {
-        pauseBtn.textContent = controlState.paused ? '▶ Lanjut' : '⏸ Jeda';
+        pauseBtn.textContent = controlState.paused ? tr('controlResume') : tr('controlPause');
       }
       modeChips.forEach((chip) => {
         const mode = chip.dataset.mode || chip.textContent.trim();
@@ -1466,7 +1980,7 @@
         controlState.power = !controlState.power;
         if (!controlState.power) controlState.paused = false;
         renderControlUI();
-        showToast(controlState.power ? 'Kontrol diaktifkan.' : 'Kontrol dimatikan.');
+        showToast(controlState.power ? tr('toastControlOn') : tr('toastControlOff'));
       });
     }
     if (timerMinusBtn) {
@@ -1484,7 +1998,7 @@
     if (pauseBtn) {
       pauseBtn.addEventListener('click', () => {
         if (!controlState.power) {
-          showToast('Nyalakan kontrol terlebih dahulu.');
+          showToast(tr('toastControlPowerRequired'));
           return;
         }
         controlState.paused = !controlState.paused;
@@ -1497,7 +2011,7 @@
         controlState.paused = false;
         controlState.timer = 0;
         renderControlUI();
-        showToast('Proses memasak dihentikan.');
+        showToast(tr('toastControlStopped'));
       });
     }
     modeChips.forEach((chip) => {
@@ -1506,7 +2020,7 @@
         const mode = chip.dataset.mode || chip.textContent.trim();
         controlState.mode = mode;
         renderControlUI();
-        if (mode) showToast(`Mode ${mode} aktif.`);
+        if (mode) showToast(tr('toastControlModeActive').replace('{mode}', mode));
       });
     });
 
@@ -1742,6 +2256,31 @@
     setChatMode('support');
   }
 
+  function getNextChapterMainLabel(chapterPos) {
+    return chapterPos < CHAPTER_SCREENS.length - 1 ? tr('chapterNext') : tr('chapterToc');
+  }
+
+  function getPrevChapterMainLabel(chapterPos) {
+    return chapterPos > 0 ? tr('chapterPrevious') : tr('chapterToc');
+  }
+
+  function refreshChapterActionLabels() {
+    CHAPTER_SCREENS.forEach((screenIdx, chapterPos) => {
+      const chapter = wraps[screenIdx];
+      if (!chapter) return;
+
+      const nextActionBtn = chapter.querySelector('.dab-next');
+      if (nextActionBtn) {
+        nextActionBtn.textContent = getNextChapterMainLabel(chapterPos);
+      }
+
+      const bookmarkBtn = chapter.querySelector('.dab-bookmark');
+      if (bookmarkBtn) {
+        bookmarkBtn.innerHTML = `<span style="font-size:13px;font-weight:700;color:#1E3A5F;">${getPrevChapterMainLabel(chapterPos)}</span>`;
+      }
+    });
+  }
+
   function wireChapterDetails() {
     CHAPTER_SCREENS.forEach((screenIdx, chapterPos) => {
       const chapter = wraps[screenIdx];
@@ -1773,32 +2312,6 @@
 
       if (nextActionBtn) {
         nextActionBtn.style.cursor = 'pointer';
-        const nextMain =
-          chapterPos < CHAPTER_SCREENS.length - 1
-            ? state.language === 'en'
-              ? 'Next Chapter'
-              : state.language === 'zh'
-                ? '下一章'
-                : 'Bab Selanjutnya'
-            : state.language === 'en'
-              ? 'Table of Contents'
-              : state.language === 'zh'
-                ? '目录'
-                : 'Daftar Isi';
-        const nextSub =
-          chapterPos < CHAPTER_SCREENS.length - 1
-            ? state.language === 'en'
-              ? 'Go to next chapter →'
-              : state.language === 'zh'
-                ? '前往下一章 →'
-                : 'Ke bab selanjutnya →'
-            : state.language === 'en'
-              ? 'Back to manual list ↩'
-              : state.language === 'zh'
-                ? '返回手册目录 ↩'
-                : 'Kembali ke daftar panduan ↩';
-        nextActionBtn.innerHTML = `${nextMain}<span>${nextSub}</span>`;
-
         nextActionBtn.addEventListener('click', () => {
           if (chapterPos < CHAPTER_SCREENS.length - 1) {
             goToScreen(CHAPTER_SCREENS[chapterPos + 1]);
@@ -1817,37 +2330,10 @@
         bookmarkBtn.style.padding = '12px 12px';
         bookmarkBtn.style.display = 'flex';
         bookmarkBtn.style.alignItems = 'center';
-        bookmarkBtn.style.justifyContent = 'space-between';
+        bookmarkBtn.style.justifyContent = 'center';
         bookmarkBtn.style.gap = '8px';
         bookmarkBtn.style.border = '1.5px solid rgba(30,58,95,0.22)';
         bookmarkBtn.style.background = '#fff';
-
-        const prevMain =
-          chapterPos > 0
-            ? state.language === 'en'
-              ? 'Previous Chapter'
-              : state.language === 'zh'
-                ? '上一章'
-                : 'Bab Sebelumnya'
-            : state.language === 'en'
-              ? 'Table of Contents'
-              : state.language === 'zh'
-                ? '目录'
-                : 'Daftar Isi';
-        const prevSub =
-          chapterPos > 0
-            ? state.language === 'en'
-              ? '← Back to previous chapter'
-              : state.language === 'zh'
-                ? '← 返回上一章'
-                : '← Kembali ke bab sebelumnya'
-            : state.language === 'en'
-              ? '← Back to manual list'
-              : state.language === 'zh'
-                ? '← 返回手册目录'
-                : '← Kembali ke daftar panduan';
-
-        bookmarkBtn.innerHTML = `<span style="font-size:13px;font-weight:700;color:#1E3A5F;">${prevMain}</span><span style="font-size:10.5px;color:#6B6B80;">${prevSub}</span>`;
 
         bookmarkBtn.addEventListener('click', () => {
           if (chapterPos > 0) {
@@ -1858,6 +2344,8 @@
         });
       }
     });
+
+    refreshChapterActionLabels();
   }
 
   initChatHistory();
@@ -1916,7 +2404,7 @@
       .then(() => pretranslateAllScreensInBackground(requestId))
       .catch((error) => {
         const msg = (error?.message || 'Unknown error').replace(/\s+/g, ' ').slice(0, 90);
-        showToast(`Terjemahan gagal: ${msg}`);
+        showToast(`${tr('toastTranslateErrorPrefix')}: ${msg}`);
       });
 
     return { ok: true, language: target, queued: missingMap.size };
