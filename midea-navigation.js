@@ -1,5 +1,5 @@
 (function () {
-  const NAV_VERSION = 'nav-fix-2026-03-31-v27';
+  const NAV_VERSION = 'nav-fix-2026-03-31-v28';
   window.MIDEA_NAV_VERSION = NAV_VERSION;
 
   const wraps = Array.from(document.querySelectorAll('.phone-wrap'));
@@ -299,6 +299,7 @@
   const UI_TEXT = {
     id: {
       toastChatErrorPrefix: 'ChatGPT gagal',
+      toastLocalFallbackActive: 'Mode lokal aktif: jawaban diambil dari data panduan aplikasi.',
       toastTranslateErrorPrefix: 'Terjemahan gagal',
       toastBookmark: 'Bab ditandai (bookmark).',
       toastBackChapter: 'Kembali ke bab sebelumnya.',
@@ -346,6 +347,7 @@
     },
     en: {
       toastChatErrorPrefix: 'ChatGPT failed',
+      toastLocalFallbackActive: 'Local mode active: answers are based on in-app manual data.',
       toastTranslateErrorPrefix: 'Translation failed',
       toastBookmark: 'Chapter bookmarked.',
       toastBackChapter: 'Returned to previous chapter.',
@@ -393,6 +395,7 @@
     },
     zh: {
       toastChatErrorPrefix: 'ChatGPT 连接失败',
+      toastLocalFallbackActive: '已启用本地模式：回答来自应用内说明书数据。',
       toastTranslateErrorPrefix: '翻译失败',
       toastBookmark: '章节已收藏。',
       toastBackChapter: '已返回上一章节。',
@@ -484,6 +487,93 @@
         zh: '您好！我可以根据您的 Midea 设备、现有食材和烹饪时间为您推荐食谱。',
       },
     },
+  };
+
+  const LOCAL_SUPPORT_KB = [
+    {
+      id: 'open-lid-safe',
+      keywords: ['buka tutup', 'tutup susah', 'float valve', 'quick release', 'nature release', 'open lid', '开盖'],
+      answer: {
+        id: 'Sebelum membuka tutup, pastikan tekanan sudah habis. Gunakan quick release atau tunggu nature release 10–15 menit sampai float valve turun.',
+        en: 'Before opening the lid, make sure pressure is fully released. Use quick release or wait 10-15 minutes for natural release until the float valve drops.',
+        zh: '开盖前请先确认压力已完全释放。可快速泄压，或等待自然泄压 10-15 分钟直到浮子阀下降。',
+      },
+    },
+    {
+      id: 'fill-limit',
+      keywords: ['max', 'maksimal', 'melebihi', '2/3', '1/2', 'overfill', '容量'],
+      answer: {
+        id: 'Isi bahan + air jangan melebihi garis MAX. Umumnya maksimal 2/3 panci, dan bahan yang mengembang maksimal 1/2 panci.',
+        en: 'Do not exceed the MAX line. In general, fill up to 2/3 of the pot, and for expanding ingredients up to 1/2.',
+        zh: '食材与水量不要超过 MAX 刻度。一般食材不超过 2/3，易膨胀食材不超过 1/2。',
+      },
+    },
+    {
+      id: 'steam-warning',
+      keywords: ['uap', 'steam', 'panas', 'burn', 'luka bakar', '蒸汽', '烫伤'],
+      answer: {
+        id: 'Saat melepas tekanan, jauhkan tangan dan wajah dari katup uap/float valve karena uap sangat panas.',
+        en: 'During pressure release, keep hands and face away from the steam valve/float valve because the steam is very hot.',
+        zh: '泄压时请让手和面部远离排气阀/浮子阀，蒸汽温度很高。',
+      },
+    },
+    {
+      id: 'sealing-ring',
+      keywords: ['bocor', 'leak', 'sealing ring', 'karet', '漏气', '密封圈'],
+      answer: {
+        id: 'Jika uap bocor dari sisi tutup, cek sealing ring: bersihkan, pasang ulang rata, dan ganti jika retak/aus.',
+        en: 'If steam leaks from the lid edge, check the sealing ring: clean it, reinstall evenly, and replace if cracked/worn.',
+        zh: '若锅盖边缘漏气，请检查密封圈：清洁、重新均匀安装，如有老化或破损请更换。',
+      },
+    },
+    {
+      id: 'cleaning',
+      keywords: ['bersihkan', 'cuci', 'dishwasher', 'perawatan', 'clean', '清洁', '保养'],
+      answer: {
+        id: 'Sebelum dibersihkan, cabut listrik dan tunggu dingin. Inner pot/sealing ring/aksesori boleh dishwasher; tutup dan bodi housing tidak boleh.',
+        en: 'Unplug and cool down before cleaning. Inner pot/sealing ring/accessories are dishwasher-safe; lid and housing are not.',
+        zh: '清洁前先断电并冷却。内锅/密封圈/配件可机洗；锅盖和机身不可机洗。',
+      },
+    },
+    {
+      id: 'error-codes',
+      keywords: ['e1', 'e2', 'e8', 'c1', 'kode error', 'error code', '错误代码'],
+      answer: {
+        id: 'E1/E2/E8 biasanya terkait sensor/saklar tekanan, C1 overtemperature. Hentikan penggunaan, dinginkan unit, lalu hubungi service center jika berulang.',
+        en: 'E1/E2/E8 usually relate to sensor or pressure-switch issues, and C1 is overtemperature. Stop use, cool down, then contact service if it repeats.',
+        zh: 'E1/E2/E8 通常与传感器或压力开关有关，C1 为过温保护。请停止使用、冷却后若反复出现请联系售后。',
+      },
+    },
+    {
+      id: 'warranty',
+      keywords: ['garansi', 'warranty', 'klaim', 'claim', '保修'],
+      answer: {
+        id: 'Untuk klaim garansi, siapkan model, serial number, dan bukti pembelian. Kontak cepat WA: 082325960126.',
+        en: 'For warranty claims, prepare model, serial number, and proof of purchase. Quick WhatsApp contact: 082325960126.',
+        zh: '保修申请请准备机型、序列号和购买凭证。快速 WhatsApp 联系：082325960126。',
+      },
+    },
+    {
+      id: 'service-center',
+      keywords: ['service center', 'servis', 'teknisi', 'service', '售后', '维修'],
+      answer: {
+        id: 'Kirim nama kota Anda, nanti saya bantu arahkan service center resmi terdekat. Kontak cepat WA: 082325960126.',
+        en: 'Share your city, and I will guide you to the nearest official service center. Quick WhatsApp contact: 082325960126.',
+        zh: '请提供您所在城市，我会帮您定位最近的官方服务中心。快速 WhatsApp 联系：082325960126。',
+      },
+    },
+  ];
+
+  const LOCAL_OPENERS = {
+    id: ['Baik, saya bantu ya.', 'Siap, saya cek dari panduan.', 'Oke, dari panduan Midea:'],
+    en: ['Sure, I can help with that.', 'Got it, based on the manual:', 'Okay, here is what the manual says:'],
+    zh: ['好的，我来帮您。', '明白了，基于说明书：', '可以，以下是说明书建议：'],
+  };
+
+  const LOCAL_CLOSERS = {
+    id: ['Kalau Anda mau, saya bisa lanjutkan langkah detailnya sesuai kasus Anda.', 'Kalau perlu, saya bantu cek langkah berikutnya juga.'],
+    en: ['If you want, I can continue with detailed steps for your exact case.', 'I can also walk you through the next checks step by step.'],
+    zh: ['如果需要，我可以继续按您的具体情况给出详细步骤。', '如需，我也可以继续带您一步步排查。'],
   };
 
   const VIDEO_LIBRARY = [
@@ -875,6 +965,7 @@
     translationDebounceTimer: null,
     chatMode: 'support',
     chatBusy: false,
+    localFallbackNotified: false,
     chatHistory: { support: [], recipe: [] },
     runtimeTranslationCache: {
       en: Object.create(null),
@@ -2886,38 +2977,166 @@
     chatArea.scrollTop = chatArea.scrollHeight;
   }
 
-  function makeFallbackReply(message) {
-    const text = String(message || '')
+  function hashLocalSeed(text) {
+    const raw = String(text || '');
+    let h = 0;
+    for (let i = 0; i < raw.length; i += 1) {
+      h = (h * 31 + raw.charCodeAt(i)) >>> 0;
+    }
+    return h >>> 0;
+  }
+
+  function pickLocalVariant(options, seedText) {
+    const list = Array.isArray(options) ? options.filter(Boolean) : [];
+    if (!list.length) return '';
+    return list[hashLocalSeed(seedText) % list.length];
+  }
+
+  function normalizeLocalText(text) {
+    return String(text || '')
       .toLowerCase()
       .normalize('NFKD')
       .replace(/[\u0300-\u036f]/g, '')
-      .replace(/[^\p{L}\p{N}\s]/gu, ' ')
+      .replace(/[^\w\s\u4e00-\u9fff]/g, ' ')
       .replace(/\s+/g, ' ')
       .trim();
+  }
 
-    const matchAny = (keywords) => keywords.some((k) => text.includes(k));
+  function buildFallbackQuery(message, history) {
+    const current = String(message || '').trim();
+    const normalized = normalizeLocalText(current);
+    if (!normalized) return normalized;
 
-    if (state.chatMode === 'recipe') {
-      if (text.includes('air fryer')) {
-        return tr('fallbackRecipeAirfryer');
+    const isShortFollowup = normalized.length < 18 || /\b(itu|yang tadi|lagi|lanjut|detail|jelasin|jelaskan)\b/.test(normalized);
+    if (!isShortFollowup) return normalized;
+
+    const previousUser = [...(history || [])]
+      .reverse()
+      .find((item) => item && item.role === 'user' && String(item.content || '').trim() !== current);
+    if (!previousUser) return normalized;
+
+    const prev = normalizeLocalText(previousUser.content || '');
+    if (!prev) return normalized;
+    return `${prev} ${normalized}`.trim();
+  }
+
+  function scoreSupportEntry(entry, normalizedQuery) {
+    if (!entry || !Array.isArray(entry.keywords) || !normalizedQuery) return 0;
+    let score = 0;
+    entry.keywords.forEach((rawKeyword) => {
+      const keyword = normalizeLocalText(rawKeyword);
+      if (!keyword) return;
+      if (normalizedQuery.includes(keyword)) {
+        score += keyword.length >= 8 ? 3 : 2;
       }
-      return tr('fallbackRecipeGeneral');
+    });
+    return score;
+  }
+
+  function retrieveLocalSupportEntries(normalizedQuery) {
+    return LOCAL_SUPPORT_KB.map((entry) => ({ entry, score: scoreSupportEntry(entry, normalizedQuery) }))
+      .filter((item) => item.score > 0)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 2)
+      .map((item) => item.entry);
+  }
+
+  function localSupportDynamicReply(message, history) {
+    const lang = state.language;
+    const query = buildFallbackQuery(message, history);
+    const matches = retrieveLocalSupportEntries(query);
+
+    if (!matches.length) {
+      if (/\b(halo|hai|hi|hello|你好|您好)\b/.test(query)) {
+        return chatText('support', 'welcome');
+      }
+      if (/\b(thanks|thank you|terima kasih|makasih|xie xie|谢谢)\b/.test(query)) {
+        return {
+          id: 'Sama-sama. Kalau ada gejala atau kode error spesifik, kirimkan saja dan saya bantu cek.',
+          en: 'You are welcome. If you have specific symptoms or error codes, send them and I will help you check.',
+          zh: '不客气。如有具体故障现象或错误代码，发给我我来帮您排查。',
+        }[lang] || tr('fallbackGeneric');
+      }
+      return tr('fallbackGeneric');
     }
 
-    if (matchAny(['garansi', 'warranty', '保修'])) {
-      return tr('fallbackWarranty');
+    const opener = pickLocalVariant(LOCAL_OPENERS[lang] || LOCAL_OPENERS.id, query);
+    const closer = pickLocalVariant(LOCAL_CLOSERS[lang] || LOCAL_CLOSERS.id, `${query}-closer`);
+    const extraLabel =
+      {
+        id: 'Tambahan:',
+        en: 'Additional tip:',
+        zh: '补充建议：',
+      }[lang] || 'Additional:';
+
+    const primary = langValue(matches[0].answer);
+    const secondary = matches[1] ? langValue(matches[1].answer) : '';
+
+    const parts = [opener, primary].filter(Boolean);
+    if (secondary && secondary !== primary) {
+      parts.push(`${extraLabel} ${secondary}`);
     }
-    if (matchAny(['service', 'servis', 'service center', 'teknisi', '维修', '售后'])) {
-      return tr('fallbackService');
-    }
-    if (matchAny(['cara penggunaan', 'cara pakai', 'how to use', 'usage', 'manual', 'panduan', '使用', '怎么用'])) {
-      return tr('fallbackUsage');
-    }
-    if (matchAny(['error', 'kode', 'e1', 'e2', 'e8', 'c1', 'bocor', 'leak', 'tekanan', 'pressure', '故障'])) {
-      return tr('fallbackTroubleshoot');
+    if (closer) parts.push(closer);
+    return parts.join(' ');
+  }
+
+  function localRecipeDynamicReply(message) {
+    const lang = state.language;
+    const query = normalizeLocalText(message);
+    const timeMatch = query.match(/(\d{1,3})\s*(menit|min|minute|minutes|分钟)?/i);
+    const mins = timeMatch ? Math.max(8, Math.min(120, Number(timeMatch[1]) || 20)) : 20;
+
+    const appliance = /\b(air fryer|airfryer)\b/.test(query)
+      ? 'airfryer'
+      : /\b(rice cooker)\b/.test(query)
+      ? 'ricecooker'
+      : 'pressure';
+
+    const ingredient = /\b(ayam|chicken|鸡)\b/.test(query)
+      ? 'chicken'
+      : /\b(daging|beef|sapi|牛)\b/.test(query)
+      ? 'beef'
+      : /\b(ikan|fish|鱼)\b/.test(query)
+      ? 'fish'
+      : /\b(sayur|vegetable|蔬菜)\b/.test(query)
+      ? 'veg'
+      : 'general';
+
+    if (lang === 'en') {
+      if (appliance === 'airfryer') {
+        return `Try this quick plan: marinate ${ingredient === 'general' ? 'protein' : ingredient} with garlic, salt, pepper, and a little oil. Cook at 180°C for about ${mins} minutes (flip halfway).`;
+      }
+      if (appliance === 'ricecooker') {
+        return `For rice cooker: rinse rice, use water ratio about 1:1.2 to 1:1.4, then cook normally. Add protein/vegetables in the final 8-10 minutes.`;
+      }
+      return `For pressure cooker: saute aromatics first, add ingredients + enough liquid, then pressure-cook for about ${mins} minutes and release pressure safely before opening.`;
     }
 
-    return tr('fallbackGeneric');
+    if (lang === 'zh') {
+      if (appliance === 'airfryer') {
+        return `可这样做：将${ingredient === 'general' ? '主食材' : ingredient}用蒜、盐、胡椒和少量油腌制，180°C 烹饪约 ${mins} 分钟，中途翻面一次。`;
+      }
+      if (appliance === 'ricecooker') {
+        return `电饭煲建议：大米淘洗后按 1:1.2~1.4 加水正常煮饭，肉类或蔬菜可在后段 8-10 分钟加入。`;
+      }
+      return `高压锅建议：先爆香，再加入食材与足量液体，加压约 ${mins} 分钟；开盖前务必先完全泄压。`;
+    }
+
+    if (appliance === 'airfryer') {
+      return `Bisa coba ini: marinasi ${ingredient === 'general' ? 'protein pilihan' : ingredient} dengan bawang putih, garam, lada, dan sedikit minyak. Masak 180°C sekitar ${mins} menit (balik di tengah waktu).`;
+    }
+    if (appliance === 'ricecooker') {
+      return 'Untuk rice cooker: cuci beras, pakai rasio air sekitar 1:1,2 sampai 1:1,4, lalu masak normal. Protein/sayur bisa ditambahkan di 8-10 menit terakhir.';
+    }
+    return `Untuk pressure cooker: tumis bumbu dulu, masukkan bahan + cairan cukup, lalu pressure cook sekitar ${mins} menit. Pastikan tekanan habis total sebelum buka tutup.`;
+  }
+
+  function makeFallbackReply(message) {
+    const history = getCurrentHistory();
+    if (state.chatMode === 'recipe') {
+      return localRecipeDynamicReply(message);
+    }
+    return localSupportDynamicReply(message, history);
   }
 
   function appendAssistantSmart(replyText) {
@@ -2969,11 +3188,14 @@
     try {
       const reply = await fetchGptReply();
       appendAssistantSmart(reply);
+      state.localFallbackNotified = false;
     } catch (error) {
       console.error(error);
       appendAssistantSmart(makeFallbackReply(text));
-      const msg = (error?.message || 'Unknown error').replace(/\s+/g, ' ').slice(0, 90);
-      showToast(`${tr('toastChatErrorPrefix')}: ${msg}`);
+      if (!state.localFallbackNotified) {
+        state.localFallbackNotified = true;
+        showToast(tr('toastLocalFallbackActive'));
+      }
     } finally {
       state.chatBusy = false;
       if (sendBtn) sendBtn.disabled = false;
