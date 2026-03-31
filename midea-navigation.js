@@ -48,6 +48,14 @@
     return safeUrl(url);
   }
 
+  function isPlaceholderUrl(raw) {
+    const value = String(raw || '').trim().toLowerCase();
+    if (!value) return true;
+    if (/(nama-backend|your-backend|contoh-backend|example\.com|placeholder)/i.test(value)) return true;
+    if (/[<{][^>}]*(backend|onrender|url)[^>}]?[>}]/i.test(value)) return true;
+    return false;
+  }
+
   function normalizeChatApiUrl(raw) {
     let url = withDefaultScheme(raw);
     if (!url) return '';
@@ -120,7 +128,12 @@
       backendHints.storedBackend,
       'https://midea-chat-proxy.onrender.com',
     ];
-    return uniqueUrls(hints.map(normalizeOriginUrl).filter(Boolean));
+    return uniqueUrls(
+      hints
+        .filter((hint) => !isPlaceholderUrl(hint))
+        .map(normalizeOriginUrl)
+        .filter(Boolean)
+    );
   }
 
   function buildChatApiCandidates() {
