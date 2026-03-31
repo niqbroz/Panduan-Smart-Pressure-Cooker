@@ -1,5 +1,5 @@
 (function () {
-  const NAV_VERSION = 'nav-fix-2026-03-31-v23';
+  const NAV_VERSION = 'nav-fix-2026-03-31-v24';
   window.MIDEA_NAV_VERSION = NAV_VERSION;
 
   const wraps = Array.from(document.querySelectorAll('.phone-wrap'));
@@ -645,6 +645,71 @@
       'Panduan': 'Guide',
       'Resep': 'Recipes',
       'Bantuan': 'Help',
+      'Jangan letakkan di tempat tidak stabil atau di atas koran/busa yang dapat menutup':
+        'Do not place it on an unstable surface or on newspaper/foam that may block',
+      'Alat ini tidak diperuntukkan bagi anak-anak. Jangan gunakan di dekat air atau api, dan jauhkan dari paparan sinar matahari langsung.':
+        'This appliance is not intended for children. Do not use near water or fire, and keep away from direct sunlight.',
+      'TIDAK BOLEH melebihi': 'MUST NOT exceed',
+      'sebelum memastikan tidak ada tekanan di dalam. Tunggu float valve turun sepenuhnya.':
+        'before ensuring there is no pressure inside. Wait until the float valve drops completely.',
+      'service center resmi': 'official service center',
+      'tidak boleh dihubungkan': 'must not be connected',
+      'Aktifkan mode jaga hangat kapan saja dari standby': 'Activate Keep Warm mode anytime from standby',
+      '🍽 Semua Menu Fungsi': '🍽 All Function Menus',
+      'tidak dapat menggunakan preset timer dan tidak mendukung pemilihan tekstur.':
+        'cannot use preset timer and does not support texture selection.',
+      'Dorong anti-block shield ke samping untuk mengangkatnya ke atas dari pipa uap.':
+        'Push the anti-block shield sideways to lift it up from the steam pipe.',
+      'Tarik ke atas dari rak penahan secara bertahap, bagian per bagian.':
+        'Pull upward from the retaining rack gradually, section by section.',
+      '(atas/bawah). Untuk menghilangkan bau, cuci dengan air sabun hangat.':
+        '(top/bottom). To remove odor, wash with warm soapy water.',
+      '✅ Boleh vs Tidak Boleh': '✅ Do and Don’t',
+      'Putar tuas steam vent ke posisi terbuka (panah ke atas) sebelum memulai memasak.':
+        'Turn the steam vent lever to the open position (arrow up) before starting to cook.',
+      'tidak dapat menggunakan preset timer.': 'cannot use preset timer.',
+      'di atas tutup untuk mempercepat pendinginan.': 'on top of the lid to speed up cooling.',
+      'Angkat tutup ke atas untuk membuka. Arahkan uap sisa menjauhi tubuh.':
+        'Lift the lid up to open. Direct remaining steam away from your body.',
+      'Pressure cooker memanas tidak wajar atau mengeluarkan bau terbakar saat dioperasikan.':
+        'The pressure cooker overheats abnormally or emits a burning smell during operation.',
+      'Suara atau Getaran Tidak Wajar': 'Abnormal Noise or Vibration',
+      'Muncul suara aneh atau getaran berlebihan saat alat dinyalakan. Segera cabut dan hubungi service center.':
+        'If unusual noise or excessive vibration appears when the appliance is turned on, unplug immediately and contact the service center.',
+      '& Kode Error': '& Error Codes',
+      'Sealing ring tidak terpasang dengan benar, atau float valve masih terangkat akibat tekanan sisa':
+        'The sealing ring is not installed correctly, or the float valve is still raised due to residual pressure.',
+      'Sealing ring rusak, kotor, atau tidak terpasang sempurna. Bisa juga karena tutup tidak tertutup rapat':
+        'The sealing ring is damaged, dirty, or not installed properly. It can also be due to the lid not being tightly closed.',
+      'Float valve tersumbat, silikon float valve aus, atau handle steam release tidak di posisi sealing':
+        'The float valve is clogged, the float-valve silicone is worn, or the steam release handle is not in the sealing position.',
+      'Float Valve Tidak Bisa Naik': 'Float Valve Cannot Rise',
+      'Tambahkan air sesuai resep yang dianjurkan. Jika berlanjut, kirim ke service center':
+        'Add water according to the recommended recipe. If it continues, send it to the service center.',
+      'Layar Kosong Setelah Dinyalakan': 'Blank Display After Power On',
+      'Sambungan listrik buruk, sekring alat putus, atau tutup tidak tertutup sempurna':
+        'Poor electrical connection, blown fuse, or lid not fully closed.',
+      'Periksa kabel & stopkontak. Pastikan tutup terkunci. Jika berlanjut, hubungi service center resmi Midea':
+        'Check the power cable and outlet. Ensure the lid is locked. If it continues, contact an official Midea service center.',
+      'Terlalu sedikit air, tutup dibuka terlalu cepat, atau takaran air tidak sesuai':
+        'Too little water, lid opened too early, or incorrect water ratio.',
+      '🔴 Kode Error & Artinya': '🔴 Error Codes & Meanings',
+      'Sensor suhu bagian bawah terputus. Hentikan penggunaan dan kirim ke service center untuk diperiksa.':
+        'Bottom temperature sensor open circuit. Stop using and send to service center for inspection.',
+      'Sensor suhu bagian bawah mengalami korsleting. Hentikan penggunaan segera dan hubungi service center.':
+        'Bottom temperature sensor short circuit. Stop using immediately and contact service center.',
+      'Saklar tekanan terputus. Periksa apakah ada air atau makanan yang perlu dibersihkan. Jika berlanjut, kirim ke service center.':
+        'Pressure switch open circuit. Check for water/food residue that needs cleaning. If it continues, send to service center.',
+      'Alat terlalu panas (overtemperature). Biarkan dingin sepenuhnya lalu coba nyalakan kembali. Pastikan ventilasi tidak tersumbat.':
+        'The appliance is too hot (overtemperature). Let it cool completely, then try turning it on again. Ensure vents are not blocked.',
+      'Hubungi Service Center resmi Midea atau gunakan fitur':
+        'Contact official Midea Service Center or use the feature',
+      'Empuk cepat · Cocok untuk menu keluarga': 'Fast tender texture · Suitable for family meals',
+      'Menu daging cepat · Bumbu gurih manis': 'Quick meat menu · Savory sweet seasoning',
+      'Menu praktis protein tinggi · Cocok meal prep': 'Practical high-protein menu · Great for meal prep',
+      'Ketuk kartu video untuk memutar langsung di dalam aplikasi ini. Jika gagal tampil, pastikan file Drive diset ke akses publik':
+        'Tap a video card to play directly in this app. If it fails to display, make sure the Drive file is set to public access.',
+      '0 video': '0 videos',
     },
     zh: {
       'Smart Home Experience': '智能家居体验',
@@ -679,6 +744,69 @@
       'Panduan': '指南',
       'Resep': '食谱',
       'Bantuan': '帮助',
+      'Service Center': '服务中心',
+      'Jangan letakkan di tempat tidak stabil atau di atas koran/busa yang dapat menutup':
+        '请勿放置在不稳定位置，或放在可能遮挡的报纸/泡沫上',
+      'Alat ini tidak diperuntukkan bagi anak-anak. Jangan gunakan di dekat air atau api, dan jauhkan dari paparan sinar matahari langsung.':
+        '本设备不适用于儿童。请勿在水源或火源附近使用，并避免阳光直射。',
+      'TIDAK BOLEH melebihi': '严禁超过',
+      'sebelum memastikan tidak ada tekanan di dalam. Tunggu float valve turun sepenuhnya.':
+        '在确认内部无压力之前，请勿开盖。等待浮子阀完全下降。',
+      'service center resmi': '官方服务中心',
+      'tidak boleh dihubungkan': '不得连接',
+      'tidak dapat menggunakan preset timer dan tidak mendukung pemilihan tekstur.':
+        '不能使用预约定时，且不支持口感选择。',
+      'Dorong anti-block shield ke samping untuk mengangkatnya ke atas dari pipa uap.':
+        '向侧面推动防堵罩，将其从蒸汽管向上提起。',
+      'Tarik ke atas dari rak penahan secara bertahap, bagian per bagian.':
+        '从固定架上逐段向上拉出。',
+      '(atas/bawah). Untuk menghilangkan bau, cuci dengan air sabun hangat.':
+        '（上/下均可）。如需去味，请用温肥皂水清洗。',
+      '✅ Boleh vs Tidak Boleh': '✅ 可做与不可做',
+      'Putar tuas steam vent ke posisi terbuka (panah ke atas) sebelum memulai memasak.':
+        '在开始烹饪前，将蒸汽阀拨杆旋到开启位置（箭头向上）。',
+      'tidak dapat menggunakan preset timer.': '不能使用预约定时。',
+      'di atas tutup untuk mempercepat pendinginan.': '可放在锅盖上方以加快降温。',
+      'Angkat tutup ke atas untuk membuka. Arahkan uap sisa menjauhi tubuh.':
+        '向上提起锅盖即可打开。将剩余蒸汽导向远离身体。',
+      'Pressure cooker memanas tidak wajar atau mengeluarkan bau terbakar saat dioperasikan.':
+        '压力锅运行时异常发热或出现焦糊气味。',
+      'Suara atau Getaran Tidak Wajar': '异常噪音或震动',
+      'Muncul suara aneh atau getaran berlebihan saat alat dinyalakan. Segera cabut dan hubungi service center.':
+        '开机时若出现异常噪音或过度震动，请立即拔掉电源并联系服务中心。',
+      '& Kode Error': '与错误代码',
+      'Sealing ring tidak terpasang dengan benar, atau float valve masih terangkat akibat tekanan sisa':
+        '密封圈安装不正确，或浮子阀因残余压力仍处于升起状态。',
+      'Sealing ring rusak, kotor, atau tidak terpasang sempurna. Bisa juga karena tutup tidak tertutup rapat':
+        '密封圈损坏、脏污或安装不到位，也可能是锅盖未完全锁紧。',
+      'Float valve tersumbat, silikon float valve aus, atau handle steam release tidak di posisi sealing':
+        '浮子阀堵塞、浮子阀硅胶磨损，或蒸汽释放手柄未处于密封位置。',
+      'Float Valve Tidak Bisa Naik': '浮子阀无法升起',
+      'Tambahkan air sesuai resep yang dianjurkan. Jika berlanjut, kirim ke service center':
+        '请按推荐食谱补充水量；若仍持续，请送至服务中心。',
+      'Layar Kosong Setelah Dinyalakan': '开机后屏幕无显示',
+      'Sambungan listrik buruk, sekring alat putus, atau tutup tidak tertutup sempurna':
+        '电源连接不良、保险丝熔断，或锅盖未完全闭合。',
+      'Periksa kabel & stopkontak. Pastikan tutup terkunci. Jika berlanjut, hubungi service center resmi Midea':
+        '请检查电源线和插座，确认锅盖已锁紧；若仍持续，请联系美的官方服务中心。',
+      'Terlalu sedikit air, tutup dibuka terlalu cepat, atau takaran air tidak sesuai':
+        '水量过少、开盖过早，或水量比例不正确。',
+      '🔴 Kode Error & Artinya': '🔴 错误代码与含义',
+      'Sensor suhu bagian bawah terputus. Hentikan penggunaan dan kirim ke service center untuk diperiksa.':
+        '底部温度传感器开路。请停止使用并送服务中心检修。',
+      'Sensor suhu bagian bawah mengalami korsleting. Hentikan penggunaan segera dan hubungi service center.':
+        '底部温度传感器短路。请立即停止使用并联系服务中心。',
+      'Saklar tekanan terputus. Periksa apakah ada air atau makanan yang perlu dibersihkan. Jika berlanjut, kirim ke service center.':
+        '压力开关开路。请检查是否有水或食物残留需要清理；若仍持续，请送服务中心。',
+      'Alat terlalu panas (overtemperature). Biarkan dingin sepenuhnya lalu coba nyalakan kembali. Pastikan ventilasi tidak tersumbat.':
+        '设备过热（过温保护）。请完全冷却后再尝试开机，并确保通风口未堵塞。',
+      'Hubungi Service Center resmi Midea atau gunakan fitur': '联系美的官方服务中心或使用此功能',
+      'Empuk cepat · Cocok untuk menu keluarga': '快速软烂口感 · 适合家庭菜单',
+      'Menu daging cepat · Bumbu gurih manis': '快速肉类菜单 · 咸甜风味',
+      'Menu praktis protein tinggi · Cocok meal prep': '高蛋白实用菜单 · 适合备餐',
+      'Ketuk kartu video untuk memutar langsung di dalam aplikasi ini. Jika gagal tampil, pastikan file Drive diset ke akses publik':
+        '点击视频卡片可在应用内直接播放。若无法显示，请确保 Drive 文件已设为公开访问。',
+      '0 video': '0 个视频',
     },
   };
   const FALLBACK_WORD_MAP = {
