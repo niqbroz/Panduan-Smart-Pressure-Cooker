@@ -1,5 +1,5 @@
 (function () {
-  const NAV_VERSION = 'nav-fix-2026-03-31-v25';
+  const NAV_VERSION = 'nav-fix-2026-03-31-v26';
   window.MIDEA_NAV_VERSION = NAV_VERSION;
 
   const wraps = Array.from(document.querySelectorAll('.phone-wrap'));
@@ -25,18 +25,262 @@
     .map((wrap, idx) => (wrap.querySelector('.chapter-progress-bar') ? idx : -1))
     .filter((idx) => idx >= 0);
 
-  // default same-origin agar tetap jalan saat diakses via IP LAN device lain
-  const CHAT_API_URL = window.MIDEA_CHAT_API_URL || '/api/chat';
-
-  function deriveTranslateApiUrl(chatUrl) {
-    if (window.MIDEA_TRANSLATE_API_URL) return window.MIDEA_TRANSLATE_API_URL;
-    if (/\/api\/chat\/?$/.test(chatUrl)) {
-      return chatUrl.replace(/\/api\/chat\/?$/, '/api/translate-ui');
+  function safeUrl(raw) {
+    const value = String(raw || '').trim();
+    if (!value) return '';
+    try {
+      return new URL(value, window.location.href).href;
+    } catch (_err) {
+      return '';
     }
-    return '/api/translate-ui';
   }
 
-  const TRANSLATE_API_URL = deriveTranslateApiUrl(CHAT_API_URL);
+  function withDefaultScheme(raw) {
+    const value = String(raw || '').trim();
+    if (!value) return '';
+    if (/^[a-z][a-z0-9+\-.]*:\/\//i.test(value) || value.startsWith('/')) return value;
+    if (/^[\w.-]+\.[a-z]{2,}/i.test(value)) return `https://${value}`;
+    return value;
+  }
+
+  function normalizeOriginUrl(raw) {
+    const url = withDefaultScheme(raw).replace(/\/+$/, '');
+    return safeUrl(url);
+  }
+
+  function normalizeChatApiUrl(raw) {
+    let url = withDefaultScheme(raw);
+    if (!url) return '';
+    url = url.replace(/\/+$/, '');
+
+    if (/\/api\/translate-ui$/i.test(url)) {
+      url = url.replace(/\/api\/translate-ui$/i, '/api/chat');
+    } else if (/\/v1$/i.test(url)) {
+      url = `${url}/chat/completions`;
+    } else if (/^https?:\/\/[^/]+$/i.test(url)) {
+      url = `${url}/api/chat`;
+    }
+
+    return safeUrl(url);
+  }
+
+  function deriveTranslateApiFromChat(chatUrl) {
+    const url = String(chatUrl || '').trim();
+    if (!url) return '';
+    if (/\/api\/chat\/?$/i.test(url)) {
+      return url.replace(/\/api\/chat\/?$/i, '/api/translate-ui');
+    }
+    return '';
+  }
+
+  function uniqueUrls(values) {
+    const seen = new Set();
+    const out = [];
+    values.forEach((value) => {
+      const normalized = String(value || '').trim();
+      if (!normalized || seen.has(normalized)) return;
+      seen.add(normalized);
+      out.push(normalized);
+    });
+    return out;
+  }
+
+  function readBackendHints() {
+    const params = new URLSearchParams(window.location.search || '');
+    const queryBackend = params.get('backend') || '';
+    const queryChatApi = params.get('chat_api') || '';
+
+    if (queryBackend) {
+      try {
+        localStorage.setItem('midea_backend_origin', queryBackend);
+      } catch (_err) {}
+    }
+    if (queryChatApi) {
+      try {
+        localStorage.setItem('midea_chat_api_url', queryChatApi);
+      } catch (_err) {}
+    }
+
+    let storedBackend = '';
+    let storedChatApi = '';
+    try {
+      storedBackend = localStorage.getItem('midea_backend_origin') || '';
+      storedChatApi = localStorage.getItem('midea_chat_api_url') || '';
+    } catch (_err) {}
+
+    return { queryBackend, queryChatApi, storedBackend, storedChatApi };
+  }
+
+  const backendHints = readBackendHints();
+
+  function buildBackendOriginCandidates() {
+    const hints = [
+      window.MIDEA_BACKEND_ORIGIN || '',
+      backendHints.queryBackend,
+      backendHints.storedBackend,
+      'https://midea-chat-proxy.onrender.com',
+    ];
+    return uniqueUrls(hints.map(normalizeOriginUrl).filter(Boolean));
+  }
+
+  function buildChatApiCandidates() {
+    const directHints = [
+      window.MIDEA_CHAT_API_URL || '',
+      backendHints.queryChatApi,
+      backendHints.storedChatApi,
+    ];
+
+    const byOrigin = buildBackendOriginCandidates().map((origin) => `${origin}/api/chat`);
+    const sameOrigin = ['/api/chat'];
+
+    return uniqueUrls([...directHints, ...byOrigin, ...sameOrigin].map(normalizeChatApiUrl).filter(Boolean));
+  }
+
+  function buildTranslateApiCandidates(chatCandidates) {
+    const fromChat = (chatCandidates || []).map(deriveTranslateApiFromChat).filter(Boolean);
+    const directHints = [window.MIDEA_TRANSLATE_API_URL || '', '/api/translate-ui'];
+    return uniqueUrls([...directHints, ...fromChat].map(safeUrl).filter(Boolean));
+  }
+
+  const CHAT_API_CANDIDATES = buildChatApiCandidates();
+  const TRANSLATE_API_CANDIDATES = buildTranslateApiCandidates(CHAT_API_CANDIDATES);
+
+  const apiRuntime = {
+    preferredChatUrl: '',
+    preferredTranslateUrl: '',
+    lastChatError: '',
+    lastTranslateError: '',
+  };
+
+  async function fetchWithTimeout(url, options = {}, timeoutMs = 16000) {
+    const controller = new AbortController();
+    const timer = window.setTimeout(() => controller.abort(), timeoutMs);
+    try {
+      return await fetch(url, { ...options, signal: controller.signal });
+    } finally {
+      window.clearTimeout(timer);
+    }
+  }
+
+  function parseOpenAICompatibleReply(data) {
+    if (!data || typeof data !== 'object') return '';
+
+    const ccContent = data?.choices?.[0]?.message?.content;
+    if (typeof ccContent === 'string' && ccContent.trim()) return ccContent.trim();
+    if (Array.isArray(ccContent)) {
+      const joined = ccContent
+        .map((part) => {
+          if (typeof part === 'string') return part;
+          if (part && typeof part.text === 'string') return part.text;
+          return '';
+        })
+        .join(' ')
+        .trim();
+      if (joined) return joined;
+    }
+
+    if (typeof data.output_text === 'string' && data.output_text.trim()) {
+      return data.output_text.trim();
+    }
+
+    if (Array.isArray(data.output)) {
+      const chunks = [];
+      data.output.forEach((item) => {
+        if (!item) return;
+        if (Array.isArray(item.content)) {
+          item.content.forEach((part) => {
+            if (typeof part?.text === 'string') chunks.push(part.text);
+            else if (typeof part?.output_text === 'string') chunks.push(part.output_text);
+          });
+        } else if (typeof item.content === 'string') {
+          chunks.push(item.content);
+        }
+      });
+      const merged = chunks.join('\n').trim();
+      if (merged) return merged;
+    }
+
+    return '';
+  }
+
+  function orderedCandidates(type) {
+    const preferred = type === 'chat' ? apiRuntime.preferredChatUrl : apiRuntime.preferredTranslateUrl;
+    const pool = type === 'chat' ? CHAT_API_CANDIDATES : TRANSLATE_API_CANDIDATES;
+    if (!preferred) return pool.slice();
+    return uniqueUrls([preferred, ...pool]);
+  }
+
+  async function postJsonWithFallback(type, payload) {
+    const endpoints = orderedCandidates(type);
+    const errors = [];
+
+    for (const endpoint of endpoints) {
+      try {
+        const response = await fetchWithTimeout(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+
+        let data = null;
+        let raw = '';
+        try {
+          data = await response.json();
+        } catch (_err) {
+          raw = await response.text().catch(() => '');
+        }
+
+        if (!response.ok) {
+          const errMsg =
+            (data && typeof data.error === 'string' && data.error) ||
+            (data && typeof data?.error?.message === 'string' && data.error.message) ||
+            (raw && raw.trim()) ||
+            `HTTP ${response.status}`;
+          throw new Error(errMsg);
+        }
+
+        if (type === 'chat') {
+          const replyFromProxy = data && typeof data.reply === 'string' ? data.reply.trim() : '';
+          const replyFromDirect = parseOpenAICompatibleReply(data);
+          const reply = replyFromProxy || replyFromDirect;
+          if (!reply) throw new Error('Format respons chat tidak valid.');
+          apiRuntime.preferredChatUrl = endpoint;
+          apiRuntime.lastChatError = '';
+          return { reply, raw: data || null, endpoint };
+        }
+
+        const translations =
+          data && Array.isArray(data.translations)
+            ? data.translations.map((v) => (typeof v === 'string' ? v : ''))
+            : null;
+        if (!translations) throw new Error('Format respons translate tidak valid.');
+        apiRuntime.preferredTranslateUrl = endpoint;
+        apiRuntime.lastTranslateError = '';
+        return { translations, raw: data || null, endpoint };
+      } catch (error) {
+        const short = String(error?.message || 'Unknown error').replace(/\s+/g, ' ').slice(0, 120);
+        errors.push(`${endpoint} -> ${short}`);
+      }
+    }
+
+    const summary = errors[0] || 'Tidak ada endpoint tersedia.';
+    if (type === 'chat') apiRuntime.lastChatError = summary;
+    else apiRuntime.lastTranslateError = summary;
+    throw new Error(summary);
+  }
+
+  window.mideaApiStatus = function () {
+    return {
+      navVersion: NAV_VERSION,
+      chatCandidates: CHAT_API_CANDIDATES,
+      translateCandidates: TRANSLATE_API_CANDIDATES,
+      preferredChatUrl: apiRuntime.preferredChatUrl,
+      preferredTranslateUrl: apiRuntime.preferredTranslateUrl,
+      lastChatError: apiRuntime.lastChatError,
+      lastTranslateError: apiRuntime.lastTranslateError,
+    };
+  };
+
   const SUPPORTED_LANGS = ['id', 'en', 'zh'];
 
   const UI_TEXT = {
@@ -1793,29 +2037,8 @@
   }
 
   async function fetchUiTranslationsChunk(lang, texts) {
-    const response = await fetch(TRANSLATE_API_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ lang, texts }),
-    });
-
-    if (!response.ok) {
-      let detail = `API ${response.status}`;
-      try {
-        const errJson = await response.json();
-        if (errJson?.error) detail = String(errJson.error);
-      } catch (_err) {
-        const errText = await response.text().catch(() => '');
-        if (errText) detail = `${detail}: ${errText}`;
-      }
-      throw new Error(detail);
-    }
-
-    const data = await response.json();
-    if (!Array.isArray(data?.translations)) {
-      throw new Error('Format respons translate tidak valid.');
-    }
-    return data.translations.map((v) => (typeof v === 'string' ? v : ''));
+    const result = await postJsonWithFallback('translate', { lang, texts });
+    return result.translations;
   }
 
   async function translateMissingTexts(lang, missingMap, requestId) {
@@ -2655,34 +2878,13 @@
 
   async function fetchGptReply() {
     const history = getCurrentHistory();
-    const response = await fetch(CHAT_API_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        mode: state.chatMode,
-        lang: state.language,
-        messages: history.slice(-12),
-      }),
-    });
-
-    if (!response.ok) {
-      let detail = `API ${response.status}`;
-      try {
-        const errJson = await response.json();
-        if (errJson?.error) detail = String(errJson.error);
-      } catch (_err) {
-        const errText = await response.text().catch(() => '');
-        if (errText) detail = `${detail}: ${errText}`;
-      }
-      throw new Error(detail);
-    }
-
-    const data = await response.json();
-    if (!data.reply || typeof data.reply !== 'string') {
-      throw new Error('Format respons tidak valid.');
-    }
-
-    return data.reply.trim();
+    const payload = {
+      mode: state.chatMode,
+      lang: state.language,
+      messages: history.slice(-12),
+    };
+    const result = await postJsonWithFallback('chat', payload);
+    return result.reply;
   }
 
   async function sendMessage() {

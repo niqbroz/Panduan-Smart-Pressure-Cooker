@@ -3471,11 +3471,15 @@ function closeChapter() {
   // Anda tetap bisa override manual dengan window.MIDEA_CHAT_API_URL sebelum script ini.
   (function () {
     if (window.MIDEA_CHAT_API_URL) return;
-    var host = String(window.location.hostname || '');
-    var isGithubPages = /github\.io$/i.test(host);
-    if (!isGithubPages) return;
-
-    var backendOrigin = window.MIDEA_BACKEND_ORIGIN || 'https://midea-chat-proxy.onrender.com';
+    var query = new URLSearchParams(window.location.search || '');
+    var queryBackend = query.get('backend') || '';
+    var storedBackend = '';
+    try {
+      storedBackend = localStorage.getItem('midea_backend_origin') || '';
+    } catch (_err) {}
+    var backendOrigin = window.MIDEA_BACKEND_ORIGIN || queryBackend || storedBackend || '';
+    if (!backendOrigin) return;
+    backendOrigin = String(backendOrigin).replace(/\/+$/, '');
     window.MIDEA_CHAT_API_URL = backendOrigin + '/api/chat';
     window.MIDEA_TRANSLATE_API_URL = backendOrigin + '/api/translate-ui';
   })();
@@ -3524,6 +3528,6 @@ function closeChapter() {
     );
   })();
 </script>
-<script src="midea-navigation.js?v=20260331-v33"></script>
+<script src="midea-navigation.js?v=20260331-v34"></script>
 
 </body>
