@@ -3203,6 +3203,18 @@ function closeChapter() {
     display: grid;
     gap: 10px;
   }
+  #screen-video-gallery .video-list-shell {
+    max-height: 312px;
+    overflow-y: auto;
+    padding-right: 2px;
+  }
+  #screen-video-gallery .video-list-shell::-webkit-scrollbar {
+    width: 6px;
+  }
+  #screen-video-gallery .video-list-shell::-webkit-scrollbar-thumb {
+    background: #c7d7ff;
+    border-radius: 8px;
+  }
   #screen-video-gallery .video-card {
     border: 0;
     width: 100%;
@@ -3380,8 +3392,11 @@ function closeChapter() {
       <div style="font-size:11px;font-weight:700;color:var(--mid-gray);letter-spacing:1.6px;text-transform:uppercase;margin-top:4px;">Galeri Video</div>
 
       <div style="background:linear-gradient(135deg,#fff 0%,#f8fbff 100%);border:1.5px solid #d8e1ff;border-radius:14px;padding:10px;overflow:hidden;">
-        <div id="video-gallery-list"></div>
-        <div id="video-gallery-empty" style="display:none;padding:14px;text-align:center;font-size:11px;color:var(--mid-gray);"></div>
+        <div id="video-gallery-count" style="font-size:10px;font-weight:700;color:#1e3a8a;margin:2px 2px 8px;">0 video</div>
+        <div class="video-list-shell">
+          <div id="video-gallery-list"></div>
+          <div id="video-gallery-empty" style="display:none;padding:14px;text-align:center;font-size:11px;color:var(--mid-gray);"></div>
+        </div>
       </div>
 
       <div style="background:#F0F4FF;border:1.5px solid #BFD0FF;border-radius:12px;padding:10px 12px;font-size:10.5px;color:#1E3A8A;line-height:1.5;">
@@ -3425,6 +3440,6 @@ function closeChapter() {
   // window.MIDEA_CHAT_API_URL = "https://domain-backend-anda.com/api/chat";
   // window.MIDEA_TRANSLATE_API_URL = "https://domain-backend-anda.com/api/translate-ui";
 </script>
-<script src="midea-navigation.js?v=20260331-v20"></script>
+<script src="midea-navigation.js?v=20260331-v21"></script>
 
 </body>

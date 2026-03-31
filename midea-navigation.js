@@ -1037,6 +1037,7 @@
 
     const listEl = screen.querySelector('#video-gallery-list');
     const emptyEl = screen.querySelector('#video-gallery-empty');
+    const countEl = screen.querySelector('#video-gallery-count');
     const input = screen.querySelector('#video-gallery-search');
     if (!listEl || !emptyEl) return;
 
@@ -1079,6 +1080,10 @@
 
     emptyEl.textContent = tr('galleryEmpty');
     emptyEl.style.display = filtered.length ? 'none' : 'block';
+    if (countEl) {
+      const n = filtered.length;
+      countEl.textContent = `${n} video`;
+    }
     hydrateVideoGalleryThumbnails(listEl);
   }
 
@@ -1321,6 +1326,9 @@
     if (openGalleryBtn) {
       openGalleryBtn.addEventListener('click', () => {
         if (hasScreen(SCREEN.VIDEO_GALLERY)) {
+          const galleryScreen = wraps[SCREEN.VIDEO_GALLERY];
+          const gallerySearch = galleryScreen?.querySelector('#video-gallery-search');
+          if (gallerySearch) gallerySearch.value = '';
           goToScreen(SCREEN.VIDEO_GALLERY);
           renderVideoGallery();
           return;
