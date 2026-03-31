@@ -1773,7 +1773,25 @@
 
       if (nextActionBtn) {
         nextActionBtn.style.cursor = 'pointer';
+
+        // Sesuai request: Bab 2..8 pakai aksi "Bab Sebelumnya".
+        if (chapterPos > 0) {
+          const prevMain =
+            state.language === 'en' ? 'Previous Chapter' : state.language === 'zh' ? '上一章' : 'Bab Sebelumnya';
+          const prevSub =
+            state.language === 'en'
+              ? '← Back to previous chapter'
+              : state.language === 'zh'
+                ? '← 返回上一章'
+                : '← Kembali ke bab sebelumnya';
+          nextActionBtn.innerHTML = `${prevMain}<span>${prevSub}</span>`;
+        }
+
         nextActionBtn.addEventListener('click', () => {
+          if (chapterPos > 0) {
+            goToScreen(CHAPTER_SCREENS[chapterPos - 1]);
+            return;
+          }
           if (chapterPos < CHAPTER_SCREENS.length - 1) {
             goToScreen(CHAPTER_SCREENS[chapterPos + 1]);
           } else {
