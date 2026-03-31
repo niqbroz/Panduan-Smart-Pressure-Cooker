@@ -10,6 +10,6 @@ services:
       - key: OPENAI_API_KEY
         sync: false
       - key: OPENAI_BASE_URL
-        value: https://litellm.koboi2026.biz.id/ui
+        value: https://litellm.koboi2026.biz.id/v1
       - key: OPENAI_MODEL
         value: all-team-models
