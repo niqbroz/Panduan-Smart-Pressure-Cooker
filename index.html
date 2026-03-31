@@ -3236,9 +3236,13 @@ function closeChapter() {
     gap: 10px;
   }
   #screen-video-gallery .video-list-shell {
-    max-height: none;
-    overflow: visible;
-    padding-right: 0;
+    max-height: min(44vh, 360px);
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    touch-action: pan-y;
+    padding-right: 2px;
   }
   #screen-video-gallery .video-list-shell::-webkit-scrollbar {
     width: 6px;
@@ -3259,6 +3263,7 @@ function closeChapter() {
     cursor: pointer;
     box-shadow: 0 7px 18px rgba(15, 34, 63, 0.09);
     transition: transform 0.14s ease, box-shadow 0.16s ease, border-color 0.16s ease;
+    touch-action: pan-y;
   }
   #screen-video-gallery .video-card:hover {
     transform: translateY(-1px);
@@ -3510,6 +3515,6 @@ function closeChapter() {
     );
   })();
 </script>
-<script src="midea-navigation.js?v=20260331-v32"></script>
+<script src="midea-navigation.js?v=20260331-v33"></script>
 
 </body>
