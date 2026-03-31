@@ -1,5 +1,5 @@
 (function () {
-  const NAV_VERSION = 'nav-fix-2026-03-27-v16';
+  const NAV_VERSION = 'nav-fix-2026-03-31-v17';
   window.MIDEA_NAV_VERSION = NAV_VERSION;
 
   const wraps = Array.from(document.querySelectorAll('.phone-wrap'));
@@ -1333,6 +1333,24 @@
     bindBottomNav(home);
   }
 
+  function wireGlobalSupportFallback() {
+    if (document.body.dataset.mideaSupportFallbackBound === '1') return;
+    document.body.dataset.mideaSupportFallbackBound = '1';
+
+    document.addEventListener('click', (event) => {
+      const helpNav = event.target.closest('.nav-item[data-nav="help"], .nav-item[data-nav="bantuan"]');
+      if (helpNav) {
+        routeBottomNav(helpNav.getAttribute('data-nav') || 'help');
+        return;
+      }
+
+      const tanyaCard = event.target.closest('.card-tanya');
+      if (tanyaCard && tanyaCard.closest('#screen-home')) {
+        openSupportChat();
+      }
+    });
+  }
+
   function wirePanduanList() {
     const panduan = wraps[SCREEN.PANDUAN];
     if (!panduan) return;
@@ -1774,6 +1792,7 @@
   wireVideoGallery();
   wireVideoPlayer();
   wireTanyaKami();
+  wireGlobalSupportFallback();
   wireChapterDetails();
 
   const observer = new MutationObserver((mutations) => {
