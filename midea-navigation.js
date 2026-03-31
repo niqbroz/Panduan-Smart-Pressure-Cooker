@@ -405,6 +405,33 @@
     return `https://drive.google.com/file/d/${fileId}/preview`;
   }
 
+  function extractYouTubeVideoId(src) {
+    const raw = String(src || '').trim();
+    if (!raw) return '';
+    try {
+      const u = new URL(raw);
+      const host = u.hostname.replace(/^www\./, '');
+      if (host === 'youtu.be') {
+        return (u.pathname || '').replace(/^\//, '').split('/')[0] || '';
+      }
+      if (host === 'youtube.com' || host === 'm.youtube.com') {
+        if (u.pathname === '/watch') return u.searchParams.get('v') || '';
+        const embedMatch = (u.pathname || '').match(/^\/embed\/([a-zA-Z0-9_-]+)/);
+        if (embedMatch && embedMatch[1]) return embedMatch[1];
+      }
+    } catch (_err) {
+      const shortMatch = raw.match(/youtu\.be\/([a-zA-Z0-9_-]+)/);
+      if (shortMatch && shortMatch[1]) return shortMatch[1];
+      const watchMatch = raw.match(/[?&]v=([a-zA-Z0-9_-]+)/);
+      if (watchMatch && watchMatch[1]) return watchMatch[1];
+    }
+    return '';
+  }
+
+  function toYouTubeEmbedUrl(videoId) {
+    return `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1`;
+  }
+
   function toDriveThumbUrl(fileId) {
     return `https://drive.google.com/thumbnail?id=${fileId}&sz=w1000`;
   }
@@ -1116,6 +1143,7 @@
     if (!safeSrc) return;
     const resolvedSrc = resolveAssetUrl(safeSrc);
     const driveId = extractDriveFileId(resolvedSrc);
+    const youtubeId = extractYouTubeVideoId(resolvedSrc);
     const overlay = document.getElementById('video-player-overlay');
     const player = document.getElementById('video-player');
     const frame = document.getElementById('video-player-frame');
@@ -1123,19 +1151,23 @@
 
     // Jika overlay player tidak ada di HTML, tetap buka video di tab baru.
     if (!overlay || !player || !frame) {
-      const fallbackUrl = driveId ? toDrivePreviewUrl(driveId) : resolvedSrc;
+      const fallbackUrl = driveId
+        ? toDrivePreviewUrl(driveId)
+        : youtubeId
+          ? `https://youtu.be/${youtubeId}`
+          : resolvedSrc;
       window.open(fallbackUrl, '_blank', 'noopener,noreferrer');
       return;
     }
 
     if (titleEl) titleEl.textContent = title || 'Video Panduan';
-    if (driveId) {
+    if (driveId || youtubeId) {
       player.pause();
       player.removeAttribute('src');
       player.load();
       player.style.display = 'none';
       frame.style.display = 'block';
-      frame.src = toDrivePreviewUrl(driveId);
+      frame.src = driveId ? toDrivePreviewUrl(driveId) : toYouTubeEmbedUrl(youtubeId);
     } else {
       frame.removeAttribute('src');
       frame.style.display = 'none';
@@ -1145,7 +1177,7 @@
     overlay.classList.add('open');
     overlay.setAttribute('aria-hidden', 'false');
 
-    if (!driveId) {
+    if (!driveId && !youtubeId) {
       const playPromise = player.play();
       if (playPromise && typeof playPromise.catch === 'function') {
         playPromise.catch(() => {});
