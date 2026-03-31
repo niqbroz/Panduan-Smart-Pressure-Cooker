@@ -1,5 +1,5 @@
 (function () {
-  const NAV_VERSION = 'nav-fix-2026-03-31-v24';
+  const NAV_VERSION = 'nav-fix-2026-03-31-v25';
   window.MIDEA_NAV_VERSION = NAV_VERSION;
 
   const wraps = Array.from(document.querySelectorAll('.phone-wrap'));
@@ -1375,7 +1375,18 @@
   }
 
   function toYouTubeEmbedUrl(videoId) {
-    return `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1`;
+    const params = new URLSearchParams({
+      autoplay: '1',
+      rel: '0',
+      modestbranding: '1',
+      playsinline: '1',
+      enablejsapi: '1',
+    });
+    const origin = window.location && window.location.origin;
+    if (origin && origin !== 'null') {
+      params.set('origin', origin);
+    }
+    return `https://www.youtube-nocookie.com/embed/${videoId}?${params.toString()}`;
   }
 
   function toDriveThumbUrl(fileId) {

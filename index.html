@@ -3429,9 +3429,10 @@ function closeChapter() {
     <iframe
       id="video-player-frame"
       title="Video Player"
-      allow="autoplay; encrypted-media"
+      allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
       loading="lazy"
-      referrerpolicy="no-referrer"
+      referrerpolicy="strict-origin-when-cross-origin"
+      allowfullscreen
       style="display:none;"></iframe>
   </div>
 </div>
@@ -3486,6 +3487,6 @@ function closeChapter() {
     );
   })();
 </script>
-<script src="midea-navigation.js?v=20260331-v31"></script>
+<script src="midea-navigation.js?v=20260331-v32"></script>
 
 </body>
