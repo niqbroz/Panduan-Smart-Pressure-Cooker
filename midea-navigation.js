@@ -1,5 +1,5 @@
 (function () {
-  const NAV_VERSION = 'nav-fix-2026-03-31-v17';
+  const NAV_VERSION = 'nav-fix-2026-03-31-v18';
   window.MIDEA_NAV_VERSION = NAV_VERSION;
 
   const wraps = Array.from(document.querySelectorAll('.phone-wrap'));
@@ -1306,6 +1306,9 @@
     setChatMode('support');
     goToScreen(SCREEN.TANYA);
   }
+
+  // Expose global handler so HTML-level fallback can always call this.
+  window.__mideaOpenSupportChat = openSupportChat;
 
   function openRecipeChat() {
     setChatMode('recipe');

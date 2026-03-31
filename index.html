@@ -3445,6 +3445,50 @@ function closeChapter() {
   // window.MIDEA_CHAT_API_URL = "https://domain-backend-anda.com/api/chat";
   // window.MIDEA_TRANSLATE_API_URL = "https://domain-backend-anda.com/api/translate-ui";
 </script>
-<script src="midea-navigation.js?v=20260331-v23"></script>
+<script>
+  // Hard fallback: pastikan "Tanya Teknisi" dan "Bantuan" tetap berfungsi.
+  (function () {
+    function hardOpenSupport() {
+      var tanya = document.getElementById('screen-tanya');
+      if (!tanya) return;
+      var targetWrap = tanya.closest('.phone-wrap');
+      document.querySelectorAll('.phone-wrap').forEach(function (wrap) {
+        wrap.style.display = wrap === targetWrap ? 'flex' : 'none';
+      });
+      var input = tanya.querySelector('.chat-input');
+      if (input) input.removeAttribute('readonly');
+      window.scrollTo({ top: 0, behavior: 'auto' });
+    }
+
+    window.__mideaHardOpenSupport = hardOpenSupport;
+
+    document.addEventListener(
+      'click',
+      function (event) {
+        var trigger = event.target.closest(
+          '.card-tanya, .nav-item[data-nav="help"], .nav-item[data-nav="bantuan"]'
+        );
+        if (!trigger) return;
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        if (typeof window.__mideaOpenSupportChat === 'function') {
+          window.__mideaOpenSupportChat();
+          return;
+        }
+        if (typeof window.openSupportChat === 'function') {
+          try {
+            window.openSupportChat();
+            return;
+          } catch (_err) {}
+        }
+        hardOpenSupport();
+      },
+      true
+    );
+  })();
+</script>
+<script src="midea-navigation.js?v=20260331-v24"></script>
 
 </body>
