@@ -3164,6 +3164,188 @@ function closeChapter() {
 <!-- ══════════════════════════════════════════ -->
 <!--  SCREEN 14 – GALERI VIDEO PANDUAN         -->
 <!-- ══════════════════════════════════════════ -->
+<style>
+  #screen-video-gallery .video-toolbar {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 8px;
+    align-items: center;
+  }
+  #screen-video-gallery .video-search {
+    width: 100%;
+    border: 1.5px solid #c7d7ff;
+    background: #fff;
+    color: var(--charcoal);
+    border-radius: 12px;
+    padding: 10px 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    outline: none;
+  }
+  #screen-video-gallery .video-search:focus {
+    border-color: #7ba5ff;
+    box-shadow: 0 0 0 3px rgba(123, 165, 255, 0.16);
+  }
+  #screen-video-gallery .video-refresh-btn {
+    border: 1.5px solid #c7d7ff;
+    background: #fff;
+    color: #1e3a8a;
+    border-radius: 12px;
+    height: 38px;
+    min-width: 42px;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  #screen-video-gallery #video-gallery-list {
+    display: grid;
+    gap: 10px;
+  }
+  #screen-video-gallery .video-card {
+    border: 0;
+    width: 100%;
+    text-align: left;
+    background: #fff;
+    border-radius: 15px;
+    border: 1.5px solid var(--light-gray);
+    overflow: hidden;
+    padding: 0;
+    cursor: pointer;
+    box-shadow: 0 7px 18px rgba(15, 34, 63, 0.09);
+    transition: transform 0.14s ease, box-shadow 0.16s ease, border-color 0.16s ease;
+  }
+  #screen-video-gallery .video-card:hover {
+    transform: translateY(-1px);
+    border-color: #9ebfff;
+    box-shadow: 0 10px 24px rgba(15, 34, 63, 0.15);
+  }
+  #screen-video-gallery .video-gallery-thumb {
+    position: relative;
+    height: 132px;
+    background: linear-gradient(135deg, #1e3a5f 0%, #12253e 100%);
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  #screen-video-gallery .video-gallery-thumb::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(5, 16, 36, 0.05) 0%, rgba(5, 16, 36, 0.62) 100%);
+  }
+  #screen-video-gallery .video-gallery-thumb svg {
+    width: 44px;
+    height: 44px;
+    z-index: 2;
+    filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.25));
+  }
+  #screen-video-gallery .video-duration {
+    z-index: 2;
+    position: absolute;
+    right: 8px;
+    bottom: 8px;
+    background: rgba(9, 15, 31, 0.8);
+    color: #fff;
+    border-radius: 6px;
+    padding: 3px 6px;
+    font-size: 10px;
+    font-weight: 700;
+  }
+  #screen-video-gallery .video-meta {
+    padding: 10px 12px 8px;
+  }
+  #screen-video-gallery .video-title {
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--charcoal);
+    margin-bottom: 3px;
+  }
+  #screen-video-gallery .video-desc {
+    font-size: 10.5px;
+    color: var(--mid-gray);
+    line-height: 1.45;
+  }
+  #screen-video-gallery .video-open {
+    margin: 0 12px 11px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border-radius: 20px;
+    background: #eff6ff;
+    color: #1e40af;
+    border: 1.5px solid #bfd0ff;
+    padding: 4px 10px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+  }
+  #video-player-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(7, 12, 26, 0.78);
+    backdrop-filter: blur(4px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.22s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+  }
+  #video-player-overlay.open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  #video-player-overlay .player-card {
+    width: min(520px, 94vw);
+    background: #fff;
+    border-radius: 16px;
+    border: 1.5px solid #d8e1ff;
+    box-shadow: 0 22px 52px rgba(7, 12, 26, 0.38);
+    overflow: hidden;
+  }
+  #video-player-overlay .player-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 12px 14px;
+    background: linear-gradient(160deg, #1e3a5f 0%, #12253e 100%);
+  }
+  #video-player-title {
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.3;
+    max-width: 84%;
+  }
+  #video-player-overlay .player-close {
+    border: 1.5px solid rgba(255, 255, 255, 0.25);
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+    width: 30px;
+    height: 30px;
+    border-radius: 9px;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  #video-player,
+  #video-player-frame {
+    width: 100%;
+    height: min(62vh, 420px);
+    border: 0;
+    display: block;
+    background: #000;
+  }
+</style>
 <div class="phone-wrap">
   <div id="screen-video-gallery" class="phone" style="display:flex;flex-direction:column;overflow:hidden;background:var(--cream);">
 
@@ -3190,28 +3372,20 @@ function closeChapter() {
     <div style="flex:1;overflow-y:auto;padding:14px 16px 16px;scrollbar-width:none;display:flex;flex-direction:column;gap:10px;">
       <style>.phone ::-webkit-scrollbar{display:none;}</style>
 
-      <a href="https://drive.google.com/drive/folders/1T6toreltNhAC4dP8tsuUtDFI5rREKFMU?usp=sharing" target="_blank" rel="noopener noreferrer" style="text-decoration:none;">
-        <div style="background:#fff;border:1.5px solid #C7D7FF;color:#1E3A8A;border-radius:12px;padding:10px 12px;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:space-between;gap:8px;">
-          <span>Buka Galeri Video Lengkap</span>
-          <span style="font-size:12px;">↗</span>
-        </div>
-      </a>
+      <div class="video-toolbar">
+        <input id="video-gallery-search" class="video-search" type="text" placeholder="Cari video panduan..." />
+        <button id="video-gallery-refresh-btn" class="video-refresh-btn" type="button" title="Muat ulang daftar">⟳</button>
+      </div>
 
       <div style="font-size:11px;font-weight:700;color:var(--mid-gray);letter-spacing:1.6px;text-transform:uppercase;margin-top:4px;">Galeri Video</div>
 
-      <div style="background:#fff;border:1.5px solid var(--light-gray);border-radius:14px;overflow:hidden;">
-        <iframe
-          title="Galeri Video Panduan Midea"
-          src="https://drive.google.com/embeddedfolderview?id=1T6toreltNhAC4dP8tsuUtDFI5rREKFMU#list"
-          style="width:100%;height:355px;border:0;display:block;background:#fff;"
-          allowfullscreen
-          loading="lazy"
-          referrerpolicy="no-referrer">
-        </iframe>
+      <div style="background:linear-gradient(135deg,#fff 0%,#f8fbff 100%);border:1.5px solid #d8e1ff;border-radius:14px;padding:10px;overflow:hidden;">
+        <div id="video-gallery-list"></div>
+        <div id="video-gallery-empty" style="display:none;padding:14px;text-align:center;font-size:11px;color:var(--mid-gray);"></div>
       </div>
 
       <div style="background:#F0F4FF;border:1.5px solid #BFD0FF;border-radius:12px;padding:10px 12px;font-size:10.5px;color:#1E3A8A;line-height:1.5;">
-        Jika video tidak tampil, pastikan folder Google Drive diset ke akses publik <b>"Anyone with the link · Viewer"</b>.
+        Ketuk kartu video untuk memutar langsung di dalam aplikasi ini. Jika gagal tampil, pastikan file Drive diset ke akses publik <b>"Anyone with the link · Viewer"</b>.
       </div>
     </div><!-- /body -->
 
@@ -3228,6 +3402,22 @@ function closeChapter() {
   <span class="screen-label">Layar 14 · Galeri Video</span>
 </div>
 
+<div id="video-player-overlay" aria-hidden="true">
+  <div class="player-card">
+    <div class="player-head">
+      <div id="video-player-title">Video Panduan</div>
+      <button type="button" class="player-close" data-video-close aria-label="Tutup">×</button>
+    </div>
+    <video id="video-player" controls playsinline preload="metadata"></video>
+    <iframe
+      id="video-player-frame"
+      title="Video Player"
+      allow="autoplay; encrypted-media"
+      loading="lazy"
+      referrerpolicy="no-referrer"
+      style="display:none;"></iframe>
+  </div>
+</div>
 
 
 <script>
@@ -3235,6 +3425,6 @@ function closeChapter() {
   // window.MIDEA_CHAT_API_URL = "https://domain-backend-anda.com/api/chat";
   // window.MIDEA_TRANSLATE_API_URL = "https://domain-backend-anda.com/api/translate-ui";
 </script>
-<script src="midea-navigation.js?v=20260328-v19"></script>
+<script src="midea-navigation.js?v=20260331-v20"></script>
 
 </body>

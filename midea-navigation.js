@@ -1072,7 +1072,7 @@
           <div class="video-title">${title}</div>
           <div class="video-desc">${desc}</div>
         </div>
-        <div class="video-open">Play</div>
+        <div class="video-open">▶ Putar Sekarang</div>
       `;
       listEl.appendChild(card);
     });
@@ -1164,9 +1164,15 @@
     });
 
     const player = document.getElementById('video-player');
+    const overlay = document.getElementById('video-player-overlay');
     if (player) {
       player.addEventListener('error', () => {
         showToast('Video gagal dimuat. Cek izin akses file Google Drive.');
+      });
+    }
+    if (overlay) {
+      overlay.addEventListener('click', (event) => {
+        if (event.target === overlay) closeVideoPlayer();
       });
     }
 
@@ -1184,9 +1190,16 @@
 
     const backBtn = galleryWrap.querySelector('.back-btn');
     const searchInput = galleryWrap.querySelector('#video-gallery-search');
+    const refreshBtn = galleryWrap.querySelector('#video-gallery-refresh-btn');
     if (backBtn) backBtn.addEventListener('click', () => goToScreen(SCREEN.PANDUAN));
     if (searchInput) {
       searchInput.addEventListener('input', () => renderVideoGallery());
+    }
+    if (refreshBtn) {
+      refreshBtn.addEventListener('click', () => {
+        renderVideoGallery();
+        showToast('Galeri video diperbarui.');
+      });
     }
 
     bindBottomNav(galleryWrap);
