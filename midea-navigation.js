@@ -1,5 +1,5 @@
 (function () {
-  const NAV_VERSION = 'nav-fix-2026-03-31-v26';
+  const NAV_VERSION = 'nav-fix-2026-03-31-v27';
   window.MIDEA_NAV_VERSION = NAV_VERSION;
 
   const wraps = Array.from(document.querySelectorAll('.phone-wrap'));
@@ -332,11 +332,17 @@
       fallbackRecipeGeneral:
         'Saya bisa bantu resep sesuai alat Midea Anda. Sebutkan alat, bahan utama, dan target waktu masak.',
       fallbackWarranty:
-        'Untuk klaim garansi, siapkan nomor model, serial number, dan bukti pembelian.',
+        'Untuk klaim garansi, siapkan nomor model, serial number, dan bukti pembelian. Jika perlu bantuan cepat, hubungi WA resmi 082325960126.',
       fallbackService:
-        'Silakan kirim kota Anda. Saya akan bantu arahkan ke service center resmi terdekat.',
+        'Silakan kirim kota Anda. Saya akan bantu arahkan ke service center resmi terdekat. Kontak cepat: WA 082325960126.',
+      fallbackUsage:
+        'Langkah cepat penggunaan: 1) Isi bahan maksimal 2/3 panci (bahan mengembang maksimal 1/2), 2) Tutup dan kunci rapat, 3) Pilih Menu lalu Start, 4) Setelah selesai lepaskan tekanan dulu sebelum buka tutup.',
+      fallbackTroubleshoot:
+        'Cek ini dulu: sealing ring terpasang rapat, katup uap tidak tersumbat, dan air cukup. Jika muncul kode E1/E2/E8/C1, hentikan penggunaan lalu hubungi service center resmi.',
+      fallbackDuplicate:
+        'Jawaban sebelumnya masih relevan. Kirim detail model/gejala agar saya bantu lebih spesifik.',
       fallbackGeneric:
-        'Pesan diterima. Jika API ChatGPT belum aktif, jawaban sekarang memakai mode fallback lokal.',
+        'Koneksi AI belum aktif. Saya tetap bantu dari data panduan lokal. Coba kirim pertanyaan spesifik seperti: garansi, service center, cara penggunaan, atau kode error.',
     },
     en: {
       toastChatErrorPrefix: 'ChatGPT failed',
@@ -373,11 +379,17 @@
       fallbackRecipeGeneral:
         'I can suggest recipes based on your Midea appliance. Tell me the appliance, main ingredients, and desired cooking time.',
       fallbackWarranty:
-        'For warranty claims, prepare model number, serial number, and proof of purchase.',
+        'For warranty claims, prepare model number, serial number, and proof of purchase. Quick contact: official WhatsApp 082325960126.',
       fallbackService:
-        'Please share your city. I will direct you to the nearest official service center.',
+        'Please share your city. I will direct you to the nearest official service center. Quick contact: WhatsApp 082325960126.',
+      fallbackUsage:
+        'Quick usage steps: 1) Fill max 2/3 of the pot (expanding ingredients max 1/2), 2) Lock the lid, 3) Choose Menu then Start, 4) Release pressure fully before opening the lid.',
+      fallbackTroubleshoot:
+        'Please check: sealing ring installed correctly, steam valve not clogged, and enough water. If E1/E2/E8/C1 appears, stop using the unit and contact official service.',
+      fallbackDuplicate:
+        'The previous answer is still relevant. Send your model and symptoms so I can help more specifically.',
       fallbackGeneric:
-        'Message received. If ChatGPT API is not active yet, this answer uses local fallback mode.',
+        'AI connection is not active yet. I can still help using local manual data. Try specific topics: warranty, service center, usage steps, or error codes.',
     },
     zh: {
       toastChatErrorPrefix: 'ChatGPT 连接失败',
@@ -412,9 +424,14 @@
       fallbackRecipeAirfryer:
         '可尝试：鸡胸肉 180°C 烤 16-18 分钟，蒜末+盐+胡椒+少量油腌制，第 9 分钟翻面。',
       fallbackRecipeGeneral: '我可以根据您的美的设备推荐食谱，请提供设备、主要食材和目标烹饪时间。',
-      fallbackWarranty: '如需保修，请准备型号、序列号和购买凭证。',
-      fallbackService: '请提供您所在城市，我会推荐最近的官方服务中心。',
-      fallbackGeneric: '消息已收到。如果 ChatGPT API 未启用，当前回答使用本地兜底模式。',
+      fallbackWarranty: '如需保修，请准备型号、序列号和购买凭证。快速联系：官方 WhatsApp 082325960126。',
+      fallbackService: '请提供您所在城市，我会推荐最近的官方服务中心。快速联系：WhatsApp 082325960126。',
+      fallbackUsage:
+        '快速使用步骤：1）食材不超过内锅 2/3（易膨胀食材不超过 1/2）；2）锁紧锅盖；3）选择菜单后按 Start；4）开盖前先完全泄压。',
+      fallbackTroubleshoot:
+        '请先检查：密封圈是否安装到位、排气阀是否堵塞、加水是否足够。若出现 E1/E2/E8/C1，请停止使用并联系官方售后。',
+      fallbackDuplicate: '上一条回答仍然适用。请提供机型与故障现象，我可给出更具体建议。',
+      fallbackGeneric: 'AI 连接暂未启用，我仍可基于本地说明书为您提供帮助。可咨询：保修、售后、使用步骤、错误代码。',
     },
   };
 
@@ -2870,7 +2887,15 @@
   }
 
   function makeFallbackReply(message) {
-    const text = message.toLowerCase();
+    const text = String(message || '')
+      .toLowerCase()
+      .normalize('NFKD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^\p{L}\p{N}\s]/gu, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+    const matchAny = (keywords) => keywords.some((k) => text.includes(k));
 
     if (state.chatMode === 'recipe') {
       if (text.includes('air fryer')) {
@@ -2879,14 +2904,39 @@
       return tr('fallbackRecipeGeneral');
     }
 
-    if (text.includes('garansi') || text.includes('warranty')) {
+    if (matchAny(['garansi', 'warranty', '保修'])) {
       return tr('fallbackWarranty');
     }
-    if (text.includes('service') || text.includes('servis')) {
+    if (matchAny(['service', 'servis', 'service center', 'teknisi', '维修', '售后'])) {
       return tr('fallbackService');
+    }
+    if (matchAny(['cara penggunaan', 'cara pakai', 'how to use', 'usage', 'manual', 'panduan', '使用', '怎么用'])) {
+      return tr('fallbackUsage');
+    }
+    if (matchAny(['error', 'kode', 'e1', 'e2', 'e8', 'c1', 'bocor', 'leak', 'tekanan', 'pressure', '故障'])) {
+      return tr('fallbackTroubleshoot');
     }
 
     return tr('fallbackGeneric');
+  }
+
+  function appendAssistantSmart(replyText) {
+    const text = String(replyText || '').trim();
+    if (!text) return;
+
+    const history = getCurrentHistory();
+    const last = history[history.length - 1];
+    const lastText = String(last?.content || '').trim();
+
+    if (last?.role === 'assistant' && lastText === text) {
+      const duplicateNote = String(tr('fallbackDuplicate') || '').trim();
+      if (duplicateNote && lastText !== duplicateNote) {
+        appendHistory('assistant', duplicateNote);
+      }
+      return;
+    }
+
+    appendHistory('assistant', text);
   }
 
   async function fetchGptReply() {
@@ -2918,10 +2968,10 @@
 
     try {
       const reply = await fetchGptReply();
-      appendHistory('assistant', reply);
+      appendAssistantSmart(reply);
     } catch (error) {
       console.error(error);
-      appendHistory('assistant', makeFallbackReply(text));
+      appendAssistantSmart(makeFallbackReply(text));
       const msg = (error?.message || 'Unknown error').replace(/\s+/g, ' ').slice(0, 90);
       showToast(`${tr('toastChatErrorPrefix')}: ${msg}`);
     } finally {
