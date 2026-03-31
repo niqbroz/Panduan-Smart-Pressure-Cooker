@@ -1,5 +1,5 @@
 (function () {
-  const NAV_VERSION = 'nav-fix-2026-03-31-v19';
+  const NAV_VERSION = 'nav-fix-2026-03-31-v20';
   window.MIDEA_NAV_VERSION = NAV_VERSION;
 
   const wraps = Array.from(document.querySelectorAll('.phone-wrap'));
@@ -1773,25 +1773,33 @@
 
       if (nextActionBtn) {
         nextActionBtn.style.cursor = 'pointer';
-
-        // Sesuai request: Bab 2..8 pakai aksi "Bab Sebelumnya".
-        if (chapterPos > 0) {
-          const prevMain =
-            state.language === 'en' ? 'Previous Chapter' : state.language === 'zh' ? '上一章' : 'Bab Sebelumnya';
-          const prevSub =
-            state.language === 'en'
-              ? '← Back to previous chapter'
+        const nextMain =
+          chapterPos < CHAPTER_SCREENS.length - 1
+            ? state.language === 'en'
+              ? 'Next Chapter'
               : state.language === 'zh'
-                ? '← 返回上一章'
-                : '← Kembali ke bab sebelumnya';
-          nextActionBtn.innerHTML = `${prevMain}<span>${prevSub}</span>`;
-        }
+                ? '下一章'
+                : 'Bab Selanjutnya'
+            : state.language === 'en'
+              ? 'Table of Contents'
+              : state.language === 'zh'
+                ? '目录'
+                : 'Daftar Isi';
+        const nextSub =
+          chapterPos < CHAPTER_SCREENS.length - 1
+            ? state.language === 'en'
+              ? 'Go to next chapter →'
+              : state.language === 'zh'
+                ? '前往下一章 →'
+                : 'Ke bab selanjutnya →'
+            : state.language === 'en'
+              ? 'Back to manual list ↩'
+              : state.language === 'zh'
+                ? '返回手册目录 ↩'
+                : 'Kembali ke daftar panduan ↩';
+        nextActionBtn.innerHTML = `${nextMain}<span>${nextSub}</span>`;
 
         nextActionBtn.addEventListener('click', () => {
-          if (chapterPos > 0) {
-            goToScreen(CHAPTER_SCREENS[chapterPos - 1]);
-            return;
-          }
           if (chapterPos < CHAPTER_SCREENS.length - 1) {
             goToScreen(CHAPTER_SCREENS[chapterPos + 1]);
           } else {
@@ -1802,13 +1810,50 @@
 
       if (bookmarkBtn) {
         bookmarkBtn.style.cursor = 'pointer';
+        bookmarkBtn.style.width = 'auto';
+        bookmarkBtn.style.height = 'auto';
+        bookmarkBtn.style.flex = '1';
+        bookmarkBtn.style.borderRadius = '11px';
+        bookmarkBtn.style.padding = '12px 12px';
+        bookmarkBtn.style.display = 'flex';
+        bookmarkBtn.style.alignItems = 'center';
+        bookmarkBtn.style.justifyContent = 'space-between';
+        bookmarkBtn.style.gap = '8px';
+        bookmarkBtn.style.border = '1.5px solid rgba(30,58,95,0.22)';
+        bookmarkBtn.style.background = '#fff';
+
+        const prevMain =
+          chapterPos > 0
+            ? state.language === 'en'
+              ? 'Previous Chapter'
+              : state.language === 'zh'
+                ? '上一章'
+                : 'Bab Sebelumnya'
+            : state.language === 'en'
+              ? 'Table of Contents'
+              : state.language === 'zh'
+                ? '目录'
+                : 'Daftar Isi';
+        const prevSub =
+          chapterPos > 0
+            ? state.language === 'en'
+              ? '← Back to previous chapter'
+              : state.language === 'zh'
+                ? '← 返回上一章'
+                : '← Kembali ke bab sebelumnya'
+            : state.language === 'en'
+              ? '← Back to manual list'
+              : state.language === 'zh'
+                ? '← 返回手册目录'
+                : '← Kembali ke daftar panduan';
+
+        bookmarkBtn.innerHTML = `<span style="font-size:13px;font-weight:700;color:#1E3A5F;">${prevMain}</span><span style="font-size:10.5px;color:#6B6B80;">${prevSub}</span>`;
+
         bookmarkBtn.addEventListener('click', () => {
           if (chapterPos > 0) {
             goToScreen(CHAPTER_SCREENS[chapterPos - 1]);
-            showToast(tr('toastBackChapter'));
           } else {
             goToScreen(SCREEN.PANDUAN);
-            showToast(tr('toastBackToToc'));
           }
         });
       }
